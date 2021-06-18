@@ -1,0 +1,6 @@
+<?php
+    $_order  = $block->getOrder();
+    $_source = $block->getSource();
+    global $taxIter;
+$taxIter++;
+?><tr class="totals-tax"><th scope="row" colspan="4" class="text-right"><?= /* @escapeNotVerified */ __('Tax') ?></th><td data-th="<?= $block->escapeHtml(__('Tax')) ?>"><?= /* @escapeNotVerified */ $_order->formatPrice($_source->getTaxAmount()) ?></td></tr>

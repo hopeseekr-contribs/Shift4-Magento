@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <preference for="Magento\Sales\Block\Adminhtml\Order\View\Tab\Info" type="Shift4\Payment\Block\Adminhtml\Order\View\Tab\Info" />
+	<preference for="Magento\Sales\Block\Adminhtml\Order\Invoice\View\Form" type="Shift4\Payment\Block\Adminhtml\Order\Invoice\View\Form" />
+	<preference for="Magento\Sales\Block\Adminhtml\Order\Invoice\Create\Form" type="Shift4\Payment\Block\Adminhtml\Order\Invoice\Create\Form" />
+	<preference for="Magento\Sales\Block\Adminhtml\Order\Creditmemo\View\Form" type="Shift4\Payment\Block\Adminhtml\Order\Creditmemo\View\Form" />
+	<preference for="Magento\Sales\Block\Adminhtml\Order\Creditmemo\Create\Form" type="Shift4\Payment\Block\Adminhtml\Order\Creditmemo\Create\Form" />
+</config>

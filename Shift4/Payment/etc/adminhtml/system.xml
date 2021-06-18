@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+<!--
+/**
+* Shift4_Payment admin configuration
+*
+* @category    Payment
+* @package     Shift4_Payment
+* @author      Shift4
+* @copyright   Shift4 (https://shift4.com)
+* @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="payment">
+                <group id="shift4_section" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Credit, Debit, or Gift Card (Shift4)</label>
+					<comment><![CDATA[<div class="shift4-notice">
+									<a href="https://www.shift4.com/dotn/4tify/i4go.cfm" target="_blank" id="shift4-logo">&nbsp;</a><br>
+									<a href="https://www.shift4.com/dotn/4tify/i4go.cfm" target="_blank">Click here to learn more</a>
+								</div>]]></comment>
+                    <field id="active" translate="label tooltip" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Enabled*</label>
+                        <tooltip><![CDATA[To enable Shift4 as a payment option available to your customers during the checkout process, select Yes. (This will allow you to accept credit, debit, and gift cards while keeping cardholder data out of your system.) If No is selected, Shift4 will not be displayed as a payment option during the checkout process.]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/shift4/active</config_path>
+                    </field>
+					<field id="title" translate="label tooltip" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Title*</label>
+                        <tooltip><![CDATA[If Shift4 is enabled as a payment option, it will be displayed to your customers using the text in the Title field. Leave the default text, “Credit, Debit, or Gift Card (Shift4)” or enter your own. Shift4 recommends the default text be used so your customers know their cardholder data is protected.]]></tooltip>
+                        <validate>required-entry</validate>
+                        <config_path>payment/shift4/title</config_path>
+                    </field>
+					<field id="submit_label" translate="label tooltip" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Payment Submit Label*</label>
+                        <tooltip><![CDATA[Payment Submit Label]]></tooltip>
+                        <validate>validate-length maximum-length-30 validate-no-html-tags required-entry</validate>
+                        <config_path>payment/shift4/submit_label</config_path>
+                    </field>
+                    <field id="processing_mode" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Processing Mode*</label>
+                        <tooltip><![CDATA[If Shift4 is enabled as a payment option and you would like to test it, select Demo. (Transactions processed in demo mode will not be available in DOLLARS ON THE NET®.) If you are ready to process real transactions, select Live. (All fields on this page must be properly configured in order to process real transactions, which will be available in DOLLARS ON THE NET.)]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Shift4\Payment\Model\admin\config\ProcessingMode</source_model>
+                        <config_path>payment/shift4/processing_mode</config_path>
+                    </field>
+                    <field id="server_addresses" translate="label comment" type="textarea" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Server Addresses*</label>
+                        <tooltip><![CDATA[If the Universal Transaction Gateway® (UTG®) is in use, enter a comma-separated list of UTG IP addresses and port numbers. If the UTG is not in use, the Server Addresses field will be populated with the appropriate server address.]]></tooltip>
+                        <validate>required-entry</validate>
+                        <frontend_model>Shift4\Payment\Model\admin\config\RenderResetButton</frontend_model>
+                        <config_path>payment/shift4/server_addresses</config_path>
+                    </field>
+                    <field id="auth_token" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Auth Token*</label>
+                        <tooltip><![CDATA[For instructions on generating an Auth Token, see the Account Administrator Guide located in the Help section of DOLLARS ON THE NET®. After the Auth Token is generated, paste it into the Auth Token field and click Exchange. This will exchange your Auth Token for an Access Token, allowing you to process transactions through DOLLARS ON THE NET for that Merchant ID.]]></tooltip>
+                        <validate>required-entry</validate>
+                        <frontend_model>Shift4\Payment\Model\admin\config\RenderExchangeButton</frontend_model>
+                        <config_path>payment/shift4/auth_token</config_path>
+                    </field>
+                    <field id="masked_access_token" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Access Token*</label>
+                        <tooltip><![CDATA[An Access Token allows you to process transactions through DOLLARS ON THE NET® in relation to the Merchant ID with which it corresponds. You must use the Auth Token field above to generate an Access Token, which will be displayed masked in this field.]]></tooltip>
+                        <validate>required-entry</validate>
+                        <frontend_model>Shift4\Payment\Model\admin\config\AccessTokenUnMask</frontend_model>
+                        <config_path>payment/shift4/masked_access_token</config_path>
+                    </field>
+					<field id="enable_ssl" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Enable SSL*</label>
+                        <tooltip><![CDATA[You can disable SSL only in demo mode.]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/shift4/enable_ssl</config_path>
+                    </field>
+                    <field id="logging" translate="label" type="select" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Enable Logging*</label>
+                        <tooltip><![CDATA[If Shift4 is enabled as a payment option and you would like to log all communication with DOLLARS ON THE NET®, select Log All Communications. (This is the setting Shift4 recommends.) If you only want to log communication problems with DOLLARS ON THE NET, select Log Problems Only. If you do not want any communication with DOLLARS ON THE NET logged, select Off. (The two log files, Shift4.log and Shift4-error.log, can be found by navigating to the …/Magento/var/log folder.)]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Shift4\Payment\Model\admin\config\LoggingOption</source_model>
+                        <config_path>payment/shift4/logging</config_path>
+                    </field>
+					<field id="developer_mode" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Developer mode*</label>
+                        <tooltip><![CDATA[If developer mode is enabled then more logging are applied during Shift4 payment proccess]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/shift4/developer_mode</config_path>
+                    </field>
+					<field id="html_invoice" translate="label" type="select" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Send HTML invoice*</label>
+                        <tooltip><![CDATA[Send HTML invoice to Lighthouse Transaction Manager notes]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Shift4\Payment\Model\admin\config\HtmlInvoice</source_model>
+                        <config_path>payment/shift4/html_invoice</config_path>
+                    </field>
+                    <field id="allow_partial_auth" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Allow Partial Authorization*</label>
+                        <tooltip><![CDATA[If Shift4 is enabled as a payment option and you would like to allow a partial authorization on a payment card, select Yes. This will automatically prompt for a different, additional payment card when an approval for a lesser amount is obtained on the submitted payment card. If No is selected, an authorization for a lesser amount will be voided and a new payment card will be required. (While Shift4’s payment method supports partial authorizations, some third-party one-page checkout extensions do not. If you are using this type of extension and support for partial authorizations is desired, you will need to verify it works with the Shift4 payment method.)]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/shift4/allow_partial_auth</config_path>
+                    </field>
+                    <field id="payment_action" translate="label" type="select" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Transaction Mode*</label>
+                        <tooltip><![CDATA[If Shift4 is enabled as a payment option and you would like to authorize and finalize the transaction at the same time, select Immediate Charge. If you would like to authorize the transaction and manually finalize the transaction at a later time in DOLLARS ON THE NET®, select Book and Ship. (The Book and Ship option is commonly used by merchants who need to ship the customer’s order before finalizing the transaction. These types of transactions should be finalized as soon as possible in DOLLARS ON THE NET as authorizations can expire.)]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Shift4\Payment\Model\admin\config\PaymentAction</source_model>
+                        <config_path>payment/shift4/payment_action</config_path>
+                    </field>
+                    <field id="support_swipe" translate="label" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Only Support Encrypted MSRs*</label>
+                        <tooltip><![CDATA[If Shift4 is enabled as a payment option and you would like to only support encrypted magnetic swipe readers (MSRs), select Yes. This will only allow encrypted MSRs to be used when swiping cardholder data. To support unencrypted and encrypted MSRs, select No.]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/shift4/support_swipe</config_path>
+                    </field>
+					<field id="support_hsafsa" translate="label" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Support HSA/FSA*</label>
+                        <tooltip><![CDATA[If Shift4 is enabled as a payment option and you would like to support HSA/FSA, select Yes. This will allow you to add a desired attribute to an item. (Before you can add an attribute to an item, you will need to create a new custom attribute set called “iias_type” that will be a drop-down list with the attributes listed below. Then, add an IIAS type to each product you would like HSA/FSA to be considered on.)<br>4S-Healthcare<br>4T-Transit<br>4O-Cash Disbursement<br>4U-RX<br>4V-Vision<br>4W-Clinical<br>4X-Dental]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/shift4/support_hsafsa</config_path>
+                    </field>
+                    <field id="disable_expiration_date_for_gc" translate="label" type="select" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Gift Card Disables Expiration Date*</label>
+                        <tooltip><![CDATA[If Shift4 is enabled as a payment option and you would like to process gift cards (including It’s Your Card® gift cards) without requiring the customer to enter the card’s expiration date, select this option. If not, leave the option cleared and the customer will need to enter the expiration date when using a gift card.]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/shift4/disable_expiration_date_for_gc</config_path>
+                    </field>
+                    <field id="disable_cvv_for_gc" translate="label" type="select" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Gift Card Disables Card Security Code*</label>
+                        <tooltip><![CDATA[If Shift4 is enabled as a payment option and you would like to process gift cards (including It’s Your Card® gift cards) without requiring the customer to enter the card’s security code, select this option. If not, leave the option cleared and the customer will need to enter the card’s security code (the three- or four-digit code on the front or back of the card) when using a gift card.]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/shift4/disable_cvv_for_gc</config_path>
+                    </field>
+					<field id="enable_saved_cards" translate="label" type="select" sortOrder="18" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Enable saved cards*</label>
+                        <tooltip><![CDATA[Save card enable description]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/shift4/enable_saved_cards</config_path>
+                    </field>
+					<field id="enable_google_pay" translate="label" type="select" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Enable Google pay</label>
+                        <tooltip><![CDATA[Enable Google pay]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/shift4/enable_google_pay</config_path>
+                    </field>
+					<field id="enable_apple_pay" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Enable Apple pay</label>
+                        <tooltip><![CDATA[Enable Apple pay]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/shift4/enable_apple_pay</config_path>
+                    </field>
+					<field id="i4go_template" translate="label" type="select" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>i4go template</label>
+                        <tooltip><![CDATA[Template for i4Go]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Shift4\Payment\Model\admin\config\I4goTemplate</source_model>
+                        <config_path>payment/shift4/i4go_template</config_path>
+                    </field>
+                </group>
+        </section>
+    </system>
+</config>

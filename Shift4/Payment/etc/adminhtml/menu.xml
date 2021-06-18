@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2016 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Shift4_Payment::shift4" title="Shift4" module="Shift4_Payment" sortOrder="500" parent="Magento_Reports::report" resource="Shift4_Payment::shift4"/>
+        <add id="Shift4_Payment::shift4_report" title="Shift4 Payments Reports" module="Shift4_Payment" sortOrder="100" parent="Shift4_Payment::shift4" action="payment/report/index" resource="Shift4_Payment::report"/>
+    </menu>
+</config>

@@ -1,0 +1,96 @@
+<div class="box-account">
+    <?php
+    $savedCards = $this->getStoredCards();
+
+    if ($savedCards && !empty($savedCards)):
+        ?>
+        <table class="data-table" id="stored-cards-table">
+            <col />
+            <col width="1" />
+            <col width="1" />
+            <col width="1" />
+            <thead>
+                <tr>
+                    <th width="20%"><!-- ko i18n: 'Card Type' --><!-- /ko --></th>
+                    <th width="20%"><!-- ko i18n: 'Card Number' --><!-- /ko --></th>
+                    <th width="20%"><!-- ko i18n: 'Expiration Date' --><!-- /ko --></th>
+                    <th width="20%">&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($savedCards as $card): ?>
+                    <tr>
+                        <td><?php echo $card['cc_type']; ?></td>
+                        <td>(<?php echo sprintf('xxxx-%s', $card['last_four']); ?>)</td>
+                        <td class="a-center"><span class="nobr"><?php echo $card['cc_exp_month']; ?>/<?php echo $card['cc_exp_year']; ?></span></td>
+                        <td class="a-center">
+                            <span class="nobr">
+                                <a href="javascript:;" data-card_id="<?php echo $card['saved_card_id']; ?>"  class="delete_card" title="<?php echo __('Delete'); ?>"><!-- ko i18n: 'Delete' --><!-- /ko --></a>
+                            </span>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <!--<script type="text/javascript">decorateTable('stored-cards-table');</script>-->
+    <?php else: ?>
+        <p><!-- ko i18n: 'No saved cards' --><!-- /ko --></p>
+    <?php endif; ?>
+</div>
+
+<div id="add-card-area">
+    <br />
+    <span id="i4go_error"></span>
+    <div id="addcard" class="card-new-container" style="display:none; padding-top:30px;">      
+        <form name="addcardform" id="<?php echo $this->getFormId(); ?>"></form>
+    </div>
+    <button style="float:right" class="button add-new" title="<?php echo __('New card'); ?>" type="button"><span><span><!-- ko i18n: 'New card' --><!-- /ko --></span></span></button>
+</div>
+<div class="i4goFrame-container">
+    <?php echo $this->getChildHtml('i4go_iframe'); ?>
+</div>
+<script>
+    require([
+        "jquery",
+        'mage/translate',
+        'mage/url',
+    ], function ($, __, url) {
+        $(document).ready(function($) {
+            $('.i4goFrame-container').hide();
+            function showForm() {
+                $('.button.add-new').hide();
+                $('.i4goFrame-container').slideDown('slow');
+            }
+            $(".add-new").on("click", function (e) {
+                showForm();
+            });
+            
+            $('.delete_card').click(function() {
+                var thistr = $(this).closest('tr');
+                if (confirm(__('Are you sure, want to delete this card?'))) {
+                    var canelUrl = url.build('shift4/storedcard/deletecard');
+                    $.ajax({
+                        method: "POST",
+                        url: canelUrl,
+                        dataType: "json",
+                        showLoader: true,
+                        data: {saved_card_id: $(this).attr('data-card_id')}
+                    })
+                    .done(function (response) {
+                        if (response == '1') {
+                            thistr.fadeOut('fast');
+                            thistr.remove();
+                            if ($('#stored-cards-table tbody tr').length < 1) {
+                                $('#stored-cards-table').after('<p>' + __('No saved cards') + '</p>');
+                                $('#stored-cards-table').remove();
+                            }
+                        } else {
+                            alert(response);
+                        }    
+                    });
+                }
+            });
+        });
+    });
+</script> 

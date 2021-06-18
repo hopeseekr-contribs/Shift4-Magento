@@ -1,0 +1,16 @@
+<?php
+$_order = $block->getOrder();
+$_store = $block->getStore();
+$_invoice = $block->getInvoice();
+ 
+ 
+?><?php if ($block->getInvoiceIncrementId()) { echo '<h1>Invoice: #'.$block->getInvoiceIncrementId().'</h1>'; } else { ?><h1>Order: #<?php echo $_order->getIncrementId(); ?></h1><?php } ?><table class="table table-bordered"><thead><tr><td colspan="2"><b><?php echo __('Order Details'); ?></b></td></tr></thead><tbody><tr><td style="width: 50%;"><address><strong><?php echo $block->getStoreName(); ?></strong></address><?php if ($block->getStorePhone()) { ?><b><?php echo __('Phone'); ?>:</b> <?php echo $block->getStorePhone(); ?><br><?php } ?>
+<b><?php echo __('Email'); ?>:</b> <?php echo $block->getStoreEmail(); ?><br>
+<b><?php echo __('Website'); ?>:</b> <a href="<?php echo $block->getStoreUrl(); ?>"><?php echo $block->getStoreUrl(); ?></a></td>
+<td style="width: 50%;"><b><?php echo __('Date added'); ?>:</b> <?php echo date('m/d/Y'); ?><br>
+<b><?php echo __('Order Id'); ?>:</b> <?php echo $_order->getIncrementId(); ?><br>
+<b><?php echo __('Payment method'); ?>:</b> <?php echo $_order->getPayment()->getMethodInstance()->getCode(); ?><br>
+<b><?php echo __('Shipping method'); ?>:</b> <?php echo $_order->getShippingDescription(); ?><br>
+</tr></tbody></table><table class="table table-bordered"><thead><tr><td style="width:50%;"><b><?php echo __('Billing address'); ?></b></td><td style="width:50%;"><b><?php echo __('Shipping address'); ?></b></td>
+</tr></thead><tbody><tr><td><address><?php echo $block->getAddressHtml('billing'); ?></address></td><td><address><?php echo $block->getAddressHtml('shipping'); ?></address></td></tr></tbody>
+</table><table class="table table-bordered"><thead><tr><td><b><?php echo __('Product'); ?></b></td><td><b><?php echo __('SKU'); ?></b></td><td class="text-right"><b><?php echo __('Price'); ?></b></td><td class="text-right"><b><?php echo __('Qty'); ?></b></td><td class="text-right"><b><?php echo __('Subtotal'); ?></b></td></tr></thead><tbody><?php foreach ($block->getOrderItems() as $item) { echo $block->getItemHtml($item); } ?></tbody><tfoot><?php echo $block->getTotalsHtml(); ?></tfoot></table>

@@ -1,0 +1,6 @@
+<?php
+    $_order  = $block->getOrder();
+    $_source = $block->getSource();
+    global $taxIter;
+$taxIter++;
+?><tr><th><?= /* @escapeNotVerified */ __('Tax') ?></th><td><?= /* @escapeNotVerified */ strip_tags($_order->formatPrice($_source->getTaxAmount())) ?></td></tr>

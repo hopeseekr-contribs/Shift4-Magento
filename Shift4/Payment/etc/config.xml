@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!--
+/**
+* Shift4_Payment default configuration
+*
+* @category    Payment
+* @package     Shift4_Payment
+* @author      Shift4
+* @copyright   Shift4 (https://shift4.com)
+* @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <payment>
+            <shift4>
+                <model>Shift4\Payment\Model\Shift4</model>         
+                <active>0</active>
+                <title>Credit, Debit, or Gift Card (Shift4)</title>
+				<submit_label>Secure My Payment Information</submit_label>			
+                <processing_mode>demo</processing_mode>
+                <server_addresses>https://utg.shift4api.net/api/rest/v1</server_addresses>
+                <logging>all</logging>
+                <card_on_file>0</card_on_file>         
+                <payment_action>authorize</payment_action>
+                <order_status>processing</order_status>
+                <useccv>1</useccv>
+                <allowspecific>0</allowspecific>
+                <cctypes>AX,VS,MC,DC,NS,JC,YC</cctypes>
+                <currency>USD</currency>
+                <enable_saved_cards>1</enable_saved_cards>
+                <html_invoice>1</html_invoice>
+            </shift4>
+        </payment>
+		<dev>
+			<js>
+				<minify_exclude>
+					<i4go>https://i4m.i4go.com/js/jquery.i4goTrueToken.js</i4go>
+					<wallets>https://i4m.shift4test.com/js/wallets.js</wallets>
+				</minify_exclude>
+			</js>
+		</dev>
+    </default>
+</config>

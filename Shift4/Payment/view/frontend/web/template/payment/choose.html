@@ -1,0 +1,70 @@
+<link rel="stylesheet" type="text/css" href="https://i4m.shift4test.com/css/wallets.css">
+<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
+    <div class="payment-method-title field choice">
+        <input type="radio"
+               name="payment[method]"
+               class="radio"
+               data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()" />
+        <label data-bind="attr: {'for': getCode()}" class="label">
+            <span data-bind="text: getTitle()"></span>
+        </label>
+    </div>
+    <div class="payment-method-content">
+        <!-- ko foreach: getRegion('messages') -->
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <!--/ko-->
+        <div class="payment-method-billing-address">
+            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+
+		<div id="partial_payments"></div>
+		<div id="preauth_cancel"></div>
+		<div style="margin-left: 9px; margin-top:1.5em;">
+            <label id="display_left_amount"></label>
+        </div>
+		
+		<div class="s4messages"></div>
+		
+		<div class="actions-toolbar" id="shift4_place_order" style="display:none;">
+			<label  style="color:#636363;font-size:13px;font-weight:600;display:block;margin-top:10px;margin-left:8px;font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;"><!-- ko i18n: 'My saved cards:' --><!-- /ko --></label>
+			<select id="my_saved_cards" name="saved_card" style="margin-left:8px; width: 273px;height: 30px;padding: 0 8px;margin-bottom: 10px;border: 1px solid silver;border-radius: 2px;font-size: 15px;"><?php echo $savedCards['html']; ?></select>
+            <div class="primary" style="display:none;">
+                <button class="action primary checkout primaryPlaceOrder"
+                        type="submit"
+                        data-bind="
+                        click: placeOrder,
+                        attr: {title: $t('Place Order')},
+                        css: {disabled: !isPlaceOrderActionAllowed()},
+                        enable: (getCode() == isChecked())
+                        "
+                        disabled>
+                    <span data-bind="i18n: 'Place Order'"></span>
+                </button>
+            </div>
+        </div>
+			
+		<div id="new_card" style="display:none;">
+			<div id="i4go_form"></div>
+			
+
+			<label id="save_card_for_future_use" style="display:none;"><input type="checkbox" name="save_card" id="save_card" checked="checked"> <!-- ko i18n: 'Save this card for future use?' --><!-- /ko --></label>
+
+		</div>
+		<div id="ap_gp_buttons" style="display:none;">
+			<div class="pay-buttons">
+				<button class="pay-button apple-pay-button pay-hidden"></button>
+				<button class="pay-button google-pay-button pay-hidden"></button>
+			</div>
+
+		</div>
+		
+	
+        <div class="checkout-agreements-block">
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+    </div>
+</div>

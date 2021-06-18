@@ -1,0 +1,7 @@
+.collapse { margin:0; padding:0 0 0 13px; background:url(../images/note_cell_bg.gif) 1px 6px no-repeat; font-size:11px;cursor:pointer; }
+.expand { margin:0; padding:0 0 0 13px; background:url(../images/note_bg.gif) 1px 6px no-repeat; font-size:11px;cursor:pointer; }
+.collapse > span , .expand > span { cursor: default; }
+.shift4-notice { text-align: center; padding-left:70px; }
+#shift4-logo { background:url(../images/secured-by-i4go.png) no-repeat; display:inline-block; width:570px; height:130px; }
+#shift4-logo:hover { text-decoration:none; }
+.shift4-notice a:last-child { margin-left:5px; }

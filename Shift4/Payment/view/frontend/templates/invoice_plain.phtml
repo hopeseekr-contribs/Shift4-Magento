@@ -1,0 +1,17 @@
+<?php
+$_order = $block->getOrder();
+$_store = $block->getStore();
+$_invoice = $block->getInvoice();
+ 
+?><b>Order: #<?php echo $_order->getIncrementId(); ?></b>
+<?php if ($block->getInvoiceIncrementId()) { echo '<br>Invoice: #'.$block->getInvoiceIncrementId().'</br>'; } ?><br>
+<br>
+<b><?php echo __('Shipping method'); ?>:</b> <?php echo $_order->getShippingDescription(); ?><br>
+<br>
+<b><?php echo __('Billing address'); ?></b><br>
+<?php echo nl2br(preg_replace("/\n\n+/s", "\n", strip_tags($block->getAddressHTML('billing')))); ?>
+<br>
+<b><?php echo __('Shipping address'); ?></b><br>
+<?php echo nl2br(preg_replace("/\n\n+/s", "\n", strip_tags($block->getAddressHTML('shipping')))); ?>
+<br>
+<table><thead><tr><td><b><?php echo __('Product'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?php echo __('SKU'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?php echo __('Price'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?php echo __('Qty'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?php echo __('Subtotal'); ?></b>&nbsp;</td></tr></thead><tbody><?php foreach ($block->getOrderItems() as $item) { echo $block->getItemHtml($item); } ?></tbody><tfoot><?php echo $block->getTotalsHtml(); ?></tfoot></table>

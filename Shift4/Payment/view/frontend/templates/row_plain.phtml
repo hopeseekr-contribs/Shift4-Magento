@@ -1,0 +1,12 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var $block \Magento\Tax\Block\Item\Price\Renderer */
+
+$_item = $block->getItem();
+?><?php if (($block->displayPriceInclTax() || $block->displayBothPrices()) && !$_item->getNoSubtotal()): ?><?= /* @escapeNotVerified */ strip_tags($block->formatPrice($_item->getRowTotalInclTax())) ?><?php endif; ?><?php if (($block->displayPriceExclTax() || $block->displayBothPrices()) && !$_item->getNoSubtotal()): ?><?= /* @escapeNotVerified */ strip_tags($block->formatPrice($_item->getRowTotal())) ?><?php endif; ?>

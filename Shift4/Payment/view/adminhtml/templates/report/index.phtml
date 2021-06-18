@@ -1,0 +1,402 @@
+<?php
+$transactions = $this->getTransactions();
+$request = $this->getS4Request();
+$totals = $this->getTransactionTotal();
+$totalRecords = $totals['total_records'];
+$page = $this->getPage();
+$limit = $this->getLimit();
+$totalPages = ceil($totalRecords / $limit);
+?>
+<style>
+.data-grid td.grey { background-color:#f5f5f5!important; border:.1rem dashed #d6d6d6; }
+.data-grid td.white { background-color:#fff!important; border:.1rem dashed #d6d6d6; }
+</style>
+<div class="page-main-actions">
+    <div class="page-actions" >
+        <div class="page-actions-inner" data-title="Shift4 Report">
+            <div class="page-actions-buttons">
+                <button id="filter_form_submit" title="Show Report" type="button" class="action-default scalable primary" onclick="filterFormSubmit()" >
+                    <span><?=__('Show Report');?></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="reports-content">
+    <div class="entry-edit form-inline">
+        <form id="filter_form" action="<?php echo $this->getUrl('*/*/*', ['_current' => true, '_use_rewrite' => true]); ?>" method="get" novalidate="novalidate">
+            <fieldset class="fieldset admin__fieldset " id="sales_report_base_fieldset">
+                <legend class="admin__legend legend">
+                    <span><?=__('Filter');?></span>
+                </legend><br>
+                <div class="messages">
+                </div>
+
+                <div class="admin__field field field-filter_type  with-note" >
+                    <label class="label admin__field-label" for="shift4_report_filter_type" ><span><?=__('Filter By');?></span></label>
+                    <div class="admin__field-control control">
+                        <select id="shift4_report_filter_type" name="filter_type" class="select admin__control-select" onchange="changeStatusOption(this.value);">
+                            <option value="transaction_date"<?php if ($request['filter_type'] == 'transaction_date') { echo ' selected="selected"';} ?>><?=__('Transaction Date');?></option>
+                            <option value="order_date"<?php if ($request['filter_type'] == 'order_date') { echo ' selected="selected"';} ?>><?=__('Order Date');?></option>
+                            <option value="shipping_date"<?php if ($request['filter_type'] == 'shipping_date') { echo ' selected="selected"';} ?>><?=__('Shipping Date');?></option>
+                            <option value="timeout_date"<?php if ($request['filter_type'] == 'timeout_date') { echo ' selected="selected"';} ?>><?=__('Time out Date');?></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="admin__field field field-from admin__field-small required _required" data-ui-id="grid-filter-form-fieldset-element-form-field-from">
+                    <label class="label admin__field-label" for="shift4_report_from" data-ui-id="grid-filter-form-fieldset-element-text-from-label"><span><?=__('From');?></span></label>
+                    <div class="admin__field-control control">
+                        <input name="from" id="shift4_report_from" value="<?=$request['from'];?>" title="From" type="text" class="admin__control-text required-entry _required input-text" data-mage-init="{&quot;calendar&quot;:{&quot;dateFormat&quot;:&quot;M\/d\/yy&quot;,&quot;maxDate&quot;:&quot;0&quot;,&quot;showsTime&quot;:false,&quot;timeFormat&quot;:null,&quot;buttonImage&quot;:null,&quot;buttonText&quot;:&quot;Select Date&quot;,&quot;disabled&quot;:null}}" />
+                    </div>
+                </div>
+
+                   <div class="admin__field field field-to admin__field-small required _required" data-ui-id="grid-filter-form-fieldset-element-form-field-to">
+                    <label class="label admin__field-label" for="shift4_report_to" data-ui-id="grid-filter-form-fieldset-element-text-to-label"><span><?=__('To');?></span></label>
+                    <div class="admin__field-control control">
+                        <input name="to" id="shift4_report_to" value="<?=$request['to'];?>" title="To" type="text" class="admin__control-text required-entry _required input-text" data-mage-init="{&quot;calendar&quot;:{&quot;dateFormat&quot;:&quot;M\/d\/yy&quot;,&quot;maxDate&quot;:&quot;0&quot;,&quot;showsTime&quot;:false,&quot;timeFormat&quot;:null,&quot;buttonImage&quot;:null,&quot;buttonText&quot;:&quot;Select Date&quot;,&quot;disabled&quot;:null}}" />
+                    </div>
+                </div>
+            
+                <div class="admin__field field field-order_statuses">
+                    <label class="label admin__field-label" for="shift4_report_transaction_types"><span><?=__('Request Types');?></span></label>
+                    <div class="admin__field-control control">
+                        <select id="shift4_report_transaction_types" name="transaction_types" size="10" class="select multiselect admin__control-multiselect ignore-validate" multiple="multiple" style="height:210px">
+                            <option value="refund"<?php  if (in_array('refund', $request['transaction_types'])) { echo ' selected="selected"';} ?>><?=__('Refund');?></option>
+                            <option value="authorization"<?php if (in_array('authorization', $request['transaction_types'])) { echo ' selected="selected"';} ?>><?=__('Authorization');?></option>
+                            <option value="sale_capture"<?php if (in_array('sale_capture', $request['transaction_types'])) { echo ' selected="selected"';} ?>><?=__('Sale');?></option>
+                            <option value="invoice"<?php if (in_array('invoice', $request['transaction_types'])) { echo ' selected="selected"';} ?>><?=__('Invoice');?></option>
+                            <option value="updates"<?php if (in_array('updates', $request['transaction_types'])) { echo ' selected="selected"';} ?>><?=__('Partial tax adjustment');?></option>
+                            <option value="void"<?php if (in_array('void', $request['transaction_types'])) { echo ' selected="selected"';} ?>><?=__('Void');?></option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="admin__field field field-order_statuses">
+                    <label class="label admin__field-label" for="shift4_report_transaction_statuses"><span><?=__('Transaction Status');?></span></label>
+                    <div class="admin__field-control control">
+                        <select id="shift4_report_transaction_statuses" name="transaction_statuses" size="10" class="select multiselect admin__control-multiselect ignore-validate" multiple="multiple" style="height:120px">
+                            <option value="success"<?php if (in_array('success', $request['transaction_statuses'])) { echo ' selected="selected"';} ?>><?=__('Success');?></option>
+                            <option value="error"<?php if (in_array('error', $request['transaction_statuses'])) { echo ' selected="selected"';} ?>><?=__('Error');?></option>
+                            <option value="timedout"<?php if (in_array('timedout', $request['transaction_statuses'])) { echo ' selected="selected"';} ?>><?=__('Time out');?></option>
+                            <option value="voided"<?php if (in_array('voided', $request['transaction_statuses'])) { echo ' selected="selected"';} ?>><?=__('Voided');?></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="admin__field field field-show_order_statuses  with-note" data-ui-id="grid-filter-form-fieldset-element-form-field-show-order-statuses">
+                    <label class="label admin__field-label" for="shift4_report_show_order_statuses" data-ui-id="grid-filter-form-fieldset-element-select-show-order-statuses-label"><span><?=__('Order Status');?></span></label>
+                    <div class="admin__field-control control">
+                        <select id="shift4_report_show_order_statuses" name="show_order_statuses" class=" select admin__control-select" data-ui-id="grid-filter-form-fieldset-element-select-show-order-statuses">
+                            <option value="0"<?php if ($request['show_order_statuses'] == '0') { echo ' selected="selected"';} ?>><?=__('Any');?></option>
+                            <option value="1"<?php if ($request['show_order_statuses'] == '1') { echo ' selected="selected"';} ?>><?=__('Specified');?></option>
+                        </select>
+                        <div class="note admin__field-note" id="show_order_statuses-note"><?=__('Applies to Any of the Specified Order Statuses');?></div>
+                    </div>
+                </div>
+
+                <div class="admin__field field field-order_statuses " data-ui-id="grid-filter-form-fieldset-element-form-field-order-statuses" style="display: none;">
+                    <label class="label admin__field-label" for="shift4_report_order_statuses" data-ui-id="grid-filter-form-fieldset-element-select-order-statuses-label"><span></span></label>
+                    <div class="admin__field-control control">
+                        <select id="shift4_report_order_statuses" name="order_statuses" size="10" class="select multiselect admin__control-multiselect ignore-validate" data-ui-id="grid-filter-form-fieldset-element-select-order-statuses" multiple="multiple" disabled=""<?php if ($request['show_order_statuses'] == '0') { echo ' style="display: none;"';} ?>>
+                        <?php foreach ($this->getOrderStatuses() as $k => $v): ?>
+                            <option value="<?=$k;?>"<?php if (in_array($k, $request['order_statuses'])) { echo ' selected="selected"';} ?>><?=$v;?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <script>
+                    require(["mage/adminhtml/form"], function () {
+                        new FormElementDependenceController({"shift4_report_order_statuses": {"shift4_report_show_order_statuses": {"values": ["1"], "negative": false}}});
+                    });
+                </script>
+            </fieldset>
+        </form>
+    </div>
+</div>
+<div>
+
+    <div class="admin__data-grid-header admin__data-grid-toolbar">
+    <?php /*
+        <div class="admin__data-grid-header-row">
+            <div class="admin__data-grid-export">
+                <button title="Export" type="button" class="action-default scalable task" onclick="window.open('<?=$this->getLogUrl();?>', '_blank')" data-ui-id="widget-button-0">
+                    <span>Export Logs</span>
+                </button>
+            </div>
+        </div>
+*/ ?>
+        <div class="admin__data-grid-header-row ">
+            <div class="admin__control-support-text">
+                <span data-ui-id="adminhtml-sales-sales-grid-total-count"><?=$totalRecords;?></span> <?=__('records found');?>
+            </div>
+        </div>
+    </div>
+    
+    <div class="admin__data-grid-wrap admin__data-grid-wrap-static">
+            <div class="admin__data-grid-pager-wrap" style="margin:1.1rem 0">
+            <select name="limit" class="admin__control-select select_limit">
+                <option value="20"<?php if ($limit == 20) { echo ' selected="selected"';}?>>20</option>
+                <option value="30"<?php if ($limit == 30) { echo ' selected="selected"';}?>>30</option>
+                <option value="50"<?php if ($limit == 50) { echo ' selected="selected"';}?>>50</option>
+                <option value="100"<?php if ($limit == 100) { echo ' selected="selected"';}?>>100</option>
+                <option value="200"<?php if ($limit == 200) { echo ' selected="selected"';}?>>200</option>
+            </select>
+            <label for="gridAbandonedgridAbandoned_page-limit" class="admin__control-support-text">per page</label>
+            <div class="admin__data-grid-pager">
+                <button type="button" class="action-previous<?php if ($page <= 1) { echo ' disabled';} ?>"><span>Previous page</span></button>
+                <input type="text" name="page" value="<?=$page;?>" class="admin__control-text action-page">
+                <label class="admin__control-support-text" for="gridAbandoned_page-current">of <span><?=$totalPages;?></span></label>
+                <button type="button" class="action-next<?php if ($page >= $totalPages) { echo ' disabled';} ?>"><span>Next page</span></button>
+            </div>
+        </div>
+        <table class="data-grid">
+            <thead>
+                <tr>
+                    <th class="data-grid-th"><span><?=__('Order Id');?></span></th>
+                    <th class="data-grid-th"><span><?=__('Order Status');?></span></th>
+                    <th class="data-grid-th"><span><?php
+                    
+                    switch ($request['filter_type']) {
+
+                        case 'order_date':
+                            echo 'Order date';
+                            break;
+                        case 'shipping_date':
+                            echo 'Shipping date';
+                            break;
+                        case 'timeout_date':
+                            echo 'Timeout date';
+                            break;
+                        case 'transaction_date':
+                        default:
+                            echo 'Transaction date';
+                    }
+                    ?></span></th>
+                    <th class="data-grid-th"><span><?=__('Transaction Type');?></span></th>
+                    <th class="data-grid-th"><span><?=__('Shift4 Invoice ID');?></span></th>
+                    <th class="data-grid-th"><span><?=__('Card Type<br>and Number');?></span></th>
+                    <th class="data-grid-th"><span><?=__('Amount<br>Requested');?></span></th>
+                    <th class="data-grid-th"><span><?=__('Amount<br>Processed');?></span></th>
+                    <th class="data-grid-th"><span><?=__('Transaction status');?></span></th>
+                    <th class="data-grid-th"><span><?=__('Customer');?></span></th>
+                    <th class="data-grid-th"><span><?=__('Transaction Log');?></span></th>
+                </tr>
+            </thead>
+
+                <?php if (empty($transactions)): ?>
+            <tbody>
+                    <tr class="data-grid-tr-no-data even">
+                        <td class="empty-text" colspan="12"><?=__("We couldn't find any records.");?></td>
+                    </tr>
+            </tbody>
+                <?php else: ?>
+            <tbody>
+                    <?php $amountTotal = $amountProcessedTotal = 0; ?>
+                    <?php $grey = false; ?> 
+                    <?php foreach ($transactions as $key => $subtransactions): ?>
+                        <?php
+                        $rows = count($subtransactions);
+                        $firstrow = true;
+                        ?>
+                        <?php foreach ($subtransactions as $k => $v): ?>
+                        <tr>
+                            <?php if ($firstrow): ?>
+                            <td<?php if ($rows >1) { echo ' rowspan="'. $rows .'"';} ?> class="<?php if ($grey) { echo 'grey';
+                               } else { echo 'white';
+                               } ?> order_id"><?=$v['order_url'] ? '<a href="'.$v['order_url'].'" target="_blank" title="Order: '.$v['order_id'].'">'.$v['order_id'].'</a>' : ''; ?></td>
+
+                            <td<?php if ($rows >1) { echo ' rowspan="'. $rows .'"';} ?> class="<?php if ($grey) { echo 'grey';
+                               } else { echo 'white';
+                               } ?> order_status"><?=$block->escapeHtml($v['status']); ?></td>
+
+                            <td<?php if ($rows >1) { echo ' rowspan="'. $rows .'"';} ?> class="<?php if ($grey) { echo 'grey';
+                               } else { echo 'white';
+                               } ?> date"><?php
+                    
+switch ($request['filter_type']) {
+
+    case 'order_date':
+        echo $block->escapeHtml($v['order_date_formated']);
+        break;
+    case 'shipping_date':
+        echo 'Shipping date';
+        break;
+    case 'timeout_date':
+    case 'transaction_date':
+    default:
+        echo $block->escapeHtml($v['date_formated']);
+}
+?>
+                            </td>
+                            <?php endif; ?>
+                            <td class="<?php if ($grey) { echo 'grey';
+                                       } else { echo 'white';
+                                       } ?> transaction_type"><?php if ($v['transaction_mode'] == 'manualauthorization' || $v['transaction_mode'] == 'manualsale') { echo __('Partial tax adjustment');
+                                       } else { echo $block->escapeHtml($v['transaction_mode']);} ?></td>
+                            <td class="<?php if ($grey) { echo 'grey';
+                                       } else { echo 'white';
+                                       } ?> shift4_invoice"><?=$block->escapeHtml($v['shift4_invoice']); ?></td>
+                            <td class="<?php if ($grey) { echo 'grey';
+                                       } else { echo 'white';
+                                       } ?> card_number"><?=$block->escapeHtml($v['card_type']); ?><br><?=$block->escapeHtml($v['card_number']); ?></td>
+                            <td class="<?php if ($grey) { echo 'grey';
+                                       } else { echo 'white';
+                                       } ?> amount"><?php echo $this->formatPrice($v['amount']);
+$amountTotal += $v['amount']; ?></td>
+                            <td class="<?php if ($grey) { echo 'grey';
+                                       } else { echo 'white';
+                                       } ?> amount_processed"><?php if ($v['voided'] != 0): ?><strike><?=$this->formatPrice($v['amount_processed']); ?></strike><?php else: echo $this->formatPrice($v['amount_processed']);
+                                       $amountProcessedTotal += $v['amount_processed']; ?><?php endif; ?></td>
+                            <td class="<?php if ($grey) { echo 'grey';
+                                       } else { echo 'white';
+                                       } ?> status">
+                            <?php if ($v['http_code'] == 200 && $v['error'] == ''): ?><span style="color:#3c9943"><?=__('Success');?></span><br><?php endif; ?>
+                            <?php if ($v['voided'] != 0): ?><span style="color:#ff0000"><?=__('Voided');?></span><br><?php endif; ?>
+                            <?php if ($v['timed_out'] != 0): ?><span style="color:#ff0000"><?=__('Timed out');?></span><br><?php endif; ?>
+                            <?php if ($v['error'] != ''): ?><span style="color:#ff0000"><?=__('Error');?>: <?=$block->escapeHtml($v['error']);?></span><br><?php endif; ?>
+                            </td>
+                            <td class="<?php if ($grey) { echo 'grey';
+                                       } else { echo 'white';
+                                       } ?> customer"><?=$v['customer_url'] ? '<a href="'.$v['customer_url'].'" target="_blank" title="'.$block->escapeHtml($v['customer_firstname']).' '.$block->escapeHtml($v['customer_lastname']).'">'.$block->escapeHtml($v['customer_firstname']).' '.$block->escapeHtml($v['customer_lastname']).'</a>' : __('Guest'); ?></td>
+                            <?php if ($firstrow): ?>
+                            <td<?php if ($rows >1) { echo ' rowspan="'. $rows .'"';} ?> class="<?php if ($grey) { echo 'grey';
+                               } else { echo 'white';
+                               } ?> download"><a href="<?=$v['download_url']; ?>" target="_blank" title="Download"><?=__('Download');?></a></td>
+                            <?php endif; ?>
+                        </tr>
+                            <?php $firstrow = false; ?>
+                    <?php endforeach; ?>
+                        <?php if (!$grey) { $grey = true;
+                        } else { $grey = false;
+                        } ?>
+                    <?php endforeach; ?>
+            </tbody>
+            <?php endif; ?>
+        </table>
+
+        <div class="admin__data-grid-pager-wrap" style="margin:1.1rem 0">
+            <select name="limit" class="admin__control-select select_limit">
+                <option value="20"<?php if ($limit == 20) { echo ' selected="selected"';}?>>20</option>
+                <option value="30"<?php if ($limit == 30) { echo ' selected="selected"';}?>>30</option>
+                <option value="50"<?php if ($limit == 50) { echo ' selected="selected"';}?>>50</option>
+                <option value="100"<?php if ($limit == 100) { echo ' selected="selected"';}?>>100</option>
+                <option value="200"<?php if ($limit == 200) { echo ' selected="selected"';}?>>200</option>
+            </select>
+            <label for="gridAbandonedgridAbandoned_page-limit" class="admin__control-support-text">per page</label>
+            <div class="admin__data-grid-pager">
+                <button type="button" class="action-previous<?php if ($page <= 1) { echo ' disabled';} ?>"><span>Previous page</span></button>
+                <input type="text" name="page" value="<?=$page;?>" class="admin__control-text action-page">
+                <label class="admin__control-support-text" for="gridAbandoned_page-current">of <span><?=$totalPages;?></span></label>
+                <button type="button" class="action-next<?php if ($page >= $totalPages) { echo ' disabled';} ?>"><span>Next page</span></button>
+            </div>
+        </div>
+        <table class="data-grid">
+            <thead>
+                <tr>
+                    <th class="data-grid-th">Card Type</th>
+                    <th class="data-grid-th" colspan="2">Authorization</th>
+                    <th class="data-grid-th" colspan="2">Sales</th>
+                    <th class="data-grid-th" colspan="2">Refunds</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php
+            foreach ($totals as $cardType => $values): ?>
+                <?php if ($cardType == 'totals' || $cardType == 'errors' || $cardType == 'total_records') { continue;} ?>
+                <tr>
+                    <td><?php echo $cardType; ?></td>
+                    <td><?php echo isset($values['authorization']) ? $values['authorization']['count'] : 0; ?></td>
+                    <td><?php echo isset($values['authorization']) ? $this->formatPrice($values['authorization']['total']) : 0; ?></td>
+                    <td><?php echo isset($values['sale']) ? $values['sale']['count'] : 0; ?></td>
+                    <td><?php echo isset($values['sale']) ? $this->formatPrice($values['sale']['total']) : 0; ?></td>
+                    <td><?php echo isset($values['refund']) ? $values['refund']['count'] : 0; ?></td>
+                    <td><?php echo isset($values['refund']) ? $this->formatPrice($values['refund']['total']) : 0; ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td><strong><span><?=__('Totals');?>:</span></strong></td>
+                    <td><?php echo isset($totals['totals']['authorization']) ? $totals['totals']['authorization']['count'] : 0; ?></td>
+                    <td><?php echo isset($totals['totals']['authorization']) ? $this->formatPrice($totals['totals']['authorization']['total']) : 0; ?></td>
+                    <td><?php echo isset($totals['totals']['sale']) ? $totals['totals']['sale']['count'] : 0; ?></td>
+                    <td><?php echo isset($totals['totals']['sale']) ? $this->formatPrice($totals['totals']['sale']['total']) : 0; ?></td>
+                    <td><?php echo isset($totals['totals']['refund']) ? $totals['totals']['refund']['count'] : 0; ?></td>
+                    <td><?php echo isset($totals['totals']['refund']) ? $this->formatPrice($totals['totals']['refund']['total']) : 0; ?></td>
+                </tr>
+                <tr>
+                    <td style="color:#ff0000;"><strong><span><?=__('Errors');?>:</span></strong></td>
+                    <td style="color:#ff0000;"><?php echo isset($totals['errors']['authorization']) ? $totals['errors']['authorization']['count'] : 0; ?></td>
+                    <td style="color:#ff0000;"><?php echo isset($totals['errors']['authorization']) ? $this->formatPrice($totals['errors']['authorization']['total']) : 0; ?></td>
+                    <td style="color:#ff0000;"><?php echo isset($totals['errors']['sale']) ? $totals['errors']['sale']['count'] : 0; ?></td>
+                    <td style="color:#ff0000;"><?php echo isset($totals['errors']['sale']) ? $this->formatPrice($totals['errors']['sale']['total']) : 0; ?></td>
+                    <td style="color:#ff0000;"><?php echo isset($totals['errors']['refund']) ? $totals['errors']['refund']['count'] : 0; ?></td>
+                    <td style="color:#ff0000;"><?php echo isset($totals['errors']['refund']) ? $this->formatPrice($totals['errors']['refund']['total']) : 0; ?></td>
+                </tr>
+                <tr>
+                    <td colspan="7" style="text-align:center;"><a href="<?=$this->getLogUrl();?>" title="<?=__('Download All Logs');?>"><?=__('Download All Logs');?></a></td>
+                </tr>
+            </tfoot>            
+        </table>
+    </div>
+</div>
+<script>
+require([
+    'jquery',
+    'mage/backend/validation',
+    "prototype"
+], function(jQuery){
+
+//<![CDATA[
+    jQuery('#filter_form').mage('validation', {errorClass: 'mage-error'});
+    function filterFormSubmit() {
+        var filters = $$('#filter_form input', '#filter_form select'),
+            elements = [];
+
+        for (var i in filters) {
+            if (filters[i].value && filters[i].value.length && !filters[i].disabled) {
+                elements.push(filters[i]);
+            }
+        }
+
+        if (jQuery('#filter_form').valid()) {
+            setLocation('<?= /* @escapeNotVerified */ $this->getFilterUrl() ?>filter/'+
+                Base64.encode(Form.serializeElements(elements))+'/page/<?=$page;?>/limit/<?=$limit;?>/'
+            );
+        }
+    }
+    
+    jQuery('.select_limit').change(function() {
+        setLocation('<?= /* @escapeNotVerified */ $this->getReportUrl() ?>page/<?=$page;?>/limit/'+jQuery(this).val()+'/');
+    });
+    
+    jQuery('.action-next').click(function() {
+        setLocation('<?= /* @escapeNotVerified */ $this->getReportUrl() ?>page/<?=$page+1;?>/limit/<?=$limit;?>/');
+    });
+    
+    jQuery('.action-previous').click(function() {
+        setLocation('<?= /* @escapeNotVerified */ $this->getReportUrl() ?>page/<?=$page-1;?>/limit/<?=$limit;?>/');
+    });
+
+    jQuery('.action-page').keypress(function (e) {
+        var key = e.which;
+        if(key == 13) {
+            var page = jQuery(this).val();
+            if (page > <?=$totalPages?>) {
+                page = <?=$totalPages?>;
+            }
+
+            if (page < 1) {
+                page = 1;
+            }
+
+            setLocation('<?= /* @escapeNotVerified */ $this->getReportUrl() ?>page/'+ page +'/limit/<?=$limit;?>/');
+            return false;  
+        }  
+    });
+    
+//]]>
+    window.filterFormSubmit = filterFormSubmit;
+});
+</script>

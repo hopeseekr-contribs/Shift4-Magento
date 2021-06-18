@@ -1,0 +1,190 @@
+<?php
+
+$i4go = $block->getAccessBlock();
+$savedCards = $block->getSavedCards();
+
+$i4go_server = $i4go['i4go_server'];
+$i4go_accessblock = $i4go['i4go_accessblock'];
+$i4go_countrycode = $i4go['i4go_countrycode'];
+$i4go_i4m_url = $i4go['i4go_i4m_url'];
+
+$partialpayments = $block->getPartialPayments();
+$hsaFsa = $block->getHsaFsa();
+?>
+
+<script type="text/javascript">
+
+    require([
+        'jquery',
+        'https://i4m.i4go.com/js/jquery.i4goTrueToken.js',
+        'https://i4m.shift4test.com/js/wallets.js',
+        'mage/url',
+    ], function ($, i4go, url) {
+        
+        JQuery = $;
+
+        loadShift4();
+        
+        $("#payment-methods .radio[name='payment[method]']").change(function() {
+            loadShift4();
+        });
+        
+        <?php if ($savedCards['html'] != ''): ?>
+        
+        $('#my_saved_cards').change(function() {
+            if ($(this).val() == 'new') {
+                $('#i4go_form').show();
+                $('#payment-continue').prop('disabled', true);
+                $('#shift4_true_token').val('');
+                $('#shift4_cardtype').val('');
+            } else {
+                $('#shift4_true_token').val($(this).val());
+                $('#shift4_cardtype').val($('#my_saved_cards option:selected').attr('data-type'));
+                $('#payment-continue').removeAttr('disabled');
+                $('#i4go_form').hide();
+            }
+        });
+        <?php endif; ?>
+        
+        function loadShift4() {
+            if ($('#p_method_shift4').is(':checked')) {
+                $('#shift4_payment_block').show();
+                $('#shift4_true_token').removeAttr('disabled');
+                if ($('#shift4_true_token').val() == '') { 
+                    $('#payment-continue').prop('disabled', true);
+                }
+            } else {
+                console.log('uncheck');
+                $('#shift4_payment_block').hide();
+                $('#payment-continue').removeAttr('disabled');
+            }
+        }
+        
+        window.cancelAllPayments = function(e) {
+            var self = this;
+            if (confirm("<?= /* @escapeNotVerified */ __('Are you sure you want to cancel your payment? Click OK to cancel your payment and release the amount on hold. Click Cancel to enter another credit card and continue with your payment.') ?>")) {
+                var canelUrl = '<?php echo $block->getCancelUrl(); ?>';
+                $.ajax({
+                    method: "POST",
+                    url: canelUrl,
+                    dataType: "json",
+                    showLoader: true,
+                    data: {form_key: window.FORM_KEY}
+                })
+                .done(function (response) {
+                    if (response == '1') {
+                            $('#partial_payments').html('');
+                            $('#preauth_cancel').html('');
+                            $('#display_left_amount').html('');
+                            window.addShift4Message("<?= /* @escapeNotVerified */ __('All partial authorizations voided.') ?>", 'success');
+                        } else {
+                            window.addShift4Message(response, 'error');
+                        }
+                        
+                    });
+                return true;
+            } else {
+                if (e) { e.preventDefault(); }
+                return false;
+            }                
+        }
+        
+        window.addShift4Message = function(text, type) {
+            $('.s4messages').append('<div role="alert" class="message message-'+type+' '+type+' s4-message"><div>'+text+'</div></div>');
+        },
+        
+        $("#i4go_form").i4goTrueToken({
+            server: '<?=$i4go_server?>',
+            accessBlock: '<?=$i4go_accessblock?>',
+            language: '<?=$i4go_countrycode?>',
+            self: document.location,
+            template: "plain",
+            i4goInfo: {visible: true},
+            encryptedOnlySwipe: <?=$i4go['support_swipe']?>,
+            gcDisablesExpiration: <?=$i4go['disable_expiration_date_for_gc']?>,
+            gcDisablesCVV2Code: <?=$i4go['disable_cvv_for_gc']?>,
+            url: '<?=$i4go_i4m_url?>',
+            frameContainer: 'i4go_form', // Only used if frameName does not exist
+            frameName: "", // Auto-assigned if left empty
+            frameAutoResize: true,
+            frameClasses: "",
+            formAutoSubmitOnSuccess: false,
+            formAutoSubmitOnFailure: false,
+            onSuccess: function (form, data) {
+                if (data.i4go_response == 'SUCCESS' && data.i4go_responsecode == 1) {
+                    $('#shift4_true_token').val(data.i4go_uniqueid);
+                    $('#shift4_cardtype').val(data.i4go_cardtype);
+                    $('#payment-continue').removeAttr('disabled');
+                    $('#payment-continue').click();
+                } else {
+                    //errors
+                }
+            },
+            onFailure: function (form, data) {
+                //
+            },
+            onComplete: function (form, data) {
+                //
+            },
+            acceptedPayments: "AX,DC,GC,JC,MC,NS,VS",
+            formPaymentResponse: "i4go_response",
+            formPaymentResponseCode: "i4go_responsecode",
+            formPaymentResponseText: "i4go_responsetext",
+            formPaymentMaskedCard: "i4go_maskedcard",
+            formPaymentToken: "i4go_uniqueid",
+            formPaymentExpMonth: "i4go_expirationmonth",
+            formPaymentExpYear: "i4go_expirationyear",
+            formPaymentType: "i4go_cardtype",
+            payments: [
+                {type: "VS", name: "Visa"},
+                {type: "MC", name: "MasterCard"},
+                {type: "AX", name: "American Express"},
+                {type: "DC", name: "Diners Club"},
+                {type: "NS", name: "Discover"},
+                {type: "JC", name: "JCB"},
+                {type: "GC", name: "Gift Card"}
+            ],
+            cssRules: ["body{font-family:'Trebuchet MS', Arial, Helvetica, sans-serif;background-color: '#aaa'; borderLeft: '5px solid #ccc'}label{color:#636363;font-size: 13px;font-weight: 600;}.form-control{max-width: 100%; width: 273px;height: 30px;padding: 0 8px; margin-bottom: 10px; background: #fff none repeat scroll 0 0;border: 1px solid silver; border-radius: 2px; font-size: 15px;}#i4go_expirationMonth {width: 125px;}#i4go_expirationYear {width: 105px;}.addcardform {height:auto;}#i4go_cvv2Code {width: 105px;}#i4go_cardNumber {width: 255px;}.btn-secure {background: #1979c3; border: 0 none;color: #ffffff;display: inline-block;font-family: 'RalewayHelvetica Neue',Verdana,Arial,sans-serif;font-size: 13px;font-weight: normal;line-height: 19px;padding: 7px 15px;text-align: center;text-transform: uppercase;vertical-align: middle;white-space: nowrap;}.btn-secure:hover {background-color: #006bb4; color: #ffffff;outline: medium none; cursor: pointer;}"]
+        });
+    });
+</script>
+<div id="shift4_payment_block">
+
+<?php if (!empty($partialpayments)): ?>
+    <div id="partial_payments">
+        <?php
+        $k = 1;
+        foreach ($partialpayments as $payment): ?>
+        <div id="preauthorized_section_<?php echo $k; ?>" style="margin-top:1.5em;">
+            <div id="preauth_card_type_<?php echo $k; ?>"><span style="width:200px; float:left;"><strong><?= /* @escapeNotVerified */ __('Card Type:') ?></strong></span><?php echo $payment['cardType']; ?></div>
+            <div id="preauth_card_number_<?php echo $k; ?>"><span style="width:200px; float:left;"><strong><?= /* @escapeNotVerified */ __('Card Number:') ?></strong></span><?php echo $payment['preauthCardNumber']; ?></div>
+            <div id="preauth_processed_amount_<?php echo $k; ?>"><span style="width:200px; float:left;"><strong><?= /* @escapeNotVerified */ __('Processed Amount:') ?></strong></span><?php echo $payment['preauthProcessedAmount']; ?></div>
+            <div id="preauth_invoice_id_<?php echo $k; ?>"><span style="width:200px; float:left;"><strong><?= /* @escapeNotVerified */ __('Shift4 Invoice ID:') ?></strong></span><span class="s4Invoice"><?php echo $payment['preauthInvoiceId']; ?></span></div>
+            <div id="preauth_auth_code_<?php echo $k; ?>"><span style="width:200px; float:left;"><strong><?= /* @escapeNotVerified */ __('Authorization Code:') ?></strong></span><?php echo $payment['preauthAuthCode']; ?></div>
+            <div id="preauth_receipt_text_<?php echo $k; ?>"></div>
+        </div>
+            <?php
+            $k++;
+        endforeach; ?>
+    </div>
+    <div id="preauth_cancel">
+        <div class="release-amounts">
+            <button class="button" type="button" id="payment-button-cancel" autocomplete="off" onclick="window.cancelAllPayments();"><span><span><?= /* @escapeNotVerified */ __('Cancel:') ?></span></span></button>
+            <span> <?php if ($k>1) { $plural = __('payments');
+                   } else { $plural = __('payment');
+                   };  ?> <?= /* @escapeNotVerified */ __('To cancel your %1, click Cancel.', $plural) ?></span>
+        </div>
+    </div>
+    <div style="margin-left: 9px; margin-top:1.5em;">
+        <label id="display_left_amount"><strong><?= /* @escapeNotVerified */ __('Amount Remaining: $%1', $payment['remainingAmount']) ?></strong></label>
+    </div>
+<?php endif; ?>
+    <div class="s4messages"></div>
+    <?php if ($savedCards['html'] != ''): ?> 
+    <label style="color:#636363;font-size:13px;font-weight:600;display:block;margin-top:10px;margin-left:8px;font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;"><?= /* @escapeNotVerified */ __('My saved cards:') ?></label>
+    <select id="my_saved_cards" name="saved_card" style="margin-left:8px; width: 273px;height: 30px;padding: 0 8px;margin-bottom: 10px; border: 1px solid silver;border-radius: 2px;font-size: 15px;"><?php echo $savedCards['html']; ?></select>
+    <?php endif; ?>
+    <div id="i4go_form"<?php if (isset($savedCards['default']) && $savedCards['default'] != 'new') { echo ' style="display:none;"';} ?>></div>
+    <input id="shift4_true_token" name="shift4[trueToken]" value="<?php if (isset($savedCards['default']) && $savedCards['default'] != 'new') { echo $savedCards['default'];} ?>" type="hidden">
+    <input id="shift4_cardtype" name="shift4[cardtype]" value="<?php if (isset($savedCards['defaultType'])) { echo $savedCards['defaultType'];} ?>" type="hidden">
+</div>

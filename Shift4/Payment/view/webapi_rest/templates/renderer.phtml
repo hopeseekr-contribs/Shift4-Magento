@@ -1,0 +1,11 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var  $block \Magento\Sales\Block\Order\Item\Renderer\DefaultRenderer */
+$_item = $block->getItem();
+?><tr><td><b><?= $block->escapeHtml($_item->getName()) ?></b><?php if ($_options = $block->getItemOptions()): ?><dl><?php foreach ($_options as $_option) : ?><dt><?= $block->escapeHtml($_option['label']) ?></dt><?php if (!$block->getPrintStatus()): ?><?php $_formatedOptionValue = $block->getFormatedOptionValue($_option) ?><dd><?php if (isset($_formatedOptionValue['full_view'])): ?><?= $block->escapeHtml($_formatedOptionValue['full_view'], ['a']) ?><?php else: ?><?=$block->escapeHtml($_formatedOptionValue['value'], ['a']) ?><?php endif; ?></dd><?php else: ?><dd><?= nl2br($block->escapeHtml((isset($_option['print_value']) ? $_option['print_value'] : $_option['value']))) ?></dd><?php endif; ?><?php endforeach; ?></dl><?php endif; ?><?php $addtInfoBlock = $block->getProductAdditionalInformationBlock(); ?><?php if ($addtInfoBlock) :?><?= $addtInfoBlock->setItem($_item)->toHtml() ?><?php endif; ?><?= $block->escapeHtml($_item->getDescription()) ?></td><td><?= /* @escapeNotVerified */ $block->prepareSku($block->getSku()) ?></td><td><?= $block->getItemPriceHtml() ?></td><td><?= /* @escapeNotVerified */ $block->getItem()->getQtyOrdered() ?></td><td><?= $block->getItemRowTotalHtml() ?></td></tr>
