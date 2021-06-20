@@ -42,7 +42,9 @@ class ConfigProvider implements ConfigProviderInterface
     public function getConfig()
     {
 		$totals = @$this->checkoutSession->getQuote()->getGrandTotal();
-        $i4go = $this->api->getAccessBlock($totals);
+		$this->checkoutSession->getQuote()->reserveOrderId()->save();
+        $i4go = $this->api->getAccessBlock($totals, $this->checkoutSession->getQuote()->getReservedOrderId());
+		
         $savedCardsData = ['html' => '', 'default' => 'new'];
 
         $i4go_server = $i4go['i4go_server'];

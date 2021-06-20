@@ -797,7 +797,7 @@ class Api
      *
      * @return array
      */
-    public function getAccessBlock($amount = 0)
+    public function getAccessBlock($amount = 0, $magentoOrderId)
     {
         $i4go_clientIp = $_SERVER['REMOTE_ADDR'];
 
@@ -815,7 +815,7 @@ class Api
             'i4go_accesstoken' => $this->accessToken,
 			'i4go_basket' => json_encode([
 				'OrderDetails' => [
-					'OrderNumber' => '51521',
+					'OrderNumber' => $magentoOrderId,
 					'Amount' => $amount,
 					'CurrencyCode' => 'USD'
 				]
