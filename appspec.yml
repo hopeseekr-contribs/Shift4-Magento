@@ -1,0 +1,10 @@
+version: 0.0
+os: linux
+files:
+  - source: Shift4
+    destination: /var/www/magento/public_html/app/code/Shift4
+hooks:
+    AfterInstall:
+    - location: scripts/afterdeploy.sh
+      timeout: 300
+      runas: root
