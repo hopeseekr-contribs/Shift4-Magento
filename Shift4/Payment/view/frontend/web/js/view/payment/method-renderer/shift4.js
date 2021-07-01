@@ -17,7 +17,7 @@ define([
 
         return Component.extend({
             defaults: {
-                template: 'Shift4_Payment/payment/' + window.checkoutConfig.payment.shift4_custom_data.template
+                template: 'Shift4_Payment/payment/default'
             },
 			i4goInitialized: false,
 			i4goTrueToken: false,
@@ -95,11 +95,12 @@ define([
 							language: 'en',
 							self: document.location,
 							template: "shift4shop",
-							i4goInfo: {visible: false},
+							i4goInfo: {"visible": false},
 							submitButton: { label: window.checkoutConfig.payment.shift4_custom_data.submit_label },
 							encryptedOnlySwipe: window.checkoutConfig.payment.shift4_custom_data.support_swipe,
                             gcDisablesExpiration: window.checkoutConfig.payment.shift4_custom_data.disable_expiration_date_for_gc,
                             gcDisablesCVV2Code: window.checkoutConfig.payment.shift4_custom_data.disable_cvv_for_gc,
+							cardType: {"visible": true},
 							url: window.checkoutConfig.payment.shift4_custom_data.i4go_server_url,
 							frameContainer: 'i4go_form', // Only used if frameName does not exist
 							frameName: "", // Auto-assigned if left empty
@@ -142,7 +143,7 @@ define([
 								{type: "JC", name: "JCB"},
 								{type: "GC", name: "Gift Card"}
 							],
-							cssRules: ["body{font-family:'Trebuchet MS', Arial, Helvetica, sans-serif;background-color: '#aaa'; borderLeft: '5px solid #ccc'}label{color:#636363;font-size: 13px;font-weight: 600;}.form-control{max-width: 100%; width: 273px;height: 30px;padding: 0 8px; margin-bottom: 10px; background: #ffffff none repeat scroll 0 0;border: 1px solid silver; border-radius: 2px; font-size: 15px;}#i4go_expirationMonth {width: 125px;}#i4go_expirationYear {width: 105px;}.addcardform {height:auto;}#i4go_cvv2Code {width: 105px;}#i4go_cardNumber {width: 255px;}.btn-secure {background: #1979c3; border: 0 none;color: #ffffff;display: inline-block;font-family: 'RalewayHelvetica Neue',Verdana,Arial,sans-serif;font-size: 13px;font-weight: normal;line-height: 19px;padding: 7px 15px;text-align: center;text-transform: uppercase;vertical-align: middle;white-space: nowrap;}.btn-secure:hover {background-color: #006bb4; color: #ffffff;outline: medium none; cursor: pointer;}"]
+							cssRules: ["body{font-family:'Trebuchet MS', Arial, Helvetica, sans-serif;background-color: '#aaa'; borderLeft: '5px solid #ccc'}#container{margin-left:8px;padding-left:0px;margin-right:0px;padding-right:0px}label{display:none;}.row{margin-right:0;margin-left:0;}.col-4,.col-3{padding-left:0px;padding-right:10px;flex:0;}.col-1,.col-md-8{padding-left:0;}.form-group{margin-bottom:0;}.form-control{max-width: 100%; width: 273px;height: 30px; margin-bottom: 10px; background: #ffffff none repeat scroll 0 0;border: 1px solid silver; border-radius: 2px; font-size: 15px;}#i4go_expirationMonth {width: 80px;}#i4go_expirationYear {width: 90px;}.addcardform{height:auto;}#i4go_cvv2Code {width: 80px;}#i4go_cardNumber {width: 255px;}.btn-secure {background: #1979c3; border: 0 none;color: #ffffff;display: inline-block;font-family: 'RalewayHelvetica Neue',Verdana,Arial,sans-serif;font-size: 13px;font-weight: normal;line-height: 19px;padding: 7px 15px;text-align: center;text-transform: uppercase;vertical-align: middle;white-space: nowrap;}.btn-secure:hover {background-color: #006bb4; color: #ffffff;outline: medium none; cursor: pointer;}"]
 						});
 					}
 					catch(err) {
@@ -164,7 +165,7 @@ define([
 						
 						$('#save_card_for_future_use').show();
 						$('#shift4_place_order').show();
-						$('#shift4_place_order .primary button span').html(window.checkoutConfig.payment.shift4_custom_data.submit_label);
+						$('#shift4_place_order .s4placeorderbutton span').html(window.checkoutConfig.payment.shift4_custom_data.submit_label);
 
 						if (window.checkoutConfig.payment.shift4_custom_data.saved_cards != '') {
 							$('#my_saved_cards').html(window.checkoutConfig.payment.shift4_custom_data.saved_cards);
@@ -172,16 +173,16 @@ define([
 							
 							
 							if (window.checkoutConfig.payment.shift4_custom_data.default_card != 'new') {
-								$('#shift4_place_order .primary').show();
+								$('#shift4_place_order .s4placeOrderBlock').show();
 								$('#new_card').hide();
 								$('#ap_gp_buttons').hide();
 								self.i4goTrueToken = window.checkoutConfig.payment.shift4_custom_data.default_card;
 							} else if (window.checkoutConfig.payment.shift4_custom_data.default_card == 'wallets') {
-								$('#shift4_place_order .primary').hide();
+								$('#shift4_place_order .s4placeOrderBlock').hide();
 								$('#ap_gp_buttons').show();
 								$('#new_card').hide();
 							} else {
-								$('#shift4_place_order .primary').hide();
+								$('#shift4_place_order .s4placeOrderBlock').hide();
 								$('#new_card').show();
 								$('#ap_gp_buttons').hide();
 							}
@@ -192,16 +193,16 @@ define([
 						
 						$('#my_saved_cards').change(function() {
 							if ($(this).val() == 'new') {
-								$('#shift4_place_order .primary').hide();
+								$('#shift4_place_order .s4placeOrderBlock').hide();
 								$('#ap_gp_buttons').hide();
 								$('#new_card').show();
 							} else if ($(this).val() == 'wallets') {
 								$('#ap_gp_buttons').show();
-								$('#shift4_place_order .primary').hide();
+								$('#shift4_place_order .s4placeOrderBlock').hide();
 								$('#new_card').hide();
 							} else {
 								self.i4goTrueToken = $(this).val();
-								$('#shift4_place_order .primary').show();
+								$('#shift4_place_order .s4placeOrderBlock').show();
 								$('#ap_gp_buttons').hide();
 								$('#new_card').hide();
 							}
@@ -258,7 +259,7 @@ define([
 
 									} else {
 										self.cancelPayment(paymentData[0]);
-										
+										$('.s4-message.message-warning').remove();
 									}
 									self.isPlaceOrderActionAllowed(true);
 									$('#i4go_form iframe').attr('src', $('#i4go_form iframe').attr('src'));

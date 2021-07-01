@@ -45,7 +45,7 @@
                         <source_model>Shift4\Payment\Model\admin\config\ProcessingMode</source_model>
                         <config_path>payment/shift4/processing_mode</config_path>
                     </field>
-                    <field id="server_addresses" translate="label comment" type="textarea" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <field id="server_addresses" translate="label comment" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Server Addresses*</label>
                         <tooltip><![CDATA[If the Universal Transaction Gateway® (UTG®) is in use, enter a comma-separated list of UTG IP addresses and port numbers. If the UTG is not in use, the Server Addresses field will be populated with the appropriate server address.]]></tooltip>
                         <validate>required-entry</validate>
@@ -143,28 +143,49 @@
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/shift4/enable_saved_cards</config_path>
                     </field>
-					<field id="enable_google_pay" translate="label" type="select" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="1">
+					<field id="sort_order" translate="label" type="text" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Sort Order*</label>
+                        <tooltip><![CDATA[Sort order]]></tooltip>
+                        <validate>required-entry</validate>
+                        <config_path>payment/shift4/sort_order</config_path>
+                    </field>
+                </group>
+				<group id="shift4_quick" translate="label" type="text" sortOrder="51" showInDefault="1" showInWebsite="0" showInStore="0">
+				<label>Quick pay methods (Shift4)</label>
+					<field id="active" translate="label tooltip" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Enable Quick pay methods*</label>
+                        <tooltip><![CDATA[To enable Shift4 as a payment option available to your customers during the checkout process, select Yes. (This will allow you to accept credit, debit, and gift cards while keeping cardholder data out of your system.) If No is selected, Shift4 will not be displayed as a payment option during the checkout process.]]></tooltip>
+                        <validate>required-entry</validate>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/shift4_quick/active</config_path>
+                    </field>
+					<field id="title" translate="label tooltip" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Title*</label>
+                        <tooltip><![CDATA[If Shift4 is enabled as a payment option, it will be displayed to your customers using the text in the Title field. Leave the default text, “Credit, Debit, or Gift Card (Shift4)” or enter your own. Shift4 recommends the default text be used so your customers know their cardholder data is protected.]]></tooltip>
+                        <validate>required-entry</validate>
+                        <config_path>payment/shift4_quick/title</config_path>
+                    </field>
+					<field id="enable_google_pay" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enable Google pay</label>
                         <tooltip><![CDATA[Enable Google pay]]></tooltip>
                         <validate>required-entry</validate>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/shift4/enable_google_pay</config_path>
+                        <config_path>payment/shift4_quick/enable_google_pay</config_path>
                     </field>
-					<field id="enable_apple_pay" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+					<field id="enable_apple_pay" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enable Apple pay</label>
                         <tooltip><![CDATA[Enable Apple pay]]></tooltip>
                         <validate>required-entry</validate>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/shift4/enable_apple_pay</config_path>
+                        <config_path>payment/shift4_quick/enable_apple_pay</config_path>
                     </field>
-					<field id="i4go_template" translate="label" type="select" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>i4go template</label>
-                        <tooltip><![CDATA[Template for i4Go]]></tooltip>
+					<field id="sort_order" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Sort Order*</label>
+                        <tooltip><![CDATA[Sort order]]></tooltip>
                         <validate>required-entry</validate>
-                        <source_model>Shift4\Payment\Model\admin\config\I4goTemplate</source_model>
-                        <config_path>payment/shift4/i4go_template</config_path>
+                        <config_path>payment/shift4_quick/sort_order</config_path>
                     </field>
-                </group>
+				</group>
         </section>
     </system>
 </config>

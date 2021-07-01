@@ -17,7 +17,7 @@
                 <model>Shift4\Payment\Model\Shift4</model>         
                 <active>0</active>
                 <title>Credit, Debit, or Gift Card (Shift4)</title>
-				<submit_label>Secure My Payment Information</submit_label>			
+				<submit_label>Place Order</submit_label>			
                 <processing_mode>demo</processing_mode>
                 <server_addresses>https://utg.shift4api.net/api/rest/v1</server_addresses>
                 <logging>all</logging>
@@ -30,7 +30,16 @@
                 <currency>USD</currency>
                 <enable_saved_cards>1</enable_saved_cards>
                 <html_invoice>1</html_invoice>
+                <sort_order>1</sort_order>
             </shift4>
+			<shift4_quick>
+				<model>Shift4\Payment\Model\Shift4Quick</model> 
+				<title>Quick Pay Methods (Shift4)</title>
+				<payment_action>authorize</payment_action>
+				<active>0</active>
+				<currency>USD</currency>
+				<sort_order>2</sort_order>
+			</shift4_quick>
         </payment>
 		<dev>
 			<js>

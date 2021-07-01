@@ -2,6 +2,24 @@ jQuery(document).ready(function () {
 
     var processingMode = jQuery('select[id*="shift4_section_processing_mode"] option:selected').val();
 
+
+	jQuery('tr[id*="shift4_section_auth_token"] td.value').prepend('<select id="have_auth_token" style="margin-bottom:15px;"><option value="1">Already have Auth Token</option><option value="2">Do not have Auth token</option></select><div id="auth_error_message" style="display:none;font-size: 1.4rem; padding:10px; border:1px solid #f00;">A production Shift4 Merchant ID (MID) is needed to proceed. If a MID is already created, a shift4 configuration sheet with the necessary auth token credentials should have been sent by your Shift4 administrator. Please obtain the auth token and populate it in this field. If your organization has not obtained an e-commerce merchant ID, please contact a Shift4 Channel Sales Manager to obtain the new MID. If you are an existing Shift4 customer, please contact your Shift4 Strategic Account Manager to begin the process. If you are a new Shift4 customer, please use our contact page at <a href="https://www.shift4.com/get-started/" target="_blank">https://www.shift4.com/get-started/</a> to begin the process.</div>');
+
+	jQuery('input[id*="shift4_section_auth_token"]').attr('placeholder', 'XXXXXXXX-XXXX-XXXX-XXXXXXXXXXXXXXXX');
+
+	jQuery('#have_auth_token').change(function() {
+		if(jQuery(this).val() == 2) {
+			jQuery('#auth_error_message').show();
+			jQuery('#shift4_exchange_tokens').hide();
+			jQuery('input[id*="shift4_section_auth_token"]').hide();
+		} else {
+			jQuery('#auth_error_message').hide();
+			jQuery('#shift4_exchange_tokens').show();
+			jQuery('input[id*="shift4_section_auth_token"]').show();
+		}
+		
+	});
+	
 	showAccessToken();
 	changeProcessingMode(processingMode);
 	jQuery('input[id*="shift4_section_masked_access_token"]').attr('disabled', 'disabled');

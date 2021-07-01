@@ -86,10 +86,26 @@ class ConfigProvider implements ConfigProviderInterface
             $savedCardsData = $this->savedCardsHelper->getSavedCardsHTML($this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId());
         }
 		
-		$template = $this->scopeConfig->getValue('payment/shift4/i4go_template', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+		$quickPayEnable = $this->scopeConfig->getValue('payment/shift4_quick/active', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+		$quickPayTemplate = 'quick';
 		
-		if ($template != 'top' && $template != 'side' && $template != 'choose') {
-			$template = 'side';
+		if ($quickPayEnable) {
+		
+			$enableGPay = $this->scopeConfig->getValue('payment/shift4_quick/enable_google_pay', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+			$enableAPay = $this->scopeConfig->getValue('payment/shift4_quick/enable_apple_pay', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+			
+			if (!$enableGPay && !$enableAPay) {
+				$quickPayEnable = 0;
+			}
+			else {
+				if (!$enableGPay) {
+					$quickPayTemplate = 'quick_ngp';
+				}
+				
+				if (!$enableAPay) {
+					$quickPayTemplate = 'quick_nap';
+				}
+			}
 		}
 		
         return [
@@ -112,7 +128,8 @@ class ConfigProvider implements ConfigProviderInterface
                     'default_card' => $savedCardsData['default'],
                     'processedAmountHsaFsa' => $processedAmountHsaFsa,
                     'total_amount' => $totals,
-                    'template' => $template,
+                    'quickPayTemplate' => $quickPayTemplate,
+                    'quickPayEnable' => $quickPayEnable
                 ]
             ]
         ];

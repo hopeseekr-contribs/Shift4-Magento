@@ -9,6 +9,10 @@ define([
             {
                 type: 'shift4',
                 component: 'Shift4_Payment/js/view/payment/method-renderer/shift4'
+            },
+			{
+                type: 'shift4_quick',
+                component: 'Shift4_Payment/js/view/payment/method-renderer/shift4quick'
             }
         );
 
