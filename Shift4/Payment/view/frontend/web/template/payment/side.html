@@ -24,12 +24,12 @@
 		<div style="margin-left: 9px; margin-top:1.5em;">
             <label id="display_left_amount"></label>
         </div>
-		
+
 		<div class="s4messages"></div>
-		
+
 		<div class="actions-toolbar" id="shift4_place_order" style="display:none;">
 			<label  style="color:#636363;font-size:13px;font-weight:600;display:block;margin-top:10px;margin-left:8px;font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;"><!-- ko i18n: 'My saved cards:' --><!-- /ko --></label>
-			<select id="my_saved_cards" name="saved_card" style="margin-left:8px; width: 273px;height: 30px;padding: 0 8px;margin-bottom: 10px;border: 1px solid silver;border-radius: 2px;font-size: 15px;"><?php echo $savedCards['html']; ?></select>
+			<select id="my_saved_cards" name="saved_card" style="margin-left:8px; width: 273px;height: 30px;padding: 0 8px;margin-bottom: 10px;border: 1px solid silver;border-radius: 2px;font-size: 15px;"><?= $savedCards['html']; ?></select>
             <div class="primary" style="display:none;">
                 <button class="action primary checkout primaryPlaceOrder"
                         type="submit"
@@ -44,7 +44,7 @@
                 </button>
             </div>
         </div>
-			
+
 		<div id="new_card" style="display:none;">
 			<div style="width:50%; float:left;">
 				<div id="i4go_form"></div>
@@ -59,8 +59,8 @@
 			<div style="clear:both;"></div>
 
 		</div>
-		
-	
+
+
         <div class="checkout-agreements-block">
             <!-- ko foreach: $parent.getRegion('before-place-order') -->
             <!-- ko template: getTemplate() --><!-- /ko -->
