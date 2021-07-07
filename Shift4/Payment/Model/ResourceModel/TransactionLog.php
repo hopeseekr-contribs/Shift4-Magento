@@ -16,7 +16,7 @@ use \PDO;
 
 class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
-    
+
     private $dbPdo;
 
     /**
@@ -28,8 +28,8 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
     {
         $this->_init('shift4_transactions', 'shift4_transaction_id');
     }
-    
-    
+
+
 
     public function getTransactions($from, $to, $filterType, $showOrderStatuses, $orderStatuses = [], $transactionStatuses, $transactionTypes, $countTotal = false, $lmitFrom = 0, $limitTo = 20)
     {
@@ -61,7 +61,7 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
             $sql->where("s4.transaction_date >= '".$this->convertDate($from)." 00:00:00' AND s4.transaction_date <= '".$this->convertDate($to)." 23:59:59'");
             $sql->order('s4.transaction_date DESC');
         }
-        
+
         if (!empty($transactionTypes)) {
             $transactionTypesString = '';
             foreach ($transactionTypes as $v) {
@@ -76,7 +76,7 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
             $transactionTypesString = substr($transactionTypesString, 0, -1);
             $sql->where("s4.transaction_mode IN (".$transactionTypesString.")");
         }
-        
+
         if ($showOrderStatuses) {
             if (!empty($orderStatuses)) {
                 $orderStatusesString = '';
@@ -89,38 +89,38 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
                 $sql->where("1=2"); //no order status selected and false query
             }
         }
-        
+
         $transactionStatusesSQL = '';
-        
+
         if (in_array('success', $transactionStatuses)) {
             $transactionStatusesSQL .= "s4.http_code = '200' OR ";
         } else {
             //$transactionStatusesSQL .= "s4.http_code != '200' OR ";
         }
-        
+
         if (in_array('error', $transactionStatuses)) {
             $transactionStatusesSQL .= "s4.error != '' OR ";
         } else {
             $transactionStatusesSQL .= "s4.error = '' OR ";
         }
-        
+
         if (in_array('timedout', $transactionStatuses)) {
             $transactionStatusesSQL .= "s4.timed_out = 1 OR ";
         } else {
             //$transactionStatusesSQL .= "s4.timed_out = 0 OR ";
         }
-        
+
         if (in_array('voided', $transactionStatuses)) {
             $transactionStatusesSQL .= "s4.voided = 1 OR ";
         } else {
             $transactionStatusesSQL .= "s4.voided = 0 OR ";
         }
-        
+
         if ($transactionStatusesSQL != '') {
             $transactionStatusesSQL = substr($transactionStatusesSQL, 0, -4);
             $sql->where($transactionStatusesSQL);
         }
-        
+
         if (!$countTotal) {
             $sql->limit($limitTo, $lmitFrom);
             $transactions = $this->getConnection()->fetchAll($sql);
@@ -130,14 +130,14 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
             $totals = [];
             $totals['total_records'] = count($transactionsForTotals);
             foreach ($transactionsForTotals as $k => $v) {
-                
+
                 $amountProcessed = 0;
 
                 $utgResponse = json_decode($v['utg_response']);
                 if (json_last_error() == JSON_ERROR_NONE) {
-                    $amountProcessed = (float) @$utgResponse->result[0]->amount->total;
+                    $amountProcessed = (float) $utgResponse->result[0]->amount->total;
                 }
-                
+
                 $type = 'other';
                 if ($v['transaction_mode'] == 'capture' || $v['transaction_mode'] == 'sale') {
                     $type = 'sale';
@@ -148,26 +148,26 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
                 if ($v['transaction_mode'] == 'authorization') {
                     $type = 'authorization';
                 }
-                
+
                 if ($v['error'] == '' && $v['voided'] == 0) {
-                    $totals[$v['card_type']][$type]['total'] = (float) @$totals[$v['card_type']][$type]['total'] + $amountProcessed;
-                    $totals[$v['card_type']][$type]['count'] = (int) @$totals[$v['card_type']][$type]['count'] + 1;
-                    $totals['totals'][$type]['total'] = (float) @$totals['totals'][$type]['total'] + $amountProcessed;
-                    $totals['totals'][$type]['count'] = (int) @$totals['totals'][$type]['count'] + 1;
+                    $totals[$v['card_type']][$type]['total'] = (float) $totals[$v['card_type']][$type]['total'] + $amountProcessed;
+                    $totals[$v['card_type']][$type]['count'] = (int) $totals[$v['card_type']][$type]['count'] + 1;
+                    $totals['totals'][$type]['total'] = (float) $totals['totals'][$type]['total'] + $amountProcessed;
+                    $totals['totals'][$type]['count'] = (int) $totals['totals'][$type]['count'] + 1;
                 } elseif ($v['error'] != '' && $v['voided'] == 0) {
-                    $totals['errors'][$type]['total'] = (float) @$totals['errors'][$type]['total'] + $v['amount'];
-                    $totals['errors'][$type]['count'] = (int) @$totals['errors'][$type]['count'] + 1;
+                    $totals['errors'][$type]['total'] = (float) $totals['errors'][$type]['total'] + $v['amount'];
+                    $totals['errors'][$type]['count'] = (int) $totals['errors'][$type]['count'] + 1;
                 }
-                
+
             }
             $transactions = $totals;
         }
-        
+
         //echo $sql->__toString(); die();
 
         return $transactions;
     }
-    
+
     public function updateTransaction($shift4Invoice, $data)
     {
         $this->getConnection()->update(
@@ -176,7 +176,7 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
             ['shift4_invoice = ?' => $shift4Invoice]
         );
     }
-    
+
     public function getTransaction($transactionId)
     {
         $sql = $this->getConnection()
@@ -205,11 +205,11 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
                     ->joinLeft(["o" => $this->getTable('sales_order')], "s4.order_id = o.increment_id", $orderColumns)
                     ->where("o.entity_id ='". (int) $orderId."'")
                     ->order('s4.transaction_date');
-        
+
         $transactions = $this->getConnection()->fetchAll($sql);
         return $transactions;
     }
-    
+
     public function getTransactionsByInvoiceId($invoiceId)
     {
         $orderColumns = [
@@ -227,11 +227,11 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
                     ->joinLeft(["o" => $this->getTable('sales_order')], "s4.order_id = o.increment_id", $orderColumns)
                     ->where("s4.invoice_id ='". $this->escapeString($invoiceId)."'")
                     ->order('s4.transaction_date');
-        
+
         $transactions = $this->getConnection()->fetchAll($sql);
         return $transactions;
     }
-    
+
     private function convertDate($date)
     {
         $date = explode("/", $date);
@@ -241,15 +241,15 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
         $year = (int) $date[2];
         $month = str_pad((int) $date[0], 2, 0, STR_PAD_LEFT);
         $day = str_pad((int) $date[1], 2, 0, STR_PAD_LEFT);
-    
+
         return $year.'-'.$month.'-'.$day;
     }
-    
+
     private function escapeString($string)
     {
         return preg_replace('/[^\w]/', '', $string);
     }
-    
+
     public function getNextInvoiceId()
     {
 
@@ -262,7 +262,7 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
         $invoice = $this->getConnection()->fetchRow($sql);
         return str_pad(((int) $invoice['increment_id'] +1), 9, "0", STR_PAD_LEFT);
     }
-    
+
     public function saveAllTransactions($transactions)
     {
         $this->getConnection()->insertMultiple($this->getMainTable(), $transactions);
