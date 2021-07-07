@@ -13,14 +13,9 @@
 
 namespace Shift4\Payment\Block;
 
-/**
- * Class Form
-
- * @package Shift4\Payment
- */
 class Form extends \Magento\Payment\Block\Form
 {
-    
+
     protected $_template = 'Shift4_Payment::cc-form.phtml';
 
     public function __construct(
@@ -41,19 +36,19 @@ class Form extends \Magento\Payment\Block\Form
         $this->authSession = $authSession;
         $this->checkoutSession = $checkoutSession;
         $this->savedCardsHelper = $savedCardsHelper;
-        
+
         if ($this->authSession->isLoggedIn()) {
             $this->session = $authSession;
         } else {
             $this->session = $checkoutSession;
         }
-        
+
         parent::__construct(
             $context,
             $data
         );
     }
-    
+
     public function getCancelUrl()
     {
         return $this->getUrl('payment/CancelShift4Payments');
@@ -68,8 +63,10 @@ class Form extends \Magento\Payment\Block\Form
             'healthcareTotalAmountLeft' => 0,
             'healthcareTax' => 0
         ];
-        
-        if ($this->scopeConfig->getValue('payment/shift4/support_hsafsa', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1) {
+
+        $valueToTest = $this->scopeConfig
+            ->getValue('payment/shift4/support_hsafsa', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        if ($valueToTest == 1) {
             $healthcareProducts = [];
             if ($this->authSession->isLoggedIn()) {
                 $products = $this->sessionQuote->getQuote()->getAllItems();
@@ -80,22 +77,25 @@ class Form extends \Magento\Payment\Block\Form
             foreach ($products as $product) {
                 $attribute = $product->getProduct()->getResource()->getAttribute('iias_type');
                 if (!$attribute) {
-                    continue; //skip if product has no attribute. On Magento 2.4 will crash on line "$attribute->getFrontend()" if that line is removed.
+                    //skip if product has no attribute. On Magento 2.4 will crash on line
+                    // "$attribute->getFrontend()" if that line is removed.
+                    continue;
                 }
-                
+
                 $productObject = $this->productModel->load($product->getProduct()->getId());
                 $hsaFsa = $attribute->getFrontend()->getValue($productObject);
                 if ($hsaFsa) {
-                    
+
                     $price = $product->getPrice();
                     $priceInclTax = $product->getPriceInclTax();
                     $qty = $product->getQty();
-                    
+
                     $healthcareProducts[] = [
                         'name' => $product->getProduct()->getName(),
                         'id' => $product->getProduct()->getId(),
                         'price' => $price,
-                        'price_without_tax' => $product->getProduct()->getPriceInfo()->getPrice('final_price')->getAmount()->getBaseAmount(),
+                        'price_without_tax' => $product->getProduct()
+                            ->getPriceInfo()->getPrice('final_price')->getAmount()->getBaseAmount(),
                         'quantity' => $qty,
                         'iias_type' => $attribute->getFrontend()->getValue($productObject),
                         'finalprice' => $priceInclTax,
@@ -105,7 +105,7 @@ class Form extends \Magento\Payment\Block\Form
                 }
             }
 
-            $processedAmountHsaFsa = (float) @$this->session->getData('processedAmountHsaFsa');
+            $processedAmountHsaFsa = (float) $this->session->getData('processedAmountHsaFsa');
 
             $hsaFsaInfo['healthcareProducts'] = $healthcareProducts;
             $hsaFsaInfo['healthcareTotalAmount'] = $healthcareTotalAmount;
@@ -114,49 +114,67 @@ class Form extends \Magento\Payment\Block\Form
             $healthcareTax = $healthcareTotalAmountWithTax - $healthcareTotalAmount;
             $hsaFsaInfo['healthcareTax'] = $healthcareTax;
         }
-        
+
         return $hsaFsaInfo;
     }
-    
+
     public function getPartialPayments()
     {
-        
+
         $authorizedCardsData = (array) $this->session->getData('authorizedCardsData');
-        
+
         foreach ($authorizedCardsData as $k => $v) {
             if ($v['voided']) {
                 unset($authorizedCardsData[$k]);
             }
         }
-        
+
         return $authorizedCardsData;
     }
-    
+
     public function getAccessBlock()
     {
 
         $i4goOptions = $this->shift4api->getAccessBlock();
-        
-        $i4goOptions['support_swipe'] = ($this->scopeConfig->getValue('payment/shift4/support_swipe', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)? 'true' : 'false');
-        $i4goOptions['disable_expiration_date_for_gc'] = ($this->scopeConfig->getValue('payment/shift4/disable_expiration_date_for_gc', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)? 'true' : 'false');
-        $i4goOptions['disable_cvv_for_gc'] = ($this->scopeConfig->getValue('payment/shift4/disable_cvv_for_gc', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)? 'true' : 'false');
-        
+
+        $i4goOptions['support_swipe'] = (
+            $this->scopeConfig
+                ->getValue(
+                    'payment/shift4/support_swipe',
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                )? 'true' : 'false'
+        );
+        $i4goOptions['disable_expiration_date_for_gc'] = (
+            $this->scopeConfig
+                ->getValue(
+                    'payment/shift4/disable_expiration_date_for_gc',
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                )? 'true' : 'false'
+        );
+        $i4goOptions['disable_cvv_for_gc'] = (
+            $this->scopeConfig
+                ->getValue(
+                    'payment/shift4/disable_cvv_for_gc',
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                )? 'true' : 'false'
+        );
+
         return $i4goOptions;
     }
-    
+
     private function _getOrderCustomerId()
     {
         $customerId = 0;
-        
+
         if ($this->authSession->isLoggedIn()) {
             $customerId = $this->sessionQuote->getCustomerId();
         } else {
             $customerId = $this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId();
         }
-        
+
         return $customerId;
     }
-    
+
     public function getSavedCards()
     {
         $savedCardsData = $this->savedCardsHelper->getSavedCardsHTML($this->_getOrderCustomerId());

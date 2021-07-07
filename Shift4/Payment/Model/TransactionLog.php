@@ -36,42 +36,42 @@ class TransactionLog extends \Magento\Framework\Model\AbstractModel
         $this->setData($this->formatInsertData($data));
         $this->save();
     }
-    
+
     public function updateTransaction($shift4Invoice, $data)
     {
         $transactions = $this->getResource()->updateTransaction($shift4Invoice, $data);
     }
-    
+
     public function getTransactions($from, $to, $filterType, $showOrderStatuses, $orderStatuses, $transactionStatuses, $transactionTypes, $countTotal = false, $lmitFrom = 0, $limitTo = 20)
     {
         $transactions = $this->getResource()->getTransactions($from, $to, $filterType, $showOrderStatuses, $orderStatuses, $transactionStatuses, $transactionTypes, $countTotal, $lmitFrom, $limitTo);
         return $transactions;
     }
-    
+
     public function getTransaction($transactionId)
     {
         $transactions = $this->getResource()->getTransaction($transactionId);
         return $transactions;
     }
-    
+
     public function getTransactionsByOrderId($orderId)
     {
         $transactions = $this->getResource()->getTransactionsByOrderId($orderId);
         return $transactions;
     }
-    
+
     public function getTransactionsByInvoiceId($invoiceId)
     {
         $transactions = $this->getResource()->getTransactionsByInvoiceId($invoiceId);
         return $transactions;
     }
-    
+
     public function getNextInvoiceId()
     {
         $invoiceId = $this->getResource()->getNextInvoiceId();
         return $invoiceId;
     }
-    
+
     public function saveAllTransactions($transactions)
     {
         $insertData = [];
@@ -82,11 +82,11 @@ class TransactionLog extends \Magento\Framework\Model\AbstractModel
         }
         $this->getResource()->saveAllTransactions($insertData);
     }
-    
+
     private function formatInsertData($data)
     {
         $cardType = $cardNumber = '';
-            
+
         $timedOut = isset($data['timed_out']) ? (int) $data['timed_out'] : 0;
         $voided = isset($data['voided']) ? (int) $data['voided'] : 0;
         $error = isset($data['error']) ? $data['error'] : '';
@@ -98,15 +98,15 @@ class TransactionLog extends \Magento\Framework\Model\AbstractModel
         $shift4Invoice = isset($data['shift4_invoice']) ? $data['shift4_invoice'] : '';
         $requestHeader = isset($data['request_header']) ? $data['request_header'] : [];
         $httpCode = isset($data['http_code']) ? $data['http_code'] : '';
-        
+
         if ($utgResponse != '') {
             $responseJson = json_decode($utgResponse);
             if (json_last_error() == JSON_ERROR_NONE) {
-                if (@$responseJson->result[0]->card->number) {
-                    $cardNumber = @$responseJson->result[0]->card->number;
+                if ($responseJson->result[0]->card->number) {
+                    $cardNumber = $responseJson->result[0]->card->number;
                 }
-                if (@$responseJson->result[0]->card->type) {
-                    $cardType = @$responseJson->result[0]->card->type;
+                if ($responseJson->result[0]->card->type) {
+                    $cardType = $responseJson->result[0]->card->type;
                 }
             } else {
                 if (!($data['card_type']) || $data['card_type'] == '' || !isset($data['card_number']) || $data['card_number'] == '') {
@@ -116,7 +116,7 @@ class TransactionLog extends \Magento\Framework\Model\AbstractModel
                 $cardType = $data['card_type'];
             }
         }
-        
+
         $insertData = [
             'amount' => $amount,
             'card_type' => $cardType,

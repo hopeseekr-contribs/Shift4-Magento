@@ -35,10 +35,7 @@ class cancelPayment extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        
         $invoiceId = $this->getRequest()->getParam('shift4invoice');
-        echo $this->shift4->cancelPartialPayment($invoiceId);
-
-        exit;
+        return $this->getResponse()->setBody($this->shift4->cancelPartialPayment($invoiceId));
     }
 }

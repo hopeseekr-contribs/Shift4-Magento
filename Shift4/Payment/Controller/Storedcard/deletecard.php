@@ -9,8 +9,12 @@ class Deletecard extends \Magento\Framework\App\Action\Action
     protected $api;
     protected $customerSession;
 
-    public function __construct(\Shift4\Payment\Model\Shift4 $shift4, \Magento\Customer\Model\Session $customerSession, \Magento\Framework\App\Request\Http $request, \Magento\Framework\App\Action\Context $context)
-    {
+    public function __construct(
+        \Shift4\Payment\Model\Shift4 $shift4,
+        \Magento\Customer\Model\Session $customerSession,
+        \Magento\Framework\App\Request\Http $request,
+        \Magento\Framework\App\Action\Context $context
+    ) {
         $this->shift4 = $shift4;
         $this->request = $request;
         $this->customerSession = $customerSession;
@@ -37,11 +41,11 @@ class Deletecard extends \Magento\Framework\App\Action\Action
 
         $deletecard = $this->shift4->deleteCard($customerId, $savedCardId);
         if ($deletecard) {
-            echo 1;
+            $body = 1;
         } else {
-            echo $deletecard;
+            $body = $deletecard;
         }
 
-        exit;
+        $this->getResponse()->setBody($body);
     }
 }

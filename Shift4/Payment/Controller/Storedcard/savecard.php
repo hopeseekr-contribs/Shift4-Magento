@@ -9,8 +9,12 @@ class Savecard extends \Magento\Framework\App\Action\Action
     protected $api;
     protected $customerSession;
 
-    public function __construct(\Shift4\Payment\Model\Shift4 $shift4, \Magento\Customer\Model\Session $customerSession, \Magento\Framework\App\Request\Http $request, \Magento\Framework\App\Action\Context $context)
-    {
+    public function __construct(
+        \Shift4\Payment\Model\Shift4 $shift4,
+        \Magento\Customer\Model\Session $customerSession,
+        \Magento\Framework\App\Request\Http $request,
+        \Magento\Framework\App\Action\Context $context
+    ) {
         $this->shift4 = $shift4;
         $this->request = $request;
         $this->customerSession = $customerSession;
@@ -35,11 +39,10 @@ class Savecard extends \Magento\Framework\App\Action\Action
         $customerId = $this->customerSession->getCustomer()->getId();
 
         if (!$customerId) {
-            http_response_code(404);
-            exit;
+            return $this->getResponse()->setHttpResponseCode(404);
         }
 
-        echo $this->shift4->saveCard($customerId, $i4goTrueToken, $i4goExpYear, $i4goType, $i4goExpMonth);
-        exit;
+        $body = $this->shift4->saveCard($customerId, $i4goTrueToken, $i4goExpYear, $i4goType, $i4goExpMonth);
+        return $this->getResponse()->setBody($body);
     }
 }

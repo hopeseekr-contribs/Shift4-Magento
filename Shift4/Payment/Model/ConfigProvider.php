@@ -12,14 +12,12 @@ use Shift4\Payment\Helper\SavedCards as SavedCards;
 
 class ConfigProvider implements ConfigProviderInterface
 {
-    
+
      /**
       * @var \Magento\Framework\App\Config\ScopeConfigInterface
       */
     protected $scopeConfig;
-    
 
-    
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Checkout\Model\Session $checkoutSession,
@@ -41,25 +39,25 @@ class ConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
-        $totals = @$this->checkoutSession->getQuote()->getGrandTotal();
+        $totals = $this->checkoutSession->getQuote()->getGrandTotal();
         $this->checkoutSession->getQuote()->reserveOrderId()->save();
         $i4go = $this->api->getAccessBlock($totals, $this->checkoutSession->getQuote()->getReservedOrderId());
-        
+
         $savedCardsData = ['html' => '', 'default' => 'new'];
 
         $i4go_server = $i4go['i4go_server'];
         $i4go_accessblock = $i4go['i4go_accessblock'];
         $i4go_countrycode = $i4go['i4go_countrycode'];
         $i4go_i4m_url = $i4go['i4go_i4m_url'];
-        
+
         $healthcareProducts = (array) $this->checkoutSession->getData('healthcareProducts');
-        
-        $processedAmountHsaFsa = (float) @$this->checkoutSession->getData('processedAmountHsaFsa');
-        $healthcareTotalAmount = (float) @$this->checkoutSession->getData('healthcareTotalAmountWithTax');
-        
+
+        $processedAmountHsaFsa = (float) $this->checkoutSession->getData('processedAmountHsaFsa');
+        $healthcareTotalAmount = (float) $this->checkoutSession->getData('healthcareTotalAmountWithTax');
+
         $healthcareTotalAmount = $healthcareTotalAmount - $processedAmountHsaFsa;
-        
-        
+
+
         //$totalAmount = $totals
 
         $authorizedCardsData = (array) $this->checkoutSession->getData('authorizedCardsData');
@@ -78,20 +76,20 @@ class ConfigProvider implements ConfigProviderInterface
         }
 
         $saved_cards_enabled = 0;
-        
+
         $customerId = (int) $this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId();
 
         if ($this->customerSession->isLoggedIn() && $this->scopeConfig->getValue('payment/shift4/enable_saved_cards', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
             $saved_cards_enabled = 1;
             $savedCardsData = $this->savedCardsHelper->getSavedCardsHTML($this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId());
         }
-        
+
         $template = $this->scopeConfig->getValue('payment/shift4/i4go_template', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        
+
         if ($template != 'top' && $template != 'side' && $template != 'choose') {
             $template = 'side';
         }
-        
+
         return [
             'guest_user_data' => $guestUserData,
             'payment' => [

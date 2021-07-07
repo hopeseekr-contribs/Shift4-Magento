@@ -22,16 +22,12 @@ class AccessTokenUnMask extends \Magento\Config\Block\System\Config\Form\Field
      */
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
-        try {
-            $this->setElement($element);
+        $this->setElement($element);
 
-            $html = $element->getElementHtml();
-            $html .= $this->getAfterElementHtml();
+        $html = $element->getElementHtml();
+        $html .= $this->getAfterElementHtml();
 
-            return $html;
-        } catch (Exception $e) {
-            Mage::log(__LINE__ . 'Exception Cdon_Product_Block_Adminhtml_CheckApiButton  _getElementHtml ' . $e, null, 'exception.log');
-        }
+        return $html;
     }
 
     /**

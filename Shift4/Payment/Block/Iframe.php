@@ -16,11 +16,6 @@ namespace Shift4\Payment\Block;
 use Magento\Framework\View\Element\Template;
 use Shift4\Payment\Model\Api;
 
-/**
- * Class Form
-
- * @package Shift4\Payment
- */
 class Iframe extends Template
 {
 
@@ -56,17 +51,37 @@ class Iframe extends Template
         $currencyCode = $this->storeManager->getStore()->getCurrentCurrencyCode();
         $currency = $this->currencyFactory->create()->load($currencyCode);
         $this->_symbol = $currency->getCurrencySymbol();
-        $this->locale = $this->scopeConfig->getValue('general/locale/code', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $this->locale = $this->scopeConfig->getValue(
+            'general/locale/code',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
     }
 
     public function getAccessBlock()
     {
         $i4goOptions = $this->shift4api->getAccessBlock();
-        
-        $i4goOptions['support_swipe'] = ($this->scopeConfig->getValue('payment/shift4/support_swipe', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)? 'true' : 'false');
-        $i4goOptions['disable_expiration_date_for_gc'] = ($this->scopeConfig->getValue('payment/shift4/disable_expiration_date_for_gc', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)? 'true' : 'false');
-        $i4goOptions['disable_cvv_for_gc'] = ($this->scopeConfig->getValue('payment/shift4/disable_cvv_for_gc', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)? 'true' : 'false');
-        
+
+        $i4goOptions['support_swipe'] = (
+            $this->scopeConfig->getValue(
+                'payment/shift4/support_swipe',
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+            ) ? 'true' : 'false'
+        );
+
+        $i4goOptions['disable_expiration_date_for_gc'] = (
+            $this->scopeConfig->getValue(
+                'payment/shift4/disable_expiration_date_for_gc',
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+            ) ? 'true' : 'false'
+        );
+
+        $i4goOptions['disable_cvv_for_gc'] = (
+            $this->scopeConfig->getValue(
+                'payment/shift4/disable_cvv_for_gc',
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+            ) ? 'true' : 'false'
+        );
+
         return $i4goOptions;
     }
 }

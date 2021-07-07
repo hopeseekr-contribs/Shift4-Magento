@@ -15,25 +15,41 @@ class Overview extends \Magento\Multishipping\Block\Checkout\Overview
         \Shift4\Payment\Model\SavedCards $savedCards,
         array $data = []
     ) {
-        parent::__construct($context, $multishipping, $taxHelper, $priceCurrency, $totalsCollector, $totalsReader, $data);
+        parent::__construct(
+            $context,
+            $multishipping,
+            $taxHelper,
+            $priceCurrency,
+            $totalsCollector,
+            $totalsReader,
+            $data
+        );
         $this->request = $request;
         $this->savedCards = $savedCards;
     }
-   
+
     /**
      * @return string
      */
     public function getPaymentHtml()
     {
         $shift4Post = $this->request->getParam('shift4');
-        
-        if (!empty($shift4Post) && isset($shift4Post['trueToken']) && isset($shift4Post['cardtype']) && ctype_alnum($shift4Post['trueToken']) && ctype_alnum($shift4Post['cardtype'])) {
+
+        if (!empty($shift4Post) &&
+            isset($shift4Post['trueToken']) &&
+            isset($shift4Post['cardtype']) &&
+            ctype_alnum($shift4Post['trueToken']) &&
+            ctype_alnum($shift4Post['cardtype'])
+        ) {
             $additionalHtml = '
 			<input type="hidden" name="shift4truetoken" value="'. $shift4Post['trueToken'] .'">
 			<strong>'. __('Card Type:') .'</strong> '. $shift4Post['cardtype'] . '<br>
-			<strong>'. __('Card Number:') .'</strong> xxxx-' . $this->savedCards->getLast4FromToken($shift4Post['trueToken']);
+			<strong>'. __('Card Number:') .'</strong> xxxx-'
+                . $this->savedCards->getLast4FromToken($shift4Post['trueToken']);
         } else {
-            $additionalHtml = '<span style="color:#ff0000">'. __('Error getting i4go TrueToken') .'</span> <a href="'.$this->getEditBillingUrl() .'">'. __('Please Back to Billing Information.') .'</a>';
+            $additionalHtml = '<span style="color:#ff0000">'. __('Error getting i4go TrueToken')
+                . '</span> <a href="'.$this->getEditBillingUrl() .'">'. __('Please Back to Billing Information.')
+                . '</a>';
         }
         return parent::getPaymentHtml() . $additionalHtml;
     }

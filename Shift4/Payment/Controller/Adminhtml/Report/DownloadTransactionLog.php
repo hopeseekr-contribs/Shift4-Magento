@@ -27,18 +27,22 @@ class DownloadTransactionLog extends \Magento\Backend\App\Action
     {
         $logId = (int) $this->getRequest()->getParam('id');
         $transaction = $this->transactionLog->getTransaction($logId);
-    
+
         $fileName = str_replace([' ', ':'], ['_', ''], $transaction['transaction_date']).'_'.$logId.'.log';
-        
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename='.$fileName);
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        
-        echo 'Transaction date: '.$transaction['transaction_date'].PHP_EOL;
-        echo 'Method: '.$transaction['transaction_mode'].PHP_EOL;
-        echo 'Request: '.stripslashes($transaction['utg_request']).PHP_EOL;
-        echo 'Response: '.stripslashes($transaction['utg_response']).PHP_EOL;
+
+        $response = $this->getResponse()
+            ->setHeader('Content-Type', 'application/octet-stream')
+            ->setHeader('Content-Disposition', 'attachment; filename='.$fileName)
+            ->setHeader('Expires', '0')
+            ->setHeader('Cache-Control', 'must-revalidate')
+            ->setHeader('Pragma', 'public');
+
+        $body = '';
+        $body .= 'Transaction date: '.$transaction['transaction_date'].PHP_EOL;
+        $body .= 'Method: '.$transaction['transaction_mode'].PHP_EOL;
+        $body .= 'Request: '.stripslashes($transaction['utg_request']).PHP_EOL;
+        $body .= 'Response: '.stripslashes($transaction['utg_response']).PHP_EOL;
+
+        return $response->setBody($body);
     }
 }

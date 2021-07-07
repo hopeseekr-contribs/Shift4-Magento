@@ -1,13 +1,15 @@
 <?php
 namespace Shift4\Payment\Helper;
 
+use Magento\Framework\App\ObjectManager;
+
 class PaymentInfo
 {
-    
+
     public function generatePaymentInformationTable($payment, $invoice = false)
     {
 
-        $transactionsDB = \Magento\Framework\App\ObjectManager::getInstance()->get('Shift4\Payment\Model\TransactionLog');
+        $transactionsDB = ObjectManager::getInstance()->get('Shift4\Payment\Model\TransactionLog');
         if ($invoice) {
             $cards = $transactionsDB->getTransactionsByInvoiceId($invoice->getIncrementId());
         } else {
@@ -15,7 +17,8 @@ class PaymentInfo
         }
 
         $paymentMethod = $payment->getMethodInstance()->getTitle();
-        $returnHtml = '<dl class="payment-method"><dt class="title">' . (isset($paymentMethod) ? nl2br($paymentMethod) : '') . '</dt>';
+        $returnHtml = '<dl class="payment-method"><dt class="title">'
+            . (isset($paymentMethod) ? nl2br($paymentMethod) : '') . '</dt>';
 
         $cardCount = 1;
         if (isset($cards) && !empty($cards)) {
@@ -29,14 +32,14 @@ class PaymentInfo
                 $amount = 0;
                 $utgResponse = \json_decode($card['utg_response']);
                 if (json_last_error() == JSON_ERROR_NONE) {
-                    $amount = (float) @$utgResponse->result[0]->amount->total;
-                    $authorizationCode = (string) @$utgResponse->result[0]->transaction->authorizationCode;
+                    $amount = (float) $utgResponse->result[0]->amount->total;
+                    $authorizationCode = (string) $utgResponse->result[0]->transaction->authorizationCode;
                 }
                 $t = \Safe\strtotime($card['transaction_date']);
                 $date = date('d/m/Y H:i:s', $t);
 
                 $returnHtml .= '<tr><th colspan="2"><strong> '. __('Transaction') .' #'
-                    . $cardCount . '</strong>'.(@$date !== '' ? '&nbsp;&nbsp;'.$date :'').'</th></tr>
+                    . $cardCount . '</strong>'.($date !== '' ? '&nbsp;&nbsp;'.$date :'').'</th></tr>
                     <tr>
                         <th scope="row"><strong>'. __('Card Type:') .'</strong></th>
                         <td><span class="s4card_type">' . (isset($card['card_type']) ? $card['card_type'] : '') .
@@ -55,13 +58,14 @@ class PaymentInfo
                     </tr>
                     <tr>
                         <th scope="row"><strong>'. __('Processed Amount:') .'</strong></th>
-                        <td>' . ((@$card['transaction_mode'] == 'refund') ? '<span style="color:#ff0000">
+                        <td>' . (($card['transaction_mode'] == 'refund') ? '<span style="color:#ff0000">
                             (<span class="s4refunded-amount">$'.$amount.'</span>)</span>' :
                             '<span class="s4processed-amount">$'.$amount.'</span>'). '</td>
                     </tr>
                     <tr>
                         <th scope="row"><strong>'. __('Shift4 Invoice ID:') .'</strong></th>
-                        <td><span class="s4invoice">' . (isset($card['shift4_invoice']) ? $card['shift4_invoice'] : '') . '</span></td>
+                        <td><span class="s4invoice">'
+                    . (isset($card['shift4_invoice']) ? $card['shift4_invoice'] : '') . '</span></td>
                     </tr>
                     '.($authorizationCode ? '<tr>
                         <th scope="row"><strong>Authorization Code</strong></th><td>' . $authorizationCode . '</td>
