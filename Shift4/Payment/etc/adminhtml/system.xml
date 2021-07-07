@@ -145,7 +145,7 @@
                     </field>
 					<field id="sort_order" translate="label" type="text" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Sort Order*</label>
-                        <tooltip><![CDATA[Sort order]]></tooltip>
+                        <tooltip><![CDATA[The two Sort Order options work in conjunction to determine the order in which the credit option and Quick pay methods will appear during the checkout process. For example, credit options might be 1 and quick pay options might be 2]]></tooltip>
                         <validate>required-entry</validate>
                         <config_path>payment/shift4/sort_order</config_path>
                     </field>
@@ -181,7 +181,7 @@
                     </field>
 					<field id="sort_order" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Sort Order*</label>
-                        <tooltip><![CDATA[Sort order]]></tooltip>
+                        <tooltip><![CDATA[The two Sort Order options work in conjunction to determine the order in which the credit option and Quick pay methods will appear during the checkout process. For example, credit options might be 1 and quick pay options might be 2]]></tooltip>
                         <validate>required-entry</validate>
                         <config_path>payment/shift4_quick/sort_order</config_path>
                     </field>
