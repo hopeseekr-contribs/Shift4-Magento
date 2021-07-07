@@ -12,14 +12,12 @@ use Shift4\Payment\Helper\SavedCards as SavedCards;
 
 class ConfigProvider implements ConfigProviderInterface
 {
-    
+
      /**
       * @var \Magento\Framework\App\Config\ScopeConfigInterface
       */
     protected $scopeConfig;
-    
 
-    
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Checkout\Model\Session $checkoutSession,
@@ -41,26 +39,26 @@ class ConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
-		$totals = @$this->checkoutSession->getQuote()->getGrandTotal();
-		$this->checkoutSession->getQuote()->reserveOrderId()->save();
+        $totals = @$this->checkoutSession->getQuote()->getGrandTotal();
+        $this->checkoutSession->getQuote()->reserveOrderId()->save();
         $i4go = $this->api->getAccessBlock($totals, $this->checkoutSession->getQuote()->getReservedOrderId());
-		
+
         $savedCardsData = ['html' => '', 'default' => 'new'];
 
         $i4go_server = $i4go['i4go_server'];
         $i4go_accessblock = $i4go['i4go_accessblock'];
         $i4go_countrycode = $i4go['i4go_countrycode'];
         $i4go_i4m_url = $i4go['i4go_i4m_url'];
-        
+
         $healthcareProducts = (array) $this->checkoutSession->getData('healthcareProducts');
-        
+
         $processedAmountHsaFsa = (float) @$this->checkoutSession->getData('processedAmountHsaFsa');
         $healthcareTotalAmount = (float) @$this->checkoutSession->getData('healthcareTotalAmountWithTax');
-        
+
         $healthcareTotalAmount = $healthcareTotalAmount - $processedAmountHsaFsa;
-		
-		
-		//$totalAmount = $totals
+
+
+        //$totalAmount = $totals
 
         $authorizedCardsData = (array) $this->checkoutSession->getData('authorizedCardsData');
 
@@ -78,22 +76,22 @@ class ConfigProvider implements ConfigProviderInterface
         }
 
         $saved_cards_enabled = 0;
-        
+
         $customerId = (int) $this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId();
 
         if ($this->customerSession->isLoggedIn() && $this->scopeConfig->getValue('payment/shift4/enable_saved_cards', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
             $saved_cards_enabled = 1;
             $savedCardsData = $this->savedCardsHelper->getSavedCardsHTML($this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId());
         }
-		
+
 		$quickPayEnable = $this->scopeConfig->getValue('payment/shift4_quick/active', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 		$quickPayTemplate = 'quick';
-		
+
 		if ($quickPayEnable) {
-		
+
 			$enableGPay = $this->scopeConfig->getValue('payment/shift4_quick/enable_google_pay', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 			$enableAPay = $this->scopeConfig->getValue('payment/shift4_quick/enable_apple_pay', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-			
+
 			if (!$enableGPay && !$enableAPay) {
 				$quickPayEnable = 0;
 			}
@@ -101,14 +99,14 @@ class ConfigProvider implements ConfigProviderInterface
 				if (!$enableGPay) {
 					$quickPayTemplate = 'quick_ngp';
 				}
-				
+
 				if (!$enableAPay) {
 					$quickPayTemplate = 'quick_nap';
 				}
 			}
 		}
-		
-        return [
+
+		return [
             'guest_user_data' => $guestUserData,
             'payment' => [
                 'shift4_custom_data' => [

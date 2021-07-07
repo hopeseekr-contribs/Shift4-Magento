@@ -20,8 +20,8 @@ namespace Shift4\Payment\Block;
  */
 class Form extends \Magento\Payment\Block\Form
 {
-	
-	protected $_template = 'Shift4_Payment::cc-form.phtml';
+    
+    protected $_template = 'Shift4_Payment::cc-form.phtml';
 
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
