@@ -813,13 +813,13 @@ class Api
             'fuseaction' => 'account.preauthorizeClient',
             'i4go_clientip' => $i4go_clientIp,
             'i4go_accesstoken' => $this->accessToken,
-			'i4go_basket' => json_encode([
-				'OrderDetails' => [
-					'OrderNumber' => $magentoOrderId,
-					'Amount' => $amount,
-					'CurrencyCode' => 'USD'
-				]
-			])
+            'i4go_basket' => json_encode([
+                'OrderDetails' => [
+                    'OrderNumber' => $magentoOrderId,
+                    'Amount' => $amount,
+                    'CurrencyCode' => 'USD'
+                ]
+            ])
         ];
 
         $i4goData = str_replace('+', '%20', http_build_query($i4goData, '', '&'));

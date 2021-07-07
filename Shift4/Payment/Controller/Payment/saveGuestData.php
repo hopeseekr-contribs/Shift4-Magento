@@ -5,12 +5,13 @@
  *
  * @category    Shift4
  * @package     Payment
- * @author	Giedrius
+ * @author    Giedrius
  */
 
 namespace Shift4\Payment\Controller\Payment;
 
-class saveGuestData extends \Magento\Framework\App\Action\Action {
+class saveGuestData extends \Magento\Framework\App\Action\Action
+{
 
     /**
      * @var \Magento\Framework\App\Request\Http
@@ -33,12 +34,13 @@ class saveGuestData extends \Magento\Framework\App\Action\Action {
     protected $logger;
     protected $shift4;
 
-    public function __construct(\Magento\Framework\App\Action\Context $context, \Magento\Framework\App\Request\Http $request, \Magento\Checkout\Model\Session $checkoutSession, \Psr\Log\LoggerInterface $logger) {
+    public function __construct(\Magento\Framework\App\Action\Context $context, \Magento\Framework\App\Request\Http $request, \Magento\Checkout\Model\Session $checkoutSession, \Psr\Log\LoggerInterface $logger)
+    {
         $this->request = $request;
         $this->checkoutSession = $checkoutSession;
         $this->logger = $logger;
         parent::__construct(
-                $context
+            $context
         );
     }
 
@@ -50,13 +52,13 @@ class saveGuestData extends \Magento\Framework\App\Action\Action {
      *
      * @return Json
      */
-    public function execute() {
+    public function execute()
+    {
         $email = $this->getRequest()->getParam('email');
         
-		$this->checkoutSession->setData('guestEmail', $email);	
+        $this->checkoutSession->setData('guestEmail', $email);
 
         echo $email;
         exit;
     }
-
 }

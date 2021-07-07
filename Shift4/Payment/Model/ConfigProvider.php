@@ -41,10 +41,10 @@ class ConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
-		$totals = @$this->checkoutSession->getQuote()->getGrandTotal();
-		$this->checkoutSession->getQuote()->reserveOrderId()->save();
+        $totals = @$this->checkoutSession->getQuote()->getGrandTotal();
+        $this->checkoutSession->getQuote()->reserveOrderId()->save();
         $i4go = $this->api->getAccessBlock($totals, $this->checkoutSession->getQuote()->getReservedOrderId());
-		
+        
         $savedCardsData = ['html' => '', 'default' => 'new'];
 
         $i4go_server = $i4go['i4go_server'];
@@ -58,9 +58,9 @@ class ConfigProvider implements ConfigProviderInterface
         $healthcareTotalAmount = (float) @$this->checkoutSession->getData('healthcareTotalAmountWithTax');
         
         $healthcareTotalAmount = $healthcareTotalAmount - $processedAmountHsaFsa;
-		
-		
-		//$totalAmount = $totals
+        
+        
+        //$totalAmount = $totals
 
         $authorizedCardsData = (array) $this->checkoutSession->getData('authorizedCardsData');
 
@@ -85,13 +85,13 @@ class ConfigProvider implements ConfigProviderInterface
             $saved_cards_enabled = 1;
             $savedCardsData = $this->savedCardsHelper->getSavedCardsHTML($this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId());
         }
-		
-		$template = $this->scopeConfig->getValue('payment/shift4/i4go_template', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-		
-		if ($template != 'top' && $template != 'side' && $template != 'choose') {
-			$template = 'side';
-		}
-		
+        
+        $template = $this->scopeConfig->getValue('payment/shift4/i4go_template', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        
+        if ($template != 'top' && $template != 'side' && $template != 'choose') {
+            $template = 'side';
+        }
+        
         return [
             'guest_user_data' => $guestUserData,
             'payment' => [

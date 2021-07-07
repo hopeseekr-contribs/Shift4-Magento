@@ -68,12 +68,12 @@ class SavedCards
                     $savedCardsHTML .= '</optgroup>';
                 }
                 
-				
+                
                 $savedCardsNew = '';
                 $scopeConfigGetValue = $this->scopeConfig->getValue('payment/shift4/i4go_template', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                if ($scopeConfigGetValue == 'choose') { 
-					$savedCardsNew .= '<optgroup label="Wallets"><option value="wallets">Google pay or Apple pay</option></optgroup>';
-				}
+                if ($scopeConfigGetValue == 'choose') {
+                    $savedCardsNew .= '<optgroup label="Wallets"><option value="wallets">Google pay or Apple pay</option></optgroup>';
+                }
                 $savedCardsNew .= '<optgroup label="'. __('New card') .'"><option value="new"';
                 if ($default == 'new') {
                     $savedCardsNew .= ' selected="selected"';

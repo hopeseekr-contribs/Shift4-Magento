@@ -14,9 +14,9 @@ class I4goTemplate
     public function toOptionArray()
     {
         return [
-			['value' => 'side', 'label' => __('Side')],
-			['value' => 'top', 'label' => __('Top')],
-			['value' => 'choose', 'label' => __('Choose')]
-		];
+            ['value' => 'side', 'label' => __('Side')],
+            ['value' => 'top', 'label' => __('Top')],
+            ['value' => 'choose', 'label' => __('Choose')]
+        ];
     }
 }
