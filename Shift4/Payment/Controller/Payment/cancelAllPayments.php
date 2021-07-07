@@ -33,9 +33,6 @@ class cancelAllPayments extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-  
-        echo $this->shift4->cancelAllPartialPayments();
-
-        exit;
+        return $this->getResponse()->setBody($this->shift4->cancelAllPartialPayments());
     }
 }

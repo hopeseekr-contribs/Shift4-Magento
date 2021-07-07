@@ -47,21 +47,27 @@ class Printinvoice extends \Magento\Sales\Block\Items\AbstractItems
         $currency = $this->_currencyFactory->create()->load($currencyCode);
         $this->_symbol = $currency->getCurrencySymbol();
         $this->_addressConfig = $addressConfig;
-        
+
         $this->_storeInfo = $storeInfo;
         $this->orderFactory = $orderFactory;
         $this->transactionLog = $transactionLog;
-    
-        $this->getLayout()->createBlock('Magento\Tax\Block\Item\Price\Renderer', 'item_unit_price')->setTemplate('Shift4_Payment::unit.phtml');
-        $this->getLayout()->createBlock('Magento\Tax\Block\Item\Price\Renderer', 'item_row_total')->setTemplate('Shift4_Payment::row.phtml');
-        $this->getLayout()->createBlock('Magento\Tax\Block\Item\Price\Renderer', 'item_row_total_after_discount')->setTemplate('Shift4_Payment::total_after_discount.phtml');
+
+        $this->getLayout()
+            ->createBlock(\Magento\Tax\Block\Item\Price\Renderer::class, 'item_unit_price')
+            ->setTemplate('Shift4_Payment::unit.phtml');
+        $this->getLayout()
+            ->createBlock(\Magento\Tax\Block\Item\Price\Renderer::class, 'item_row_total')
+            ->setTemplate('Shift4_Payment::row.phtml');
+        $this->getLayout()
+            ->createBlock(\Magento\Tax\Block\Item\Price\Renderer::class, 'item_row_total_after_discount')
+            ->setTemplate('Shift4_Payment::total_after_discount.phtml');
     }
-    
+
     public function getOrder()
     {
         return $this->order;
     }
-    
+
     public function getInvoice()
     {
         return $this->invoice;
@@ -71,12 +77,12 @@ class Printinvoice extends \Magento\Sales\Block\Items\AbstractItems
     {
         return $this->_storeManager->getStore()->getName();
     }
-    
+
     public function getStorePhone()
     {
         return $this->_storeInfo->getStoreInformationObject($this->_storeManager->getStore())->getPhone();
     }
-    
+
     public function getStoreEmail()
     {
         return $this->_scopeConfig->getValue(
@@ -84,7 +90,7 @@ class Printinvoice extends \Magento\Sales\Block\Items\AbstractItems
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
     }
-    
+
     public function getStoreUrl()
     {
         return $this->_storeManager->getStore()->getBaseUrl();
@@ -108,11 +114,11 @@ class Printinvoice extends \Magento\Sales\Block\Items\AbstractItems
         }
         return $orderItems;
     }
-    
+
     public function setInformation($order, $invoice = false)
     {
         //$order = $this->orderFactory->create()->load($order);
-        
+
         $this->order = $order;
         if ($invoice) {
             $this->invoice = $invoice;
@@ -135,29 +141,35 @@ class Printinvoice extends \Magento\Sales\Block\Items\AbstractItems
     {
         return $this->addressRenderer->format($address, $format);
     }
-    
+
     public function getHTML()
     {
         $this->setTemplate('Shift4_Payment::invoice.phtml');
         return parent::_toHtml();
     }
-    
+
     public function getTotalsHtml()
     {
-
         if ($this->invoice) {
-            $totals = $this->getLayout()->createBlock('Magento\Sales\Block\Order\Invoice\Totals', 'invoice_totals')->setTemplate('Shift4_Payment::totals.phtml');
+            $totals = $this->getLayout()
+                ->createBlock(\Magento\Sales\Block\Order\Invoice\Totals::class, 'invoice_totals')
+                ->setTemplate('Shift4_Payment::totals.phtml');
         } else {
-            $totals = $this->getLayout()->createBlock('Magento\Sales\Block\Order\Totals', 'invoice_totals')->setTemplate('Shift4_Payment::totals.phtml');
+            $totals = $this->getLayout()
+                ->createBlock(\Magento\Sales\Block\Order\Totals::class, 'invoice_totals')
+                ->setTemplate('Shift4_Payment::totals.phtml');
         }
-        
+
         $this->setChild('invoice_totals', $totals);
 
-        $customerbalance = $this->getLayout()->createBlock('Magento\CustomerBalance\Block\Sales\Order\Customerbalance', 'customerbalance')->setTemplate('Shift4_Payment::customerbalance.phtml');
+        $customerbalance = $this->getLayout()
+            ->createBlock(\Magento\CustomerBalance\Block\Sales\Order\Customerbalance::class, 'customerbalance')
+            ->setTemplate('Shift4_Payment::customerbalance.phtml');
         $totals->setChild('customerbalance', $customerbalance);
-        
-        $tax = $this->getLayout()->createBlock('Magento\Tax\Block\Sales\Order\Tax', 'tax')->setTemplate('Shift4_Payment::tax.phtml');
-        //$tax = $this->getLayout()->createBlock('Magento\Sales\Block\Adminhtml\Order\Invoice\Totals', 'tax')->setTemplate('Shift4_Payment::tax.phtml');
+
+        $tax = $this->getLayout()
+            ->createBlock(\Magento\Tax\Block\Sales\Order\Tax::class, 'tax')
+            ->setTemplate('Shift4_Payment::tax.phtml');
         $totals->setChild('tax', $tax);
 
         $html = '';
@@ -166,26 +178,29 @@ class Printinvoice extends \Magento\Sales\Block\Items\AbstractItems
             if ($this->invoice) {
                 $totals->setInvoice($this->invoice);
             }
-            
+
             $html = $totals->toHtml();
         }
-        
+
         //echo $html; die();
         return $html;
     }
-    
+
     public function itemRenderer($type, $item)
     {
         /** @var \Magento\Framework\View\Element\RendererList $rendererList */
         $item->setOrder($this->order);
         //$item->setInvoice($this->invoice);
-        
-        
-        
-        $typeBlock = $this->getLayout()->createBlock('Magento\Sales\Block\Order\Item\Renderer\DefaultRenderer')->setItem($item)->setTemplate('Shift4_Payment::renderer.phtml');
 
-        $rendererList = $this->getLayout()->createBlock('Magento\Framework\View\Element\RendererList')->setChild($type, $typeBlock);
-        
+        $typeBlock = $this->getLayout()
+            ->createBlock(\Magento\Sales\Block\Order\Item\Renderer\DefaultRenderer::class)
+            ->setItem($item)
+            ->setTemplate('Shift4_Payment::renderer.phtml');
+
+        $rendererList = $this->getLayout()
+            ->createBlock(\Magento\Framework\View\Element\RendererList::class)
+            ->setChild($type, $typeBlock);
+
         if (!$rendererList) {
             throw new \RuntimeException('Renderer list for block "' . $this->getNameInLayout() . '" is not defined');
         }
@@ -195,7 +210,7 @@ class Printinvoice extends \Magento\Sales\Block\Items\AbstractItems
         $renderer->setRenderedBlock($this);
         return $renderer;
     }
-    
+
     public function getItemHtml($item)
     {
         if (!$item->getParentItem()) {
@@ -212,7 +227,7 @@ class Printinvoice extends \Magento\Sales\Block\Items\AbstractItems
             return $block->toHtml();
         }
     }
-    
+
     public function getInvoiceIncrementId()
     {
         if ($this->invoice) {
@@ -226,7 +241,7 @@ class Printinvoice extends \Magento\Sales\Block\Items\AbstractItems
             return false;
         }
     }
-    
+
     private function getTemplateDir()
     {
         return getcwd() . '/app/code/Shift4/Payment/view/frontend/templates/';

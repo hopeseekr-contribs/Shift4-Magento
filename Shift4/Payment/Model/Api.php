@@ -2,6 +2,8 @@
 
 namespace Shift4\Payment\Model;
 
+use Magento\Framework\Serialize\Serializer\Serialize;
+use Magento\Store\Model\ScopeInterface;
 use Shift4\Payment\Model\Shift4;
 use Magento\Framework\App\Config\ScopeConfigInterface as ScopeConfig;
 
@@ -31,7 +33,7 @@ class Api
     private $invoiceId;
     private $i4goType = '';
     protected $developerMode = false;
-    
+
     private $transactionLog;
     private $customerSession;
 
@@ -70,21 +72,22 @@ class Api
             }
         }
 
-        $this->verifySSL = $this->scopeConfig->getValue('payment/shift4/enable_ssl', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $this->verifySSL = $this->scopeConfig->getValue('payment/shift4/enable_ssl', ScopeInterface::SCOPE_STORE);
 
-        if ($this->scopeConfig->getValue('payment/shift4/processing_mode', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 'live') {
-            $this->endpoint = $this->scopeConfig->getValue('payment/shift4/server_addresses', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-            $this->accessToken = $this->scopeConfig->getValue('payment/shift4/live_accessToken', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        if ($this->scopeConfig->getValue('payment/shift4/processing_mode', ScopeInterface::SCOPE_STORE) == 'live') {
+            $this->endpoint = $this->scopeConfig
+                ->getValue('payment/shift4/server_addresses', ScopeInterface::SCOPE_STORE);
+            $this->accessToken = $this->scopeConfig
+                ->getValue('payment/shift4/live_accessToken', ScopeInterface::SCOPE_STORE);
             $this->i4goEndpoint = 'https://access.i4go.com';
             $this->verifySSL = true;
         }
-        
+
         //logging
-        if ($this->scopeConfig->getValue('payment/shift4/developer_mode', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1) {
+        if ($this->scopeConfig->getValue('payment/shift4/developer_mode', ScopeInterface::SCOPE_STORE) == 1) {
             $this->developerMode = true;
         }
     }
-
 
     public function setCustomerId($customerId)
     {
@@ -101,7 +104,6 @@ class Api
         $this->invoiceId = $invoiceId;
     }
 
-
     /**
      * Shift4 transaction
      *
@@ -110,8 +112,18 @@ class Api
      * @param string $i4goTrueToken
      * @return array $response
      */
-    public function transaction($amount, $payment, $i4goTrueToken, $tax = 0, $i4goType = '', $transactionMode = '', $invoiceHtml = '', $productDescriptors = [], $iias = false, $invoiceId = false)
-    {
+    public function transaction(
+        $amount,
+        $payment,
+        $i4goTrueToken,
+        $tax = 0,
+        $i4goType = '',
+        $transactionMode = '',
+        $invoiceHtml = '',
+        $productDescriptors = [],
+        $iias = false,
+        $invoiceId = false
+    ) {
         $magentoOrderId = $payment->getOrder()->getIncrementId();
         $this->orderId = $magentoOrderId;
         $this->customerId = (int) $this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId();
@@ -123,7 +135,8 @@ class Api
 
         if ($transactionMode == '') {
             $method = 'authorization';
-            if ($this->scopeConfig->getValue('payment/shift4/payment_action', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 'authorize_capture') {
+            $paymentAction = $this->scopeConfig->getValue('payment/shift4/payment_action', ScopeInterface::SCOPE_STORE);
+            if ($paymentAction == 'authorize_capture') {
                 $method = 'sale';
             }
         } else {
@@ -147,9 +160,9 @@ class Api
         $shift4Invoice = $this->shift4Invoice($payment);
 
         if (!$payment->getOrder()->getShippingAddress()) {
-            $destinationPostalCode = @$billingAddress->getPostCode();
+            $destinationPostalCode = $billingAddress->getPostCode();
         } else {
-            $destinationPostalCode = @$payment->getOrder()->getShippingAddress()->getPostCode();
+            $destinationPostalCode = $payment->getOrder()->getShippingAddress()->getPostCode();
         }
 
         $requestBody = [
@@ -185,18 +198,19 @@ class Api
         ];
 
         //allow partial auth
-        if ($this->scopeConfig->getValue('payment/shift4/allow_partial_auth', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) && !$this->isMultiShiping) {
+        $allowPartialAuth = $this->scopeConfig
+            ->getValue('payment/shift4/allow_partial_auth', ScopeInterface::SCOPE_STORE);
+        if ($allowPartialAuth && !$this->isMultiShiping) {
             $requestBody['apiOptions'][] = 'ALLOWPARTIALAUTH';
         }
 
-        if ((float) @$this->session->getData('healthcareTotalAmount') > 0 && $this->scopeConfig->getValue('payment/shift4/support_hsafsa', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
+        if ((float) $this->session->getData('healthcareTotalAmount') > 0
+            && $this->scopeConfig->getValue('payment/shift4/support_hsafsa', ScopeInterface::SCOPE_STORE)
+        ) {
+            $healthcareProducts = (array) $this->session->getData('healthcareProducts');
+            $processedAmountHsaFsa = (float) $this->session->getData('processedAmountHsaFsa');
+            $healthcareTotalAmount = (float) $this->session->getData('healthcareTotalAmount');
 
-
-
-            $healthcareProducts = (array) @$this->session->getData('healthcareProducts');
-            $processedAmountHsaFsa = (float) @$this->session->getData('processedAmountHsaFsa');
-            $healthcareTotalAmount = (float) @$this->session->getData('healthcareTotalAmount');
-            
             $healthcareTotalAmount - $processedAmountHsaFsa;
 
             $requestBody['amount']['iiasAmounts'][] = [
@@ -204,12 +218,14 @@ class Api
                 'amount' => $healthcareTotalAmount
             ];
 
-            $requestBody['amount']['tax'] = (float) @$this->session->getData('healthcareTax');
+            $requestBody['amount']['tax'] = (float) $this->session->getData('healthcareTax');
 
             $iiasAmounts = [];
 
             foreach ($healthcareProducts as $hsproduct) {
-                $iiasAmounts[$hsproduct['iias_type']] = isset($iiasAmounts[$hsproduct['iias_type']])? $iiasAmounts[$hsproduct['iias_type']] + $hsproduct['price'] * $hsproduct['quantity'] : $hsproduct['price'] * $hsproduct['quantity'];
+                $iiasAmounts[$hsproduct['iias_type']] = isset($iiasAmounts[$hsproduct['iias_type']])
+                    ? $iiasAmounts[$hsproduct['iias_type']] + $hsproduct['price'] * $hsproduct['quantity']
+                    : $hsproduct['price'] * $hsproduct['quantity'];
             }
 
             foreach ($iiasAmounts as $iiasType => $iiasAmount) {
@@ -222,25 +238,27 @@ class Api
                     ];
                 }
             }
-            
-            print_r($requestBody);
-            die();
+
+            throw new \RuntimeException(print_r($requestBody, true));
+//            print_r($requestBody);
+//            die();
         }
 
         if ($invoiceHtml == '') {
-            if ($this->scopeConfig->getValue('payment/shift4/html_invoice', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == self::HTML_INVOICE_FULL) {
+            $htmlInvoice = $this->scopeConfig->getValue('payment/shift4/html_invoice', ScopeInterface::SCOPE_STORE);
+            if ($htmlInvoice == self::HTML_INVOICE_FULL) {
                 $pageObject = $this->pageFactory->create();
                 $invoiceHtml = $pageObject->getLayout()
                     ->createBlock('Shift4\Payment\Block\Printinvoice')
                     ->setInformation($order)
                     ->getHTML();
-            } elseif ($this->scopeConfig->getValue('payment/shift4/html_invoice', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == self::HTML_INVOICE_SIMPLE) {
+            } elseif ($htmlInvoice == self::HTML_INVOICE_SIMPLE) {
                 $pageObject = $this->pageFactory->create();
                 $invoiceHtml = $pageObject->getLayout()
                     ->createBlock('Shift4\Payment\Block\Printinvoiceplain')
                     ->setInformation($order)
                     ->getHTML();
-            } elseif ($this->scopeConfig->getValue('payment/shift4/html_invoice', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == self::HTML_INVOICE_ORDER_NUMBER) {
+            } elseif ($htmlInvoice == self::HTML_INVOICE_ORDER_NUMBER) {
                 $invoiceHtml = 'Order id: #'. $magentoOrderId;
             } else {
                 $invoiceHtml = '';
@@ -250,7 +268,8 @@ class Api
         $requestBody['transaction']['notes'] = $invoiceHtml;
 
         if (strlen(json_encode($requestBody)) > self::MAX_REQUEST_SIZE) {
-            $requestBody['transaction']['notes'] = '(Invoice was too large for this field) Order id: #'. $magentoOrderId;
+            $requestBody['transaction']['notes'] = '(Invoice was too large for this field) '
+                . 'Order id: #'. $magentoOrderId;
         }
 
         $transCount = (int) $this->session->getData('transCount');
@@ -324,8 +343,17 @@ class Api
      * @param string $i4goTrueToken
      * @return array $response
      */
-    public function capture($invoice, $amount, $i4goTrueToken, $tax = 0, $orderId, $customerId, $magentoInvoice = false, $productDescriptors = [], $invoiceId = false)
-    {
+    public function capture(
+        $invoice,
+        $amount,
+        $i4goTrueToken,
+        $tax,
+        $orderId,
+        $customerId,
+        $magentoInvoice = false,
+        $productDescriptors = [],
+        $invoiceId = false
+    ) {
         $this->orderId = $orderId;
         $this->customerId = $customerId;
 
@@ -369,7 +397,6 @@ class Api
 
         return $response;
     }
-
 
     /**
      * Shift4 transaction refund
@@ -465,7 +492,7 @@ class Api
         $array_server_Addresses = explode(',', $serverAddresses);
         $endPoint = $array_server_Addresses[0];
 
-        if ($this->IsEndpointValid($endPoint)) { //todo check
+        if ($this->isEndpointValid($endPoint)) { //todo check
             $requestBody = [
                 'dateTime' => date('c'),
                 'credential' => [
@@ -493,7 +520,7 @@ class Api
       *
       * @return bool
       */
-    private function IsEndpointValid($endPoint)
+    private function isEndpointValid($endPoint)
     {
         return filter_var($endPoint, FILTER_VALIDATE_URL);
     }
@@ -531,7 +558,7 @@ class Api
             'invoice' => '',
         ];
 
-        if (@$requestBody['transaction']['invoice']) {
+        if ($requestBody['transaction']['invoice']) {
             $return['invoice'] = $requestBody['transaction']['invoice'];
         } else {
             foreach ($headers as $value) {
@@ -542,12 +569,12 @@ class Api
             }
         }
 
-        if (@$requestBody['card']['token']['value']) {
-            $cardNumber = 'XXXXXXXXXXXX' . substr(@$requestBody['card']['token']['value'], 0, 4);
+        if ($requestBody['card']['token']['value']) {
+            $cardNumber = 'XXXXXXXXXXXX' . substr($requestBody['card']['token']['value'], 0, 4);
         }
 
         $amount = 0;
-        if (@$requestBody['amount']['total']) {
+        if ($requestBody['amount']['total']) {
             $amount = (float) $requestBody['amount']['total'];
         }
 
@@ -620,7 +647,11 @@ class Api
                 if ($httpCode == 400 || $httpCode == 504) {
                     $responseData = json_decode($response);
                     if (json_last_error() == JSON_ERROR_NONE) {
-                        $return['errorMessage'] = __("%1 Error: %2", $httpCode, @$responseData->result[0]->error->longText);
+                        $return['errorMessage'] = __(
+                            "%1 Error: %2",
+                            $httpCode,
+                            $responseData->result[0]->error->longText
+                        );
                     } else {
                         $return['errorMessage'] = __('Error');
                     }
@@ -630,7 +661,7 @@ class Api
             }
         }
 
-        $logging = $this->scopeConfig->getValue('payment/shift4/logging', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $logging = $this->scopeConfig->getValue('payment/shift4/logging', ScopeInterface::SCOPE_STORE);
 
         switch ($logging) {
             case 'problems':
@@ -686,7 +717,7 @@ class Api
             $saveData['voided'] = 1;
             $saveData['transaction_mode'] = 'void';
 
-            if ($httpCode == '400' && @$responseData->result[0]->error->primaryCode == '9815') {
+            if ($httpCode == '400' && $responseData->result[0]->error->primaryCode == '9815') {
                 $saveData['error'] = 'Invoice Not Found';
             }
 
@@ -703,7 +734,7 @@ class Api
         } else {
             $responseData = json_decode($response);
             if (json_last_error() == JSON_ERROR_NONE) {
-                $responseCode = @$responseData->result[0]->transaction->responseCode;
+                $responseCode = $responseData->result[0]->transaction->responseCode;
                 if ($responseCode && $responseCode != 'P') {
                     $responseError = $this->checkResponseForErrors($responseCode);
                     if ($responseError) {
@@ -716,7 +747,7 @@ class Api
         }
 
         //additional logging
-        $this->devLog('Shift4 writing log to reports db:' . serialize($saveData));
+        $this->devLog('Shift4 writing log to reports db:' . json_encode($saveData));
 
         if ($this->customerId == 0 && !$this->isAdmin) { //workaround magento bug on guest user
             $guestUserTransactions[$saveData['shift4_invoice']][$method] = $saveData;
@@ -740,7 +771,9 @@ class Api
     {
         $quoteId = $payment->getOrder()->getQuoteId();
         $quoteIdLast3 = str_pad(substr($quoteId, -3), 3, '0', STR_PAD_LEFT);
-        return substr($payment->getOrder()->getIncrementId(), -5) . $quoteIdLast3 . str_pad((int) $this->session->getData('transCount'), 2, '0', STR_PAD_LEFT);
+        return substr($payment->getOrder()->getIncrementId(), -5)
+            . $quoteIdLast3
+            . str_pad((int) $this->session->getData('transCount'), 2, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -754,8 +787,10 @@ class Api
     {
         $transCount = $refundTransCount = (int) $this->session->getData('refund_transCount');
 
-        if ($payment->getData('shift4_additional_information')) {
-            $transactions = unserialize($payment->getData('shift4_additional_information'));
+        $serializer = new Serialize();
+        $transactionsData = $payment->getData('shift4_additional_information');
+        if ($transactionsData) {
+            $transactions = $serializer->unserialize($transactionsData);
             $refundTransCount = $transCount + count($transactions);
         }
         $transCount++;
@@ -764,7 +799,9 @@ class Api
 
         $quoteId = $payment->getOrder()->getQuoteId();
         $quoteIdLast3 = str_pad(substr($quoteId, -3), 3, '0', STR_PAD_LEFT);
-        return substr($payment->getOrder()->getIncrementId(), -5) . $quoteIdLast3 . str_pad($refundTransCount, 2, '0', STR_PAD_LEFT);
+        return substr($payment->getOrder()->getIncrementId(), -5)
+            . $quoteIdLast3
+            . str_pad($refundTransCount, 2, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -838,8 +875,8 @@ class Api
         if (curl_errno($handler)) {
             $return_data['error'] = curl_error($handler);
         }
-        
-        $logging = $this->scopeConfig->getValue('payment/shift4/logging', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+        $logging = $this->scopeConfig->getValue('payment/shift4/logging', ScopeInterface::SCOPE_STORE);
 
         if ($return_data['error'] == '') {
             $i4goResponse = json_decode($response);
@@ -869,11 +906,10 @@ class Api
             $this->logger->info($this->formatLogMessage($i4goResponse, $i4goData));
         }
         curl_close($handler);
-        
 
         return $return_data;
     }
-    
+
     /**
      * Format Log message
      *
@@ -885,20 +921,20 @@ class Api
     private function formatLogMessage($return, $request = '')
     {
         $logMessage = PHP_EOL;
-        
+
         if ($request) {
             $logMessage .= 'Request: '. $request . PHP_EOL;
         }
-        
+
         foreach ($return as $k => $v) {
             $logMessage .= $k .': '.$v . PHP_EOL;
         }
-        
+
         $logMessage .= PHP_EOL;
-        
+
         return $logMessage;
     }
-    
+
     /**
      * Check transaction response for errors
      *
@@ -938,7 +974,7 @@ class Api
         }
         return $error;
     }
-    
+
     public function devLog($message)
     {
         if ($this->developerMode) {

@@ -12,7 +12,6 @@ use Shift4\Payment\Helper\SavedCards as SavedCards;
 
 class ConfigProvider implements ConfigProviderInterface
 {
-
      /**
       * @var \Magento\Framework\App\Config\ScopeConfigInterface
       */
@@ -39,7 +38,7 @@ class ConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
-        $totals = @$this->checkoutSession->getQuote()->getGrandTotal();
+        $totals = $this->checkoutSession->getQuote()->getGrandTotal();
         $this->checkoutSession->getQuote()->reserveOrderId()->save();
         $i4go = $this->api->getAccessBlock($totals, $this->checkoutSession->getQuote()->getReservedOrderId());
 
@@ -52,8 +51,8 @@ class ConfigProvider implements ConfigProviderInterface
 
         $healthcareProducts = (array) $this->checkoutSession->getData('healthcareProducts');
 
-        $processedAmountHsaFsa = (float) @$this->checkoutSession->getData('processedAmountHsaFsa');
-        $healthcareTotalAmount = (float) @$this->checkoutSession->getData('healthcareTotalAmountWithTax');
+        $processedAmountHsaFsa = (float) $this->checkoutSession->getData('processedAmountHsaFsa');
+        $healthcareTotalAmount = (float) $this->checkoutSession->getData('healthcareTotalAmountWithTax');
 
         $healthcareTotalAmount = $healthcareTotalAmount - $processedAmountHsaFsa;
 

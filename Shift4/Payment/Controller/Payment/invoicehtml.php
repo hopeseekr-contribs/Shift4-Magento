@@ -56,7 +56,7 @@ class invoicehtml extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        $invoiceId = isset($_GET['invoice_id']) ? (int) $_GET['invoice_id'] : false;
+        $invoiceId = $this->getRequest()->getParam('invoice_id');
 
         if ($invoiceId) {
             $invoice = $this->invoiceRepositoryInterface->get($invoiceId);
@@ -65,8 +65,7 @@ class invoicehtml extends \Magento\Framework\App\Action\Action
             throw new \RuntimeException('No invoice_id was provided.');
         }
 
-
-            $this->_coreRegistry->register('current_order', $order);
+        $this->_coreRegistry->register('current_order', $order);
         if (isset($invoice)) {
             $this->_coreRegistry->register('current_invoice', $invoice);
         }

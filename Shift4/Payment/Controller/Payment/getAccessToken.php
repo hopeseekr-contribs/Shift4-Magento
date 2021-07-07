@@ -9,8 +9,8 @@ class getAccessToken extends \Magento\Framework\App\Action\Action
      * @var \Magento\Framework\App\Request\Http
      */
     protected $request;
-    
-    
+
+
     protected $mask = 'XXXXX-XXXX-XXXX-XXXX-XXXXX';
 
     /**
@@ -50,8 +50,6 @@ class getAccessToken extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        
-
         $authToken = $this->getRequest()->getParam('authToken');
         $endPoint = $this->getRequest()->getParam('endPoint');
 
@@ -66,18 +64,19 @@ class getAccessToken extends \Magento\Framework\App\Action\Action
             try {
                 // Get the Access token for the Merchant
                 $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-                $result = $objectManager->create('Shift4\Payment\Model\Api')->getShift4AccessToken($authToken, $endPoint);
+                $result = $objectManager->create('Shift4\Payment\Model\Api')
+                    ->getShift4AccessToken($authToken, $endPoint);
 
                 if ($result['http_code'] == '200') {
-                    
+
                     $response = json_decode($result['data']);
-                    
+
                     $access_token = @$response->result[0]->credential->accessToken;
-                    
+
                     if ($access_token) {
 
                         $this->configWriter->save('payment/shift4/live_access_token', $access_token, 'default');
-                        
+
                         $data['error_message'] = '';
                         $data['accessToken'] =  $this->maskToken($access_token);
                     } else {
@@ -93,11 +92,12 @@ class getAccessToken extends \Magento\Framework\App\Action\Action
                 $data['accessToken'] = '';
             }
         }
-        echo $this->_objectManager->get('Magento\Framework\Json\Helper\Data')->jsonEncode($data);
 
-        exit;
+        return $this->getResponse()->setBody(
+            $this->_objectManager->get('Magento\Framework\Json\Helper\Data')->jsonEncode($data)
+        );
     }
-    
+
     protected function maskToken($token)
     {
         if ($token != '') {

@@ -10,11 +10,17 @@
 
 namespace Shift4\Payment\Controller\Payment;
 
+use Magento\Checkout\Model\Session;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Request\Http;
+use Magento\Framework\Controller\ResultInterface;
+use Psr\Log\LoggerInterface;
+
 class saveGuestData extends \Magento\Framework\App\Action\Action
 {
 
     /**
-     * @var \Magento\Framework\App\Request\Http
+     * @var Http
      */
     protected $request;
 
@@ -24,17 +30,17 @@ class saveGuestData extends \Magento\Framework\App\Action\Action
     protected $paymentHelper;
 
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var Session
      */
     protected $checkoutSession;
 
     /**
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
     protected $logger;
     protected $shift4;
 
-    public function __construct(\Magento\Framework\App\Action\Context $context, \Magento\Framework\App\Request\Http $request, \Magento\Checkout\Model\Session $checkoutSession, \Psr\Log\LoggerInterface $logger)
+    public function __construct(Context $context, Http $request, Session $checkoutSession, LoggerInterface $logger)
     {
         $this->request = $request;
         $this->checkoutSession = $checkoutSession;
@@ -50,15 +56,14 @@ class saveGuestData extends \Magento\Framework\App\Action\Action
      * @param String unique_id
      * @param String invoice_id
      *
-     * @return Json
+     * @return \Magento\Framework\App\ResponseInterface|ResultInterface|void
      */
     public function execute()
     {
         $email = $this->getRequest()->getParam('email');
-        
+
         $this->checkoutSession->setData('guestEmail', $email);
 
-        echo $email;
-        exit;
+        $this->getResponse()->setBody($email);
     }
 }

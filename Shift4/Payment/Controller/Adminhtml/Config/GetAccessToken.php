@@ -2,7 +2,7 @@
 
 namespace Shift4\Payment\Controller\Adminhtml\Config;
 
-class getAccessToken extends \Magento\Backend\App\Action
+class GetAccessToken extends \Magento\Backend\App\Action
 {
     private $configWriter;
     protected $mask = 'XXXXX-XXXX-XXXX-XXXX-XXXXX';
@@ -26,7 +26,7 @@ class getAccessToken extends \Magento\Backend\App\Action
 
     public function execute()
     {
-        
+
         $authToken = $this->getRequest()->getParam('authToken');
         $endPoint = $this->getRequest()->getParam('endPoint');
 
@@ -43,12 +43,12 @@ class getAccessToken extends \Magento\Backend\App\Action
         } else {
             try {
                 $result = $this->api->getShift4AccessToken($authToken, $endPoint);
-                if (@$result['http_code'] == '200') {
-                    
+                if (!empty($result['http_code']) && $result['http_code'] == '200') {
+
                     $response = json_decode($result['data']);
-                    
-                    $access_token = @$response->result[0]->credential->accessToken;
-                    
+
+                    $access_token = $response->result[0]->credential->accessToken;
+
                     if ($access_token) {
                         $this->configWriter->save('payment/shift4/live_access_token', $access_token, 'default');
                         $data['error_message'] = '';
@@ -58,7 +58,9 @@ class getAccessToken extends \Magento\Backend\App\Action
                         $data['accessToken'] = '';
                     }
                 } else {
-                    $data['error_message'] = @$response->result[0]->error->longText ? @$response->result[0]->error->longText : __('Error generating access token');
+                    $data['error_message'] = $response->result[0]->error->longText
+                        ? $response->result[0]->error->longText
+                        : __('Error generating access token');
                     $data['accessToken'] = '';
                 }
             } catch (Exception $ex) {
@@ -66,11 +68,10 @@ class getAccessToken extends \Magento\Backend\App\Action
                 $data['accessToken'] = '';
             }
         }
-        echo $this->jsonHelper->jsonEncode($data);
 
-        exit;
+        return $this->jsonHelper->jsonEncode($data);
     }
-    
+
     protected function maskToken($token)
     {
         if ($token != '') {
