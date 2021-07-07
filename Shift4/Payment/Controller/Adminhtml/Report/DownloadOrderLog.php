@@ -44,10 +44,10 @@ class DownloadOrderLog extends \Magento\Backend\App\Action
 
         $body = '';
         foreach ($transactions as $k => $v) {
-            $body .= 'Transaction date', ''.$v['transaction_date'].PHP_EOL;
-            $body .= 'Method', ''.$v['transaction_mode'].PHP_EOL;
-            $body .= 'Request', ''.stripslashes($v['utg_request']).PHP_EOL;
-            $body .= 'Response', ''.stripslashes($v['utg_response']).PHP_EOL;
+            $body .= 'Transaction date: '.$v['transaction_date'].PHP_EOL;
+            $body .= 'Method: '.$v['transaction_mode'].PHP_EOL;
+            $body .= 'Request: '.stripslashes($v['utg_request']).PHP_EOL;
+            $body .= 'Response: '.stripslashes($v['utg_response']).PHP_EOL;
             $body .= PHP_EOL . PHP_EOL;
         }
 

@@ -71,7 +71,7 @@ class getAccessToken extends \Magento\Framework\App\Action\Action
 
                     $response = json_decode($result['data']);
 
-                    $access_token = @$response->result[0]->credential->accessToken;
+                    $access_token = $response->result[0]->credential->accessToken;
 
                     if ($access_token) {
 
@@ -84,7 +84,7 @@ class getAccessToken extends \Magento\Framework\App\Action\Action
                         $data['accessToken'] = '';
                     }
                 } else {
-                    $data['error_message'] = @$response->result[0]->error->longText;
+                    $data['error_message'] = $response->result[0]->error->longText;
                     $data['accessToken'] = '';
                 }
             } catch (Exception $ex) {
