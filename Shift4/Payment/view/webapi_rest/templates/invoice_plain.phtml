@@ -2,16 +2,16 @@
 $_order = $block->getOrder();
 $_store = $block->getStore();
 $_invoice = $block->getInvoice();
- 
-?><b>Order: #<?php echo $_order->getIncrementId(); ?></b>
+
+?><b>Order: #<?= $_order->getIncrementId(); ?></b>
 <?php if ($block->getInvoiceIncrementId()) { echo '<br>Invoice: #'.$block->getInvoiceIncrementId().'</br>'; } ?><br>
 <br>
-<b><?php echo __('Shipping method'); ?>:</b> <?php echo $_order->getShippingDescription(); ?><br>
+<b><?= __('Shipping method'); ?>:</b> <?= $_order->getShippingDescription(); ?><br>
 <br>
-<b><?php echo __('Billing address'); ?></b><br>
-<?php echo nl2br(preg_replace("/\n\n+/s", "\n", strip_tags($block->getAddressHTML('billing')))); ?>
+<b><?= __('Billing address'); ?></b><br>
+<?= nl2br(preg_replace("/\n\n+/s", "\n", strip_tags($block->getAddressHTML('billing')))); ?>
 <br>
-<b><?php echo __('Shipping address'); ?></b><br>
-<?php echo nl2br(preg_replace("/\n\n+/s", "\n", strip_tags($block->getAddressHTML('shipping')))); ?>
+<b><?= __('Shipping address'); ?></b><br>
+<?= nl2br(preg_replace("/\n\n+/s", "\n", strip_tags($block->getAddressHTML('shipping')))); ?>
 <br>
-<table><thead><tr><td><b><?php echo __('Product'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?php echo __('SKU'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?php echo __('Price'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?php echo __('Quantity'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?php echo __('Subtotal'); ?></b>&nbsp;</td></tr></thead><tbody><?php foreach ($block->getOrderItems() as $item) { echo $block->getItemHtml($item); } ?></tbody><tfoot><?php echo $block->getTotalsHtml(); ?></tfoot></table>
+<table><thead><tr><td><b><?= __('Product'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?= __('SKU'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?= __('Price'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?= __('Quantity'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?= __('Subtotal'); ?></b>&nbsp;</td></tr></thead><tbody><?php foreach ($block->getOrderItems() as $item) { echo $block->getItemHtml($item); } ?></tbody><tfoot><?= $block->getTotalsHtml(); ?></tfoot></table>

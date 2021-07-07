@@ -24,7 +24,7 @@ $totalPages = ceil($totalRecords / $limit);
 </div>
 <div class="reports-content">
     <div class="entry-edit form-inline">
-        <form id="filter_form" action="<?php echo $this->getUrl('*/*/*', ['_current' => true, '_use_rewrite' => true]); ?>" method="get" novalidate="novalidate">
+        <form id="filter_form" action="<?= $this->getUrl('*/*/*', ['_current' => true, '_use_rewrite' => true]); ?>" method="get" novalidate="novalidate">
             <fieldset class="fieldset admin__fieldset " id="sales_report_base_fieldset">
                 <legend class="admin__legend legend">
                     <span><?=__('Filter');?></span>
@@ -57,7 +57,7 @@ $totalPages = ceil($totalRecords / $limit);
                         <input name="to" id="shift4_report_to" value="<?=$request['to'];?>" title="To" type="text" class="admin__control-text required-entry _required input-text" data-mage-init="{&quot;calendar&quot;:{&quot;dateFormat&quot;:&quot;M\/d\/yy&quot;,&quot;maxDate&quot;:&quot;0&quot;,&quot;showsTime&quot;:false,&quot;timeFormat&quot;:null,&quot;buttonImage&quot;:null,&quot;buttonText&quot;:&quot;Select Date&quot;,&quot;disabled&quot;:null}}" />
                     </div>
                 </div>
-            
+
                 <div class="admin__field field field-order_statuses">
                     <label class="label admin__field-label" for="shift4_report_transaction_types"><span><?=__('Request Types');?></span></label>
                     <div class="admin__field-control control">
@@ -71,7 +71,7 @@ $totalPages = ceil($totalRecords / $limit);
                         </select>
                     </div>
                 </div>
-                
+
                 <div class="admin__field field field-order_statuses">
                     <label class="label admin__field-label" for="shift4_report_transaction_statuses"><span><?=__('Transaction Status');?></span></label>
                     <div class="admin__field-control control">
@@ -132,7 +132,7 @@ $totalPages = ceil($totalRecords / $limit);
             </div>
         </div>
     </div>
-    
+
     <div class="admin__data-grid-wrap admin__data-grid-wrap-static">
             <div class="admin__data-grid-pager-wrap" style="margin:1.1rem 0">
             <select name="limit" class="admin__control-select select_limit">
@@ -156,7 +156,7 @@ $totalPages = ceil($totalRecords / $limit);
                     <th class="data-grid-th"><span><?=__('Order Id');?></span></th>
                     <th class="data-grid-th"><span><?=__('Order Status');?></span></th>
                     <th class="data-grid-th"><span><?php
-                    
+
                     switch ($request['filter_type']) {
 
                         case 'order_date':
@@ -193,7 +193,7 @@ $totalPages = ceil($totalRecords / $limit);
                 <?php else: ?>
             <tbody>
                     <?php $amountTotal = $amountProcessedTotal = 0; ?>
-                    <?php $grey = false; ?> 
+                    <?php $grey = false; ?>
                     <?php foreach ($transactions as $key => $subtransactions): ?>
                         <?php
                         $rows = count($subtransactions);
@@ -213,7 +213,7 @@ $totalPages = ceil($totalRecords / $limit);
                             <td<?php if ($rows >1) { echo ' rowspan="'. $rows .'"';} ?> class="<?php if ($grey) { echo 'grey';
                                } else { echo 'white';
                                } ?> date"><?php
-                    
+
 switch ($request['filter_type']) {
 
     case 'order_date':
@@ -242,7 +242,7 @@ switch ($request['filter_type']) {
                                        } ?> card_number"><?=$block->escapeHtml($v['card_type']); ?><br><?=$block->escapeHtml($v['card_number']); ?></td>
                             <td class="<?php if ($grey) { echo 'grey';
                                        } else { echo 'white';
-                                       } ?> amount"><?php echo $this->formatPrice($v['amount']);
+                                       } ?> amount"><?= $this->formatPrice($v['amount']);
 $amountTotal += $v['amount']; ?></td>
                             <td class="<?php if ($grey) { echo 'grey';
                                        } else { echo 'white';
@@ -305,39 +305,39 @@ $amountTotal += $v['amount']; ?></td>
             foreach ($totals as $cardType => $values): ?>
                 <?php if ($cardType == 'totals' || $cardType == 'errors' || $cardType == 'total_records') { continue;} ?>
                 <tr>
-                    <td><?php echo $cardType; ?></td>
-                    <td><?php echo isset($values['authorization']) ? $values['authorization']['count'] : 0; ?></td>
-                    <td><?php echo isset($values['authorization']) ? $this->formatPrice($values['authorization']['total']) : 0; ?></td>
-                    <td><?php echo isset($values['sale']) ? $values['sale']['count'] : 0; ?></td>
-                    <td><?php echo isset($values['sale']) ? $this->formatPrice($values['sale']['total']) : 0; ?></td>
-                    <td><?php echo isset($values['refund']) ? $values['refund']['count'] : 0; ?></td>
-                    <td><?php echo isset($values['refund']) ? $this->formatPrice($values['refund']['total']) : 0; ?></td>
+                    <td><?= $cardType; ?></td>
+                    <td><?= isset($values['authorization']) ? $values['authorization']['count'] : 0; ?></td>
+                    <td><?= isset($values['authorization']) ? $this->formatPrice($values['authorization']['total']) : 0; ?></td>
+                    <td><?= isset($values['sale']) ? $values['sale']['count'] : 0; ?></td>
+                    <td><?= isset($values['sale']) ? $this->formatPrice($values['sale']['total']) : 0; ?></td>
+                    <td><?= isset($values['refund']) ? $values['refund']['count'] : 0; ?></td>
+                    <td><?= isset($values['refund']) ? $this->formatPrice($values['refund']['total']) : 0; ?></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
             <tfoot>
                 <tr>
                     <td><strong><span><?=__('Totals');?>:</span></strong></td>
-                    <td><?php echo isset($totals['totals']['authorization']) ? $totals['totals']['authorization']['count'] : 0; ?></td>
-                    <td><?php echo isset($totals['totals']['authorization']) ? $this->formatPrice($totals['totals']['authorization']['total']) : 0; ?></td>
-                    <td><?php echo isset($totals['totals']['sale']) ? $totals['totals']['sale']['count'] : 0; ?></td>
-                    <td><?php echo isset($totals['totals']['sale']) ? $this->formatPrice($totals['totals']['sale']['total']) : 0; ?></td>
-                    <td><?php echo isset($totals['totals']['refund']) ? $totals['totals']['refund']['count'] : 0; ?></td>
-                    <td><?php echo isset($totals['totals']['refund']) ? $this->formatPrice($totals['totals']['refund']['total']) : 0; ?></td>
+                    <td><?= isset($totals['totals']['authorization']) ? $totals['totals']['authorization']['count'] : 0; ?></td>
+                    <td><?= isset($totals['totals']['authorization']) ? $this->formatPrice($totals['totals']['authorization']['total']) : 0; ?></td>
+                    <td><?= isset($totals['totals']['sale']) ? $totals['totals']['sale']['count'] : 0; ?></td>
+                    <td><?= isset($totals['totals']['sale']) ? $this->formatPrice($totals['totals']['sale']['total']) : 0; ?></td>
+                    <td><?= isset($totals['totals']['refund']) ? $totals['totals']['refund']['count'] : 0; ?></td>
+                    <td><?= isset($totals['totals']['refund']) ? $this->formatPrice($totals['totals']['refund']['total']) : 0; ?></td>
                 </tr>
                 <tr>
                     <td style="color:#ff0000;"><strong><span><?=__('Errors');?>:</span></strong></td>
-                    <td style="color:#ff0000;"><?php echo isset($totals['errors']['authorization']) ? $totals['errors']['authorization']['count'] : 0; ?></td>
-                    <td style="color:#ff0000;"><?php echo isset($totals['errors']['authorization']) ? $this->formatPrice($totals['errors']['authorization']['total']) : 0; ?></td>
-                    <td style="color:#ff0000;"><?php echo isset($totals['errors']['sale']) ? $totals['errors']['sale']['count'] : 0; ?></td>
-                    <td style="color:#ff0000;"><?php echo isset($totals['errors']['sale']) ? $this->formatPrice($totals['errors']['sale']['total']) : 0; ?></td>
-                    <td style="color:#ff0000;"><?php echo isset($totals['errors']['refund']) ? $totals['errors']['refund']['count'] : 0; ?></td>
-                    <td style="color:#ff0000;"><?php echo isset($totals['errors']['refund']) ? $this->formatPrice($totals['errors']['refund']['total']) : 0; ?></td>
+                    <td style="color:#ff0000;"><?= isset($totals['errors']['authorization']) ? $totals['errors']['authorization']['count'] : 0; ?></td>
+                    <td style="color:#ff0000;"><?= isset($totals['errors']['authorization']) ? $this->formatPrice($totals['errors']['authorization']['total']) : 0; ?></td>
+                    <td style="color:#ff0000;"><?= isset($totals['errors']['sale']) ? $totals['errors']['sale']['count'] : 0; ?></td>
+                    <td style="color:#ff0000;"><?= isset($totals['errors']['sale']) ? $this->formatPrice($totals['errors']['sale']['total']) : 0; ?></td>
+                    <td style="color:#ff0000;"><?= isset($totals['errors']['refund']) ? $totals['errors']['refund']['count'] : 0; ?></td>
+                    <td style="color:#ff0000;"><?= isset($totals['errors']['refund']) ? $this->formatPrice($totals['errors']['refund']['total']) : 0; ?></td>
                 </tr>
                 <tr>
                     <td colspan="7" style="text-align:center;"><a href="<?=$this->getLogUrl();?>" title="<?=__('Download All Logs');?>"><?=__('Download All Logs');?></a></td>
                 </tr>
-            </tfoot>            
+            </tfoot>
         </table>
     </div>
 </div>
@@ -366,15 +366,15 @@ require([
             );
         }
     }
-    
+
     jQuery('.select_limit').change(function() {
         setLocation('<?= /* @escapeNotVerified */ $this->getReportUrl() ?>page/<?=$page;?>/limit/'+jQuery(this).val()+'/');
     });
-    
+
     jQuery('.action-next').click(function() {
         setLocation('<?= /* @escapeNotVerified */ $this->getReportUrl() ?>page/<?=$page+1;?>/limit/<?=$limit;?>/');
     });
-    
+
     jQuery('.action-previous').click(function() {
         setLocation('<?= /* @escapeNotVerified */ $this->getReportUrl() ?>page/<?=$page-1;?>/limit/<?=$limit;?>/');
     });
@@ -392,10 +392,10 @@ require([
             }
 
             setLocation('<?= /* @escapeNotVerified */ $this->getReportUrl() ?>page/'+ page +'/limit/<?=$limit;?>/');
-            return false;  
-        }  
+            return false;
+        }
     });
-    
+
 //]]>
     window.filterFormSubmit = filterFormSubmit;
 });

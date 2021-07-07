@@ -20,12 +20,12 @@
             <tbody>
                 <?php foreach ($savedCards as $card): ?>
                     <tr>
-                        <td><?php echo $card['cc_type']; ?></td>
-                        <td>(<?php echo sprintf('xxxx-%s', $card['last_four']); ?>)</td>
-                        <td class="a-center"><span class="nobr"><?php echo $card['cc_exp_month']; ?>/<?php echo $card['cc_exp_year']; ?></span></td>
+                        <td><?= $card['cc_type']; ?></td>
+                        <td>(<?= sprintf('xxxx-%s', $card['last_four']); ?>)</td>
+                        <td class="a-center"><span class="nobr"><?= $card['cc_exp_month']; ?>/<?= $card['cc_exp_year']; ?></span></td>
                         <td class="a-center">
                             <span class="nobr">
-                                <a href="javascript:;" data-card_id="<?php echo $card['saved_card_id']; ?>"  class="delete_card" title="<?php echo __('Delete'); ?>"><!-- ko i18n: 'Delete' --><!-- /ko --></a>
+                                <a href="javascript:;" data-card_id="<?= $card['saved_card_id']; ?>"  class="delete_card" title="<?= __('Delete'); ?>"><!-- ko i18n: 'Delete' --><!-- /ko --></a>
                             </span>
                         </td>
                     </tr>
@@ -42,13 +42,13 @@
 <div id="add-card-area">
     <br />
     <span id="i4go_error"></span>
-    <div id="addcard" class="card-new-container" style="display:none; padding-top:30px;">      
-        <form name="addcardform" id="<?php echo $this->getFormId(); ?>"></form>
+    <div id="addcard" class="card-new-container" style="display:none; padding-top:30px;">
+        <form name="addcardform" id="<?= $this->getFormId(); ?>"></form>
     </div>
-    <button style="float:right" class="button add-new" title="<?php echo __('New card'); ?>" type="button"><span><span><!-- ko i18n: 'New card' --><!-- /ko --></span></span></button>
+    <button style="float:right" class="button add-new" title="<?= __('New card'); ?>" type="button"><span><span><!-- ko i18n: 'New card' --><!-- /ko --></span></span></button>
 </div>
 <div class="i4goFrame-container">
-    <?php echo $this->getChildHtml('i4go_iframe'); ?>
+    <?= $this->getChildHtml('i4go_iframe'); ?>
 </div>
 <script>
     require([
@@ -65,7 +65,7 @@
             $(".add-new").on("click", function (e) {
                 showForm();
             });
-            
+
             $('.delete_card').click(function() {
                 var thistr = $(this).closest('tr');
                 if (confirm(__('Are you sure, want to delete this card?'))) {
@@ -87,10 +87,10 @@
                             }
                         } else {
                             alert(response);
-                        }    
+                        }
                     });
                 }
             });
         });
     });
-</script> 
+</script>
