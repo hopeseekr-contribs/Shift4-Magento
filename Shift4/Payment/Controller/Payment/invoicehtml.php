@@ -57,12 +57,12 @@ class invoicehtml extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $invoiceId = isset($_GET['invoice_id']) ? (int) $_GET['invoice_id'] : false;
-        
+
         if ($invoiceId) {
             $invoice = $this->invoiceRepositoryInterface->get($invoiceId);
             $order = $invoice->getOrder();
         } else {
-            die('no invoice id');
+            throw new \RuntimeException('No invoice_id was provided.');
         }
 
 

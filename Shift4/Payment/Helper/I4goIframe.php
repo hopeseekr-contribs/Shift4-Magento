@@ -6,6 +6,8 @@ use Magento\Framework\App\Config\ScopeConfigInterface as ScopeConfig;
 class I4goIframe
 {
     
+    public \Shift4\Payment\Model\Api $shift4api;
+    public $api;
     protected $scopeConfig;
     
     public function __construct(
@@ -27,7 +29,7 @@ class I4goIframe
         $i4go_countrycode = $i4go['i4go_countrycode'];
         $i4go_i4m_url = $i4go['i4go_i4m_url'];
         
-        $I4goIframeJsCode = '
+        return '
 		$("#'.$block.'").i4goTrueToken({
 			server: "'. $i4go_server .'",
 			accessBlock: "' . $i4go_accessblock .'",
@@ -77,7 +79,5 @@ class I4goIframe
 			cssRules: ["body{font-family:\'Trebuchet MS\', Arial, Helvetica, sans-serif;background-color:\'#aaa\'; borderLeft:\'5px solid #ccc\'}label{color:#636363;font-size: 13px;font-weight: 600;}.form-control{max-width: 100%; width:273px;height: 30px;padding:0 8px; margin-bottom: 10px; background: #fff none repeat scroll 0 0;border: 1px solid silver; border-radius: 2px; font-size: 15px;}#i4go_expirationMonth {width: 125px;}#i4go_expirationYear {width: 105px;}.addcardform {height:auto;}#i4go_cvv2Code {width: 105px;}#i4go_cardNumber {width: 255px;}.btn-secure {background: #1979c3; border: 0 none;color: #ffffff;display: inline-block;font-family:\'RalewayHelvetica Neue\',Verdana,Arial,sans-serif;font-size: 13px;font-weight: normal;line-height: 19px;padding: 7px 15px;text-align: center;text-transform: uppercase;vertical-align: middle;white-space: nowrap;}.btn-secure:hover {background-color: #006bb4; color: #ffffff;outline: medium none; cursor: pointer;}"]
 		});
 		';
-        
-        return $I4goIframeJsCode;
     }
 }

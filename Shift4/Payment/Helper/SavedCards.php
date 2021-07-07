@@ -8,7 +8,6 @@ class SavedCards
     
     protected $scopeConfig;
     protected $savedCardsDB;
-    private $changeQuoteControl;
     
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -22,8 +21,9 @@ class SavedCards
     {
         
         $savedCardsData = [];
+        $scopeConfigGetValue = $this->scopeConfig->getValue('payment/shift4/enable_saved_cards', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         
-        if ($this->scopeConfig->getValue('payment/shift4/enable_saved_cards', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
+        if ($scopeConfigGetValue) {
             
             $default = 'new';
             $defaultType = '';
@@ -70,7 +70,8 @@ class SavedCards
                 
 				
                 $savedCardsNew = '';
-                if ($this->scopeConfig->getValue('payment/shift4/i4go_template', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 'choose') { 
+                $scopeConfigGetValue = $this->scopeConfig->getValue('payment/shift4/i4go_template', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+                if ($scopeConfigGetValue == 'choose') { 
 					$savedCardsNew .= '<optgroup label="Wallets"><option value="wallets">Google pay or Apple pay</option></optgroup>';
 				}
                 $savedCardsNew .= '<optgroup label="'. __('New card') .'"><option value="new"';

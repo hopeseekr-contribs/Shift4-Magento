@@ -27,18 +27,16 @@ class PaymentInfo
                 }
                 $authorizationCode = false;
                 $amount = 0;
-                $utgResponse = json_decode($card['utg_response']);
+                $utgResponse = \json_decode($card['utg_response']);
                 if (json_last_error() == JSON_ERROR_NONE) {
                     $amount = (float) @$utgResponse->result[0]->amount->total;
                     $authorizationCode = (string) @$utgResponse->result[0]->transaction->authorizationCode;
                 }
-
-                $transactionType = (isset($card['transaction_mode']) ? $card['transaction_mode'] : '') ;
-                $t = strtotime($card['transaction_date']);
+                $t = \Safe\strtotime($card['transaction_date']);
                 $date = date('d/m/Y H:i:s', $t);
 
                 $returnHtml .= '<tr><th colspan="2"><strong> '. __('Transaction') .' #'
-                    . $cardCount . '</strong>'.(@$date ? '&nbsp;&nbsp;'.$date :'').'</th></tr>
+                    . $cardCount . '</strong>'.(@$date !== '' ? '&nbsp;&nbsp;'.$date :'').'</th></tr>
                     <tr>
                         <th scope="row"><strong>'. __('Card Type:') .'</strong></th>
                         <td><span class="s4card_type">' . (isset($card['card_type']) ? $card['card_type'] : '') .
@@ -74,7 +72,6 @@ class PaymentInfo
             }
             $returnHtml .= '</table>';
         }
-        $returnHtml .= '</dl>';
-        return $returnHtml;
+        return $returnHtml . '</dl>';
     }
 }
