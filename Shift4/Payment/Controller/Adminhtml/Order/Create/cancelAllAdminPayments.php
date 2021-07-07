@@ -9,7 +9,7 @@ class cancelAllAdminPayments extends \Magento\Backend\App\Action
 {
 
     protected $shift4;
-    
+
     public function __construct(\Shift4\Payment\Model\Shift4 $shift4, \Magento\Backend\App\Action\Context $context)
     {
         $this->shift4 = $shift4;
@@ -17,8 +17,8 @@ class cancelAllAdminPayments extends \Magento\Backend\App\Action
             $context
         );
     }
-    
-    
+
+
     /**
      * Cancel order create
      *
@@ -27,6 +27,5 @@ class cancelAllAdminPayments extends \Magento\Backend\App\Action
     public function execute()
     {
         echo $this->shift4->cancelAllPartialPayments();
-        die();
     }
 }

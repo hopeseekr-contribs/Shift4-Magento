@@ -26,19 +26,19 @@ class Savecard extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        
+
         $i4goTrueToken = $this->getRequest()->getParam('i4goTrueToken');
         $i4goExpYear = $this->getRequest()->getParam('i4goExpYear');
         $i4goType = $this->getRequest()->getParam('i4goType');
         $i4goExpMonth = $this->getRequest()->getParam('i4goExpMonth');
-        
+
         $customerId = $this->customerSession->getCustomer()->getId();
-        
+
         if (!$customerId) {
             http_response_code(404);
-            die();
+            exit;
         }
-        
+
         echo $this->shift4->saveCard($customerId, $i4goTrueToken, $i4goExpYear, $i4goType, $i4goExpMonth);
         exit;
     }

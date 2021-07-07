@@ -26,13 +26,13 @@ class Deletecard extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        
+
         $savedCardId = $this->getRequest()->getParam('saved_card_id');
-        
+
         $customerId = $this->customerSession->getCustomer()->getId();
-        
+
         if (!$customerId) {
-            die('error');
+            throw new \InvalidArgumentException('No customerId was given.');
         }
 
         $deletecard = $this->shift4->deleteCard($customerId, $savedCardId);
