@@ -571,12 +571,21 @@ class Api
             }
         }
 
-        if ($requestBody['card']['token']['value']) {
+        if (
+            isset($requestBody['card'])
+            && isset($requestBody['card']['token'])
+            && isset($requestBody['card']['token']['value'])
+            && $requestBody['card']['token']['value']
+        ) {
             $cardNumber = 'XXXXXXXXXXXX' . substr($requestBody['card']['token']['value'], 0, 4);
         }
 
         $amount = 0;
-        if ($requestBody['amount']['total']) {
+        if (
+            isset($requestBody['amount']['total'])
+            && $requestBody['amount']
+            && $requestBody['amount']['total']
+        ) {
             $amount = (float) $requestBody['amount']['total'];
         }
 
@@ -736,7 +745,7 @@ class Api
         } else {
             $responseData = json_decode($response);
             if (json_last_error() == JSON_ERROR_NONE) {
-                $responseCode = $responseData->result[0]->transaction->responseCode;
+                $responseCode = $responseData->result[0]->transaction->responseCode ?? null;
                 if ($responseCode && $responseCode != 'P') {
                     $responseError = $this->checkResponseForErrors($responseCode);
                     if ($responseError) {
@@ -847,13 +856,13 @@ class Api
             'i4go_countrycode' => '',
             'i4go_i4m_url' => '',
         ];
-		
+
         $i4goData = [
             'fuseaction' => 'account.preauthorizeClient',
             'i4go_clientip' => $i4go_clientIp,
             'i4go_accesstoken' => $this->accessToken
         ];
-		
+
 		if ($magentoOrderId != 0) {
 			$i4goData['i4go_basket'] = json_encode([
                 'OrderDetails' => [
