@@ -102,14 +102,27 @@ class TransactionLog extends \Magento\Framework\Model\AbstractModel
         if ($utgResponse != '') {
             $responseJson = json_decode($utgResponse);
             if (json_last_error() == JSON_ERROR_NONE) {
-                if ($responseJson->result[0]->card->number) {
-                    $cardNumber = $responseJson->result[0]->card->number;
-                }
-                if ($responseJson->result[0]->card->type) {
-                    $cardType = $responseJson->result[0]->card->type;
+                if (property_exists($responseJson->result[0], 'card')) {
+                    if (
+                        property_exists($responseJson->result[0]->card, 'number')
+                        && $responseJson->result[0]->card->number
+                    ) {
+                        $cardNumber = $responseJson->result[0]->card->number;
+                    }
+                    if (
+                        property_exists($responseJson->result[0]->card, 'type')
+                        && $responseJson->result[0]->card->type
+                    ) {
+                        $cardType = $responseJson->result[0]->card->type;
+                    }
                 }
             } else {
-                if (!($data['card_type']) || $data['card_type'] == '' || !isset($data['card_number']) || $data['card_number'] == '') {
+                if (
+                    !($data['card_type'])
+                    || $data['card_type'] == ''
+                    || !isset($data['card_number'])
+                    || $data['card_number'] == ''
+                ) {
                     $data['card_number'] = $data['card_type'] = '';
                 }
                 $cardNumber = $data['card_number'];
@@ -118,21 +131,21 @@ class TransactionLog extends \Magento\Framework\Model\AbstractModel
         }
 
         $insertData = [
-            'amount' => $amount,
-            'card_type' => $cardType,
-            'card_number' => $cardNumber,
-            'order_id' => $orderId,
-            'invoice_id' => $invoiceId,
-            'shift4_invoice' => $shift4Invoice,
-            'customer_id' => $customerId,
+            'amount'           => $amount,
+            'card_type'        => $cardType,
+            'card_number'      => $cardNumber,
+            'order_id'         => $orderId,
+            'invoice_id'       => $invoiceId,
+            'shift4_invoice'   => $shift4Invoice,
+            'customer_id'      => $customerId,
             'transaction_mode' => $data['transaction_mode'],
-            'timed_out' => $timedOut,
-            'voided' => $voided,
-            'error' => $error,
-            'http_code' => $httpCode,
-            'utg_request' => $data['utg_request'],
-            'request_header' => json_encode($requestHeader),
-            'utg_response' => $utgResponse,
+            'timed_out'        => $timedOut,
+            'voided'           => $voided,
+            'error'            => $error,
+            'http_code'        => $httpCode,
+            'utg_request'      => $data['utg_request'],
+            'request_header'   => json_encode($requestHeader),
+            'utg_response'     => $utgResponse,
         ];
 
         return $insertData;
