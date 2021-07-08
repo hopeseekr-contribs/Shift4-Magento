@@ -850,7 +850,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 
         $remainingAmount = $amount - $data->result[0]->amount->total;
 
-        if (!property_exists($utgResponse->result[0]->transaction, 'authorizationCode')) {
+        if (!property_exists($data->result[0]->transaction, 'authorizationCode')) {
             $data->result[0]->transaction->authorizationCode = null;
         }
 
