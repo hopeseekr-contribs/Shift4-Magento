@@ -113,7 +113,11 @@ class ConfigProvider implements ConfigProviderInterface
                     'i4go_accessblock' => $i4go_accessblock,
                     'i4go_countrycode' => $i4go_countrycode,
                     'i4go_server' => $i4go_server,
-                    'support_swipe' => ($this->scopeConfig->getValue('payment/shift4/support_swipe', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) ? true : false),
+                    'support_swipe' => (
+                        $this->scopeConfig->getValue(
+                            'payment/shift4/support_swipe',
+                            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                        ) ? true : false),
                     'submit_label' => $this->scopeConfig->getValue('payment/shift4/submit_label', \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
                     'disable_expiration_date_for_gc' => ($this->scopeConfig->getValue('payment/shift4/disable_expiration_date_for_gc', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) ? true : false),
                     'disable_cvv_for_gc' => ($this->scopeConfig->getValue('payment/shift4/disable_cvv_for_gc', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) ? true : false),

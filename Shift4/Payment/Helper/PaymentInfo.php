@@ -33,7 +33,9 @@ class PaymentInfo
                 $utgResponse = \json_decode($card['utg_response']);
                 if (json_last_error() == JSON_ERROR_NONE) {
                     $amount = (float) $utgResponse->result[0]->amount->total;
-                    $authorizationCode = (string) $utgResponse->result[0]->transaction->authorizationCode;
+                    if (property_exists($utgResponse->result[0]->transaction, 'authorizationCode')) {
+                        $authorizationCode = (string)$utgResponse->result[0]->transaction->authorizationCode;
+                    }
                 }
                 $t = \Safe\strtotime($card['transaction_date']);
                 $date = date('d/m/Y H:i:s', $t);

@@ -558,7 +558,9 @@ class Api
             'invoice' => '',
         ];
 
-        if ($requestBody['transaction']['invoice']) {
+        if (isset($requestBody['transaction'])
+            && isset ($requestBody['transaction']['invoice'])
+            && $requestBody['transaction']['invoice']) {
             $return['invoice'] = $requestBody['transaction']['invoice'];
         } else {
             foreach ($headers as $value) {

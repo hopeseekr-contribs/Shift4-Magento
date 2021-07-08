@@ -291,9 +291,15 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                                 'preauthInvoiceId' => $transaction['preauthInvoiceId'],
                             ];
                         }
-                        $amountCaptured += $transaction['amountCaptured'];
-                        $taxCaptured += $transaction['taxCaptured'];
-                        $amountRemaining += $transaction['preauthProcessedAmount'];
+                        if (isset($transaction['amountCaptured'])) {
+                            $amountCaptured += $transaction['amountCaptured'];
+                        }
+                        if (isset($transaction['taxCaptured'])) {
+                            $taxCaptured += $transaction['taxCaptured'];
+                        }
+                        if (isset($transaction['preauthProcessedAmount'])) {
+                            $amountRemaining += $transaction['preauthProcessedAmount'];
+                        }
                         $lastTransaction = $transaction;
                     }
                 }
@@ -843,6 +849,10 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
         }
 
         $remainingAmount = $amount - $data->result[0]->amount->total;
+
+        if (!property_exists($utgResponse->result[0]->transaction, 'authorizationCode')) {
+            $data->result[0]->transaction->authorizationCode = null;
+        }
 
         $partialAuthData = [
             'requestedAmount' => isset($amount) ? $amount : null,
