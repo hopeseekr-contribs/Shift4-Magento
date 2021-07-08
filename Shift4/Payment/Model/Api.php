@@ -836,7 +836,7 @@ class Api
      *
      * @return array
      */
-    public function getAccessBlock($amount = 0, $magentoOrderId)
+     public function getAccessBlock($amount = 0, $magentoOrderId = 0)
     {
         $i4go_clientIp = $_SERVER['REMOTE_ADDR'];
 
@@ -847,19 +847,22 @@ class Api
             'i4go_countrycode' => '',
             'i4go_i4m_url' => '',
         ];
-
+		
         $i4goData = [
             'fuseaction' => 'account.preauthorizeClient',
             'i4go_clientip' => $i4go_clientIp,
-            'i4go_accesstoken' => $this->accessToken,
-            'i4go_basket' => json_encode([
+            'i4go_accesstoken' => $this->accessToken
+        ];
+		
+		if ($magentoOrderId != 0) {
+			$i4goData['i4go_basket'] = json_encode([
                 'OrderDetails' => [
                     'OrderNumber' => $magentoOrderId,
                     'Amount' => $amount,
                     'CurrencyCode' => 'USD'
                 ]
-            ])
-        ];
+            ]);
+		}
 
         $i4goData = str_replace('+', '%20', http_build_query($i4goData, '', '&'));
 
