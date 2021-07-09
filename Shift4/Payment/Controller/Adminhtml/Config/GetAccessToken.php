@@ -69,7 +69,7 @@ class GetAccessToken extends \Magento\Backend\App\Action
             }
         }
 
-        return $this->jsonHelper->jsonEncode($data);
+        return $this->getResponse()->setBody($this->jsonHelper->jsonEncode($data));
     }
 
     protected function maskToken($token)
