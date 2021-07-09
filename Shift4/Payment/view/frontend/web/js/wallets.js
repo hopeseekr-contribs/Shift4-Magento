@@ -1008,6 +1008,7 @@ function prefetchGooglePaymentData() {
 function onGooglePaymentButtonClicked() {
 
 	jQuery('#new_card').show();
+	jQuery('#i4go_form').show();
 	jQuery('#shift4_place_order .s4placeOrderBlock').hide();
 
 	const paymentDataRequest = getGooglePaymentDataRequest();
