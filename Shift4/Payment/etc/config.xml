@@ -32,14 +32,6 @@
                 <html_invoice>1</html_invoice>
                 <sort_order>1</sort_order>
             </shift4>
-			<shift4_quick>
-				<model>Shift4\Payment\Model\Shift4Quick</model> 
-				<title>Quick Pay Methods (Shift4)</title>
-				<payment_action>authorize</payment_action>
-				<active>0</active>
-				<currency>USD</currency>
-				<sort_order>2</sort_order>
-			</shift4_quick>
         </payment>
 		<dev>
 			<js>

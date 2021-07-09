@@ -8,9 +8,9 @@ define([
 		'mage/translate',
 		'Magento_Customer/js/model/customer',
 		'Magento_Checkout/js/model/quote',
-		'Gpay',		
-		'wallets_js',	
-		'i4goTrueToken',		
+		'Gpay',
+		'wallets_js',
+		'i4goTrueToken',
     ],
     function ($, Component, placeOrderAction, additionalValidators, redirectOnSuccessAction, url, __, customer, quote) {
         'use strict';
@@ -35,7 +35,7 @@ define([
             getCode: function() {
                 return 'shift4';
             },
-			
+
 			getData: function () {
 				var self = this;
                 return {
@@ -54,7 +54,7 @@ define([
             isActive: function() {
                 return true;
             },
-			
+
 			initialize: function() {
 				this._super();
 				var self = this;
@@ -84,7 +84,7 @@ define([
 						self.cancelAllPayments(null);
 					};
 			},
-			
+
 			loadi4go: function() {
 				var self = this;
 				if ($('#i4go_form') && $('#i4go_form').length > 0) {
@@ -160,6 +160,18 @@ define([
 						self.custoMessages(true);
 					}
 					
+					if (!window.checkoutConfig.payment.shift4_custom_data.enableGPay) {
+						$('.google-pay-button').remove();
+					}
+					
+					if (!window.checkoutConfig.payment.shift4_custom_data.enableAPay) {
+						$('.apple-pay-button').remove();
+					}
+					
+					if (!window.checkoutConfig.payment.shift4_custom_data.enableGPay && !window.checkoutConfig.payment.shift4_custom_data.enableAPay) {
+						$('.quickpaymethods').hide();
+					}
+					
 					//save cards
 					if (window.checkoutConfig.payment.shift4_custom_data.saved_cards_enabled) {
 						
@@ -175,16 +187,10 @@ define([
 							if (window.checkoutConfig.payment.shift4_custom_data.default_card != 'new') {
 								$('#shift4_place_order .s4placeOrderBlock').show();
 								$('#new_card').hide();
-								$('#ap_gp_buttons').hide();
 								self.i4goTrueToken = window.checkoutConfig.payment.shift4_custom_data.default_card;
-							} else if (window.checkoutConfig.payment.shift4_custom_data.default_card == 'wallets') {
-								$('#shift4_place_order .s4placeOrderBlock').hide();
-								$('#ap_gp_buttons').show();
-								$('#new_card').hide();
 							} else {
 								$('#shift4_place_order .s4placeOrderBlock').hide();
 								$('#new_card').show();
-								$('#ap_gp_buttons').hide();
 							}
 						} else {
 							$('#shift4_place_order').hide();
@@ -194,16 +200,13 @@ define([
 						$('#my_saved_cards').change(function() {
 							if ($(this).val() == 'new') {
 								$('#shift4_place_order .s4placeOrderBlock').hide();
-								$('#ap_gp_buttons').hide();
 								$('#new_card').show();
 							} else if ($(this).val() == 'wallets') {
-								$('#ap_gp_buttons').show();
 								$('#shift4_place_order .s4placeOrderBlock').hide();
 								$('#new_card').hide();
 							} else {
 								self.i4goTrueToken = $(this).val();
 								$('#shift4_place_order .s4placeOrderBlock').show();
-								$('#ap_gp_buttons').hide();
 								$('#new_card').hide();
 							}
 						});

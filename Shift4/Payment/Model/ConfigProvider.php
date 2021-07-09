@@ -78,32 +78,25 @@ class ConfigProvider implements ConfigProviderInterface
 
         $customerId = (int) $this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId();
 
-        if ($this->customerSession->isLoggedIn() && $this->scopeConfig->getValue('payment/shift4/enable_saved_cards', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
+        if ($this->customerSession->isLoggedIn() && $this->scopeConfig->getValue(
+			'payment/shift4/enable_saved_cards',
+			\Magento\Store\Model\ScopeInterface::SCOPE_STORE
+			)) {
             $saved_cards_enabled = 1;
-            $savedCardsData = $this->savedCardsHelper->getSavedCardsHTML($this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId());
+            $savedCardsData = $this->savedCardsHelper->getSavedCardsHTML(
+				$this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId()
+			);
         }
 
-		$quickPayEnable = $this->scopeConfig->getValue('payment/shift4_quick/active', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-		$quickPayTemplate = 'quick';
 
-		if ($quickPayEnable) {
-
-			$enableGPay = $this->scopeConfig->getValue('payment/shift4_quick/enable_google_pay', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-			$enableAPay = $this->scopeConfig->getValue('payment/shift4_quick/enable_apple_pay', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-
-			if (!$enableGPay && !$enableAPay) {
-				$quickPayEnable = 0;
-			}
-			else {
-				if (!$enableGPay) {
-					$quickPayTemplate = 'quick_ngp';
-				}
-
-				if (!$enableAPay) {
-					$quickPayTemplate = 'quick_nap';
-				}
-			}
-		}
+		$enableGPay = $this->scopeConfig->getValue(
+			'payment/shift4/enable_google_pay',
+			\Magento\Store\Model\ScopeInterface::SCOPE_STORE
+		);
+		$enableAPay = $this->scopeConfig->getValue(
+			'payment/shift4_quick/enable_apple_pay',
+			\Magento\Store\Model\ScopeInterface::SCOPE_STORE
+		);
 
 		return [
             'guest_user_data' => $guestUserData,
@@ -118,9 +111,17 @@ class ConfigProvider implements ConfigProviderInterface
                             'payment/shift4/support_swipe',
                             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                         ) ? true : false),
-                    'submit_label' => $this->scopeConfig->getValue('payment/shift4/submit_label', \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
-                    'disable_expiration_date_for_gc' => ($this->scopeConfig->getValue('payment/shift4/disable_expiration_date_for_gc', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) ? true : false),
-                    'disable_cvv_for_gc' => ($this->scopeConfig->getValue('payment/shift4/disable_cvv_for_gc', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) ? true : false),
+                    'submit_label' => $this->scopeConfig->getValue(
+						'payment/shift4/submit_label', \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+					),
+                    'disable_expiration_date_for_gc' => ($this->scopeConfig->getValue(
+						'payment/shift4/disable_expiration_date_for_gc',
+						\Magento\Store\Model\ScopeInterface::SCOPE_STORE) ? true : false
+					),
+                    'disable_cvv_for_gc' => ($this->scopeConfig->getValue(
+						'payment/shift4/disable_cvv_for_gc',
+						\Magento\Store\Model\ScopeInterface::SCOPE_STORE) ? true : false
+					),
                     'partial_payments' => $authorizedCardsData,
                     'saved_cards' => $savedCardsData['html'],
                     'saved_cards_enabled' => $saved_cards_enabled,
@@ -129,8 +130,8 @@ class ConfigProvider implements ConfigProviderInterface
                     'default_card' => $savedCardsData['default'],
                     'processedAmountHsaFsa' => $processedAmountHsaFsa,
                     'total_amount' => $totals,
-                    'quickPayTemplate' => $quickPayTemplate,
-                    'quickPayEnable' => $quickPayEnable
+					'enableGPay' => $enableGPay,
+					'enableAPay' => $enableAPay
                 ]
             ]
         ];

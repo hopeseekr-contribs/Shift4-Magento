@@ -1006,11 +1006,16 @@ function prefetchGooglePaymentData() {
  * Show Google Pay payment sheet when Google Pay payment button is clicked
  */
 function onGooglePaymentButtonClicked() {
+
+	jQuery('#new_card').show();
+	jQuery('#shift4_place_order .s4placeOrderBlock').hide();
+
 	const paymentDataRequest = getGooglePaymentDataRequest();
 	paymentDataRequest.transactionInfo = getGoogleTransactionInfo();
 
 	const paymentsClient = getGooglePaymentsClient();
 	paymentsClient.loadPaymentData(paymentDataRequest);
+
 }
 
 /**
