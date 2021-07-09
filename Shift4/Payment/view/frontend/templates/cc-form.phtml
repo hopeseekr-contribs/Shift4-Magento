@@ -1,10 +1,5 @@
 <?php
-
-$totals = $this->checkoutSession->getQuote()->getGrandTotal();
-$this->checkoutSession->getQuote()->reserveOrderId()->save();
-
-
-$i4go = $block->getAccessBlock($totals, $this->checkoutSession->getQuote()->getReservedOrderId());
+$i4go = $block->getAccessBlock();
 $savedCards = $block->getSavedCards();
 
 $i4go_server = $i4go['i4go_server'];
