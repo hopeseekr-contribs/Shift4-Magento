@@ -135,7 +135,12 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
 
                 $utgResponse = json_decode($v['utg_response']);
                 if (json_last_error() == JSON_ERROR_NONE) {
-                    $amountProcessed = (float) $utgResponse->result[0]->amount->total;
+					
+					if (!property_exists($utgResponse->result[0], 'amount')) {
+						$amountProcessed = 0;
+					} else {
+						$amountProcessed = (float) $utgResponse->result[0]->amount->total;
+					}
                 }
 
                 $type = 'other';
@@ -150,11 +155,60 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
                 }
 
                 if ($v['error'] == '' && $v['voided'] == 0) {
+					if (!isset($totals[$v['card_type']])) {
+						$totals[$v['card_type']] = [];
+					}
+					
+					if (!isset($totals[$v['card_type']][$type])) {
+						$totals[$v['card_type']][$type] = [];
+					}
+					
+					if (!isset($totals[$v['card_type']][$type]['total'])) {
+						$totals[$v['card_type']][$type]['total'] = 0;
+					}
+					
+					if (!isset($totals[$v['card_type']][$type]['count'])) {
+						$totals[$v['card_type']][$type]['count'] = 0;
+					}
+					
+					if (!isset($totals['totals'])) {
+						$totals['totals'] = [];
+					}
+					
+					if (!isset($totals['totals'][$type])) {
+						$totals['totals'][$type] = [];
+					}
+					
+					if (!isset($totals['totals'][$type]['total'])) {
+						$totals['totals'][$type]['total'] = 0;
+					}
+					
+					if (!isset($totals['totals'][$type]['count'])) {
+						$totals['totals'][$type]['count'] = 0;
+					}
+					
                     $totals[$v['card_type']][$type]['total'] = (float) $totals[$v['card_type']][$type]['total'] + $amountProcessed;
                     $totals[$v['card_type']][$type]['count'] = (int) $totals[$v['card_type']][$type]['count'] + 1;
                     $totals['totals'][$type]['total'] = (float) $totals['totals'][$type]['total'] + $amountProcessed;
                     $totals['totals'][$type]['count'] = (int) $totals['totals'][$type]['count'] + 1;
                 } elseif ($v['error'] != '' && $v['voided'] == 0) {
+					
+					if (!isset($totals['errors'])) {
+						$totals['errors'] = [];
+					}
+					
+					if (!isset($totals['errors'][$type])) {
+						$totals['errors'][$type] = [];
+					}
+					
+					if (!isset($totals['errors'][$type]['total'])) {
+						$totals['errors'][$type]['total'] = 0;
+					}
+					
+					if (!isset($totals['errors'][$type]['count'])) {
+						$totals['errors'][$type]['count'] = 0;
+					}
+
                     $totals['errors'][$type]['total'] = (float) $totals['errors'][$type]['total'] + $v['amount'];
                     $totals['errors'][$type]['count'] = (int) $totals['errors'][$type]['count'] + 1;
                 }
