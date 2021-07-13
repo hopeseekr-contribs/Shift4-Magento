@@ -10,7 +10,9 @@ $_invoice = $block->getInvoice();
 <td style="width: 50%;"><b><?= __('Date added'); ?>:</b> <?= date('m/d/Y'); ?><br>
 <b><?= __('Order Id'); ?>:</b> <?= $_order->getIncrementId(); ?><br>
 <b><?= __('Payment method'); ?>:</b> <?= $_order->getPayment()->getMethodInstance()->getCode(); ?><br>
+<?php if ($block->getAddress('shipping') && !empty($block->getAddress('shipping'))): ?>
 <b><?= __('Shipping method'); ?>:</b> <?= $_order->getShippingDescription(); ?><br>
+<?php endif; ?>
 </tr></tbody></table><table class="table table-bordered"><thead><tr><td style="width:50%;"><b><?= __('Billing address'); ?></b></td><td style="width:50%;"><b><?= __('Shipping address'); ?></b></td>
 </tr></thead><tbody><tr><td><address><?= $block->getAddressHtml('billing'); ?></address></td><td><address><?= $block->getAddressHtml('shipping'); ?></address></td></tr></tbody>
 </table><table class="table table-bordered"><thead><tr><td><b><?= __('Product'); ?></b></td><td><b><?= __('SKU'); ?></b></td><td class="text-right"><b><?= __('Price'); ?></b></td><td class="text-right"><b><?= __('Qty'); ?></b></td><td class="text-right"><b><?= __('Subtotal'); ?></b></td></tr></thead><tbody><?php foreach ($block->getOrderItems() as $item) { echo $block->getItemHtml($item); } ?></tbody><tfoot><?= $block->getTotalsHtml(); ?></tfoot></table>

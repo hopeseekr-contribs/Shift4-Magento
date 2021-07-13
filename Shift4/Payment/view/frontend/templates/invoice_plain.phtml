@@ -10,8 +10,10 @@ $_invoice = $block->getInvoice();
 <br>
 <b><?= __('Billing address'); ?></b><br>
 <?= nl2br(preg_replace("/\n\n+/s", "\n", strip_tags($block->getAddressHTML('billing')))); ?>
+<?php if ($block->getAddress('shipping') && !empty($block->getAddress('shipping'))): ?>
 <br>
 <b><?= __('Shipping address'); ?></b><br>
 <?= nl2br(preg_replace("/\n\n+/s", "\n", strip_tags($block->getAddressHTML('shipping')))); ?>
+<?php endif; ?>
 <br>
-<table><thead><tr><td><b><?= __('Product'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?= __('SKU'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?= __('Price'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?= __('Qty'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?= __('Subtotal'); ?></b>&nbsp;</td></tr></thead><tbody><?php foreach ($block->getOrderItems() as $item) { echo $block->getItemHtml($item); } ?></tbody><tfoot><?= $block->getTotalsHtml(); ?></tfoot></table>
+<table><thead><tr><td><b><?= __('Product'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?= __('SKU'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?= __('Price'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?= __('Quantity'); ?></b>&nbsp;</td><td>_</td><td>&nbsp;<b><?= __('Subtotal'); ?></b>&nbsp;</td></tr></thead><tbody><?php foreach ($block->getOrderItems() as $item) { echo $block->getItemHtml($item); } ?></tbody><tfoot><?= $block->getTotalsHtml(); ?></tfoot></table>
