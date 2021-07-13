@@ -1,5 +1,4 @@
 <?php
-
 $i4go = $block->getAccessBlock();
 $savedCards = $block->getSavedCards();
 
@@ -16,8 +15,9 @@ $hsaFsa = $block->getHsaFsa();
 
     require([
         'jquery',
-        'https://i4m.i4go.com/js/jquery.i4goTrueToken.js',
-        'https://i4m.shift4test.com/js/wallets.js',
+		'Gpay',
+		'wallets_js',
+		'i4goTrueToken',
         'mage/url',
     ], function ($, i4go, url) {
 
@@ -63,7 +63,7 @@ $hsaFsa = $block->getHsaFsa();
         window.cancelAllPayments = function(e) {
             var self = this;
             if (confirm("<?= /* @escapeNotVerified */ __('Are you sure you want to cancel your payment? Click OK to cancel your payment and release the amount on hold. Click Cancel to enter another credit card and continue with your payment.') ?>")) {
-                var canelUrl = '<?php echo $block->getCancelUrl(); ?>';
+                var canelUrl = '<?= $block->getCancelUrl(); ?>';
                 $.ajax({
                     method: "POST",
                     url: canelUrl,
@@ -96,9 +96,9 @@ $hsaFsa = $block->getHsaFsa();
         $("#i4go_form").i4goTrueToken({
             server: '<?=$i4go_server?>',
             accessBlock: '<?=$i4go_accessblock?>',
-            language: '<?=$i4go_countrycode?>',
+            language: 'en',
             self: document.location,
-            template: "plain",
+            template: "shift4shop",
             i4goInfo: {visible: true},
             encryptedOnlySwipe: <?=$i4go['support_swipe']?>,
             gcDisablesExpiration: <?=$i4go['disable_expiration_date_for_gc']?>,
@@ -144,7 +144,7 @@ $hsaFsa = $block->getHsaFsa();
                 {type: "JC", name: "JCB"},
                 {type: "GC", name: "Gift Card"}
             ],
-            cssRules: ["body{font-family:'Trebuchet MS', Arial, Helvetica, sans-serif;background-color: '#aaa'; borderLeft: '5px solid #ccc'}label{color:#636363;font-size: 13px;font-weight: 600;}.form-control{max-width: 100%; width: 273px;height: 30px;padding: 0 8px; margin-bottom: 10px; background: #fff none repeat scroll 0 0;border: 1px solid silver; border-radius: 2px; font-size: 15px;}#i4go_expirationMonth {width: 125px;}#i4go_expirationYear {width: 105px;}.addcardform {height:auto;}#i4go_cvv2Code {width: 105px;}#i4go_cardNumber {width: 255px;}.btn-secure {background: #1979c3; border: 0 none;color: #ffffff;display: inline-block;font-family: 'RalewayHelvetica Neue',Verdana,Arial,sans-serif;font-size: 13px;font-weight: normal;line-height: 19px;padding: 7px 15px;text-align: center;text-transform: uppercase;vertical-align: middle;white-space: nowrap;}.btn-secure:hover {background-color: #006bb4; color: #ffffff;outline: medium none; cursor: pointer;}"]
+            cssRules: ["body{font-family:'Trebuchet MS', Arial, Helvetica, sans-serif;background-color: '#aaa'; borderLeft: '5px solid #ccc'}#container{padding-left:0px;margin-right:0px;padding-right:0px;margin-left: 8px;}label{display:none;}.row{margin-right:0;margin-left:0;}.col-4,.col-3{padding-left:0px;padding-right:10px;flex:0;}.col-1,.col-md-8{padding-left:0;}.form-group{margin-bottom:0;}.form-control{max-width: 100%; width: 273px;height: 30px; margin-bottom: 10px; background: #ffffff none repeat scroll 0 0;border: 1px solid silver; border-radius: 2px; font-size: 15px;}#i4go_expirationMonth {width: 80px;}#cvv2Code{width:60px;}#i4go_expirationYear {width: 90px;}.addcardform{height:auto;}#i4go_cvv2Code {width: 80px;}#i4go_cardNumber {width: 255px;}.btn-secure {background: #1979c3; border: 0 none;color: #ffffff;display: inline-block;font-family: 'RalewayHelvetica Neue',Verdana,Arial,sans-serif;font-size: 13px;font-weight: normal;line-height: 19px;padding: 7px 15px;text-align: center;text-transform: uppercase;vertical-align: middle;white-space: nowrap;}.btn-secure:hover {background-color: #006bb4; color: #ffffff;outline: medium none; cursor: pointer;}"]
         });
     });
 </script>
@@ -155,13 +155,13 @@ $hsaFsa = $block->getHsaFsa();
         <?php
         $k = 1;
         foreach ($partialpayments as $payment): ?>
-        <div id="preauthorized_section_<?php echo $k; ?>" style="margin-top:1.5em;">
-            <div id="preauth_card_type_<?php echo $k; ?>"><span style="width:200px; float:left;"><strong><?= /* @escapeNotVerified */ __('Card Type:') ?></strong></span><?php echo $payment['cardType']; ?></div>
-            <div id="preauth_card_number_<?php echo $k; ?>"><span style="width:200px; float:left;"><strong><?= /* @escapeNotVerified */ __('Card Number:') ?></strong></span><?php echo $payment['preauthCardNumber']; ?></div>
-            <div id="preauth_processed_amount_<?php echo $k; ?>"><span style="width:200px; float:left;"><strong><?= /* @escapeNotVerified */ __('Processed Amount:') ?></strong></span><?php echo $payment['preauthProcessedAmount']; ?></div>
-            <div id="preauth_invoice_id_<?php echo $k; ?>"><span style="width:200px; float:left;"><strong><?= /* @escapeNotVerified */ __('Shift4 Invoice ID:') ?></strong></span><span class="s4Invoice"><?php echo $payment['preauthInvoiceId']; ?></span></div>
-            <div id="preauth_auth_code_<?php echo $k; ?>"><span style="width:200px; float:left;"><strong><?= /* @escapeNotVerified */ __('Authorization Code:') ?></strong></span><?php echo $payment['preauthAuthCode']; ?></div>
-            <div id="preauth_receipt_text_<?php echo $k; ?>"></div>
+        <div id="preauthorized_section_<?= $k; ?>" style="margin-top:1.5em;">
+            <div id="preauth_card_type_<?= $k; ?>"><span style="width:200px; float:left;"><strong><?= /* @escapeNotVerified */ __('Card Type:') ?></strong></span><?= $payment['cardType']; ?></div>
+            <div id="preauth_card_number_<?= $k; ?>"><span style="width:200px; float:left;"><strong><?= /* @escapeNotVerified */ __('Card Number:') ?></strong></span><?= $payment['preauthCardNumber']; ?></div>
+            <div id="preauth_processed_amount_<?= $k; ?>"><span style="width:200px; float:left;"><strong><?= /* @escapeNotVerified */ __('Processed Amount:') ?></strong></span><?= $payment['preauthProcessedAmount']; ?></div>
+            <div id="preauth_invoice_id_<?= $k; ?>"><span style="width:200px; float:left;"><strong><?= /* @escapeNotVerified */ __('Shift4 Invoice ID:') ?></strong></span><span class="s4Invoice"><?= $payment['preauthInvoiceId']; ?></span></div>
+            <div id="preauth_auth_code_<?= $k; ?>"><span style="width:200px; float:left;"><strong><?= /* @escapeNotVerified */ __('Authorization Code:') ?></strong></span><?= $payment['preauthAuthCode']; ?></div>
+            <div id="preauth_receipt_text_<?= $k; ?>"></div>
         </div>
             <?php
             $k++;
@@ -180,9 +180,16 @@ $hsaFsa = $block->getHsaFsa();
     </div>
 <?php endif; ?>
     <div class="s4messages"></div>
+	<div class="quickpaymethods">
+		<label  style="color:#636363;font-size:13px;font-weight:600;display:block;margin-top:10px;margin-left:8px;font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;"><!-- ko i18n: 'Quick payment methods:' --><!-- /ko --></label>
+		<div class="pay-buttons" style="padding-left:8px;">
+			<button class="pay-button apple-pay-button pay-hidden"></button>
+			<button class="pay-button google-pay-button pay-hidden"></button>
+		</div>
+	</div>
     <?php if ($savedCards['html'] != ''): ?>
     <label style="color:#636363;font-size:13px;font-weight:600;display:block;margin-top:10px;margin-left:8px;font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;"><?= /* @escapeNotVerified */ __('My saved cards:') ?></label>
-    <select id="my_saved_cards" name="saved_card" style="margin-left:8px; width: 273px;height: 30px;padding: 0 8px;margin-bottom: 10px; border: 1px solid silver;border-radius: 2px;font-size: 15px;"><?php echo $savedCards['html']; ?></select>
+    <select id="my_saved_cards" name="saved_card" style="margin-left:8px; width: 273px;height: 30px;padding: 0 8px;margin-bottom: 10px; border: 1px solid silver;border-radius: 2px;font-size: 15px;"><?= $savedCards['html']; ?></select>
     <?php endif; ?>
     <div id="i4go_form"<?php if (isset($savedCards['default']) && $savedCards['default'] != 'new') { echo ' style="display:none;"';} ?>></div>
     <input id="shift4_true_token" name="shift4[trueToken]" value="<?php if (isset($savedCards['default']) && $savedCards['default'] != 'new') { echo $savedCards['default'];} ?>" type="hidden">
