@@ -13,6 +13,7 @@ class Overview extends \Magento\Multishipping\Block\Checkout\Overview
         \Magento\Quote\Model\Quote\TotalsReader $totalsReader,
         \Magento\Framework\App\Request\Http $request,
         \Shift4\Payment\Model\SavedCards $savedCards,
+        \Magento\Checkout\Model\Session $checkoutSession,
         array $data = []
     ) {
         parent::__construct(
@@ -26,6 +27,30 @@ class Overview extends \Magento\Multishipping\Block\Checkout\Overview
         );
         $this->request = $request;
         $this->savedCards = $savedCards;
+        $this->checkoutSession = $checkoutSession;
+
+		//workaround MG-90
+		if (
+			$this->getCheckoutData()->getAddressErrors() &&
+			!empty($this->getCheckoutData()->getAddressErrors()) && 
+			$this->checkoutSession->getData('shift4PostReloaded') != 1
+		) {
+			$shift4Post = $this->request->getParam('shift4');
+			if (!empty($shift4Post) &&
+				isset($shift4Post['trueToken']) &&
+				isset($shift4Post['cardtype']) &&
+				ctype_alnum($shift4Post['trueToken']) &&
+				ctype_alnum($shift4Post['cardtype'])
+			) {
+				$this->checkoutSession->setData('shift4Post', $shift4Post);
+			}
+			$this->checkoutSession->setData('shift4PostReloaded', 1);
+
+			header("refresh: 0;");
+		}
+		
+		$this->checkoutSession->setData('shift4PostReloaded', 0);
+
     }
 
     /**
@@ -34,6 +59,10 @@ class Overview extends \Magento\Multishipping\Block\Checkout\Overview
     public function getPaymentHtml()
     {
         $shift4Post = $this->request->getParam('shift4');
+		
+		if (empty($shift4Post)) {
+			$shift4Post = $this->checkoutSession->getData('shift4Post');
+		}
 
         if (!empty($shift4Post) &&
             isset($shift4Post['trueToken']) &&
