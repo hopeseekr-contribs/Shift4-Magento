@@ -134,13 +134,18 @@ class Form extends \Magento\Payment\Block\Form
 
     public function getAccessBlock()
     {
-		$totals = $this->checkoutSession->getQuote()->getGrandTotal();
-        $this->checkoutSession->getQuote()->reserveOrderId()->save();
+		
+		if (!$this->authSession->isLoggedIn()) {
+			$totals = $this->checkoutSession->getQuote()->getGrandTotal();
+			$this->checkoutSession->getQuote()->reserveOrderId()->save();
 
-        $i4goOptions = $this->shift4api->getAccessBlock(
-			$totals,
-			$this->checkoutSession->getQuote()->getReservedOrderId()
-		);
+			$i4goOptions = $this->shift4api->getAccessBlock(
+				$totals,
+				$this->checkoutSession->getQuote()->getReservedOrderId()
+			);
+		} else {
+			$i4goOptions = $this->shift4api->getAccessBlock();
+		}
 
         $i4goOptions['support_swipe'] = (
             $this->scopeConfig
