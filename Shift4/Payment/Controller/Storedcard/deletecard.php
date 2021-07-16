@@ -46,6 +46,6 @@ class Deletecard extends \Magento\Framework\App\Action\Action
             $body = $deletecard;
         }
 
-        $this->getResponse()->setBody($body);
+        return $this->getResponse()->setBody($body);
     }
 }

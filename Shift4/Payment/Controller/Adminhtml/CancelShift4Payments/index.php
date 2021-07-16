@@ -21,11 +21,9 @@ class Index extends \Magento\Backend\App\Action
 
     /**
      * Cancel order create
-     *
-     * @return
      */
     public function execute()
     {
-        return $this->shift4->cancelAllPartialPayments();
+        return $this->getResponse()->setBody($this->shift4->cancelAllPartialPayments());
     }
 }

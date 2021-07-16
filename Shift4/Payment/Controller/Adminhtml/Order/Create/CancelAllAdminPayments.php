@@ -16,8 +16,6 @@ class CancelAllAdminPayments extends \Magento\Backend\App\Action
 
     /**
      * Cancel order create
-     *
-     * @return
      */
     public function execute()
     {
