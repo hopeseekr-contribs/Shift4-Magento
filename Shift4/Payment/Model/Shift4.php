@@ -261,7 +261,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                         $transaction['preauthInvoiceId'] = $oldTransaction['shift_4_invoice_id'];
                         $transaction['amountCaptured'] = 0;
                         $transaction['taxCaptured'] = 0;
-                        $transaction['tax'] = (float) $transactions['tax_amount'];
+                        $transaction['tax'] = (float) $transactions['tax_amount'] ?? 0.00;
 
                         $authorizations++;
                         $partialTransactions[] = $transaction;
@@ -271,9 +271,9 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                             'preauthInvoiceId' => $transaction['preauthInvoiceId'],
                         ];
 
-                        $amountCaptured += $transaction['amountCaptured'];
-                        $taxCaptured += $transaction['taxCaptured'];
-                        $amountRemaining += $transaction['preauthProcessedAmount'];
+                        $amountCaptured += $transaction['amountCaptured'] ?? 0.00;
+                        $taxCaptured += $transaction['taxCaptured'] ?? 0.00;
+                        $amountRemaining += $transaction['preauthProcessedAmount'] ?? 0.00;
                         $lastTransaction = $transaction;
                     }
                 }
@@ -282,7 +282,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 
                 foreach ($transactions as $k => $transaction) {
                     if ((isset($transaction['transactionType']) && ($transaction['transactionType'] == 'authorization' || $transaction['transactionType'] == 'capture')) || (isset($transaction['transaction_type']) && ($transaction['transaction_type'] == 'authorization' || $transaction['transaction_type'] == 'capture'))) {
-                        if ($transaction['frontend']) {
+                        if ($transaction['frontend'] ?? false) {
                             $authorizations++;
                             $partialTransactions[] = $transaction;
                             $this->partialProcessedAmounts[] = [
@@ -509,7 +509,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                 } else {
 
                     $data = json_decode($response['data']);
-                    $responseCode = $data->result[0]->transaction->responseCode;
+                    $responseCode = $data->result[0]->transaction->responseCode ?? null;
                     $error = $this->checkResponseForErrors($responseCode);
 
                     $parentTransactionId = explode('-', $lastTransactionId, 2);
@@ -600,7 +600,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 
                     if ($response['error']) {
 
-                        if ($response['primaryCode'] == '9815' || $getInvoiceData->result[0]->error->primaryCode == '9815') { //batched
+                        if ($response['primaryCode'] == '9815' || ($getInvoiceData->result[0]->error->primaryCode ?? null) == '9815') { //batched
 
                             $response = $this->api->refund($payment, $transaction['preauthProcessedAmount'], $transaction['preauthInvoiceId'], $transaction['uniqueId']);
                             $data = json_decode($response['data']);
@@ -608,7 +608,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                             $error = $this->checkResponseForErrors($responseCode);
 
                             if (!$error) {
-                                $refundInvoice = $data->result[0]->transaction->invoice;
+                                $refundInvoice = $data->result[0]->transaction->invoice ?? '??';
 
                                 if ($lastTransactionId != $refundInvoice . '-refund' && $lastTransactionId != $transaction['preauthInvoiceId'] . '-capture-refund') { //workaround
                                     $payment->setTransactionId($refundInvoice . '-refund');
@@ -620,7 +620,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                                     $payment->setParentTransactionId($transaction['preauthInvoiceId']);
                                 }
 
-                                $transactions[$refundInvoice]['cardType'] = $this->getCardFullName($data->result[0]->card->type);
+                                $transactions[$refundInvoice]['cardType'] = $this->getCardFullName($data->result[0]->card->type ?? null);
                                 $transactions[$refundInvoice]['preauthCardNumber'] = 'xxxx-' . substr($data->result[0]->card->number, -4);
                                 $transactions[$refundInvoice]['preauthProcessedAmount'] = $data->result[0]->amount->total;
                                 $transactions[$refundInvoice]['preauthInvoiceId'] = $refundInvoice;
@@ -825,7 +825,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
             $response = $this->api->getInvoice($response['invoice']);
 
             if ($response['error']) {
-                throw new PaymentException($response['errorMessage']);
+                throw new PaymentException(__($response['errorMessage']));
             } else {
                 $data = json_decode($response['data']);
                 if ($data->result[0]->transaction->responseCode) {
@@ -839,7 +839,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                 }
             }
         } elseif ($response['error']) {
-            throw new PaymentException($response['errorMessage']);
+            throw new PaymentException(__($response['errorMessage']));
         } else {
             $data = json_decode($response['data']);
             $responseCode = $data->result[0]->transaction->responseCode;
@@ -1057,7 +1057,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                     );
                 }
             }
-            throw new PaymentException($error);
+            throw new PaymentException(__($error));
         }
 
         $this->transactionLog = null; //close conections
@@ -1125,7 +1125,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                     $data = json_decode($response['data']);
                     $authorizedCardsData[$k]['voided'] = 1;
                     $authorizedCardsData[$k]['transaction_type'] = 'void';
-                    $authorizedCardsData[$k]['dateUpdated'] = $data->result[0]->dateTime;
+                    $authorizedCardsData[$k]['dateUpdated'] = $data->result[0]->dateTime ?? null;
                 } else {
                     $errorMessage .= __("%1 not voided. Error: %2", $k, $response['errorMessage']).'<br>';
                 }
