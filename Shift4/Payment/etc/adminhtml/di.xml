@@ -13,4 +13,5 @@
 	<preference for="Magento\Sales\Block\Adminhtml\Order\Invoice\Create\Form" type="Shift4\Payment\Block\Adminhtml\Order\Invoice\Create\Form" />
 	<preference for="Magento\Sales\Block\Adminhtml\Order\Creditmemo\View\Form" type="Shift4\Payment\Block\Adminhtml\Order\Creditmemo\View\Form" />
 	<preference for="Magento\Sales\Block\Adminhtml\Order\Creditmemo\Create\Form" type="Shift4\Payment\Block\Adminhtml\Order\Creditmemo\Create\Form" />
+	<preference for="Magento\Sales\Controller\Adminhtml\Order\Create\Cancel" type="Shift4\Payment\Controller\Adminhtml\Order\Create\Cancel" />
 </config>
