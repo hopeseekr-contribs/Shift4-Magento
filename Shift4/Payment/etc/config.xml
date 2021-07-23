@@ -19,7 +19,7 @@
                 <title>Credit, Debit, or Gift Card (Shift4)</title>
 				<submit_label>Place Order</submit_label>			
                 <processing_mode>demo</processing_mode>
-                <server_addresses>https://utg.shift4api.net/api/rest/v1</server_addresses>
+                <server_addresses>https://utgapi.shift4test.com/api/rest/v1/</server_addresses>
                 <logging>all</logging>
                 <card_on_file>0</card_on_file>         
                 <payment_action>authorize</payment_action>

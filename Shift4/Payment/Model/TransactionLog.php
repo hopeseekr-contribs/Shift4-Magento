@@ -102,7 +102,7 @@ class TransactionLog extends \Magento\Framework\Model\AbstractModel
         if ($utgResponse != '') {
             $responseJson = json_decode($utgResponse);
             if (json_last_error() == JSON_ERROR_NONE) {
-                if (property_exists($responseJson->result[0], 'card')) {
+                if (property_exists($responseJson, 'result') && property_exists($responseJson->result[0], 'card')) {
                     if (
                         property_exists($responseJson->result[0]->card, 'number')
                         && $responseJson->result[0]->card->number

@@ -41,7 +41,7 @@ jQuery(document).ready(function () {
 	jQuery('#shift4_exchange_tokens').click(function() {
 		
 		var authToken = jQuery('input[id*="shift4_section_auth_token"]').val();
-        var endPoint = jQuery('textarea[id*="shift4_section_server_addresses"]').val();
+        var endPoint = jQuery('input[id*="shift4_section_server_addresses"]').val();
 
         var errorMsg = ''; 
         if (authToken == '') {

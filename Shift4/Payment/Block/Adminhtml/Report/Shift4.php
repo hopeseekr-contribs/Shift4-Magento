@@ -104,7 +104,9 @@ class Shift4 extends \Magento\Backend\Block\Template
 
             $utgResponse = json_decode($v['utg_response']);
             if (json_last_error() == JSON_ERROR_NONE) {
-                $amountProcessed = (float) $utgResponse->result[0]->amount->total;
+				if (property_exists($utgResponse, 'result') && property_exists($utgResponse->result[0], 'amount')) {
+					$amountProcessed = (float) $utgResponse->result[0]->amount->total;
+				}
             }
 
             $transactions[$k]['order_url'] = (
