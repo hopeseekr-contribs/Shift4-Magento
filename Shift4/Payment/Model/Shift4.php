@@ -5,7 +5,6 @@ namespace Shift4\Payment\Model;
 use Magento\Framework\Exception\PaymentException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\StateException;
-use Magento\Framework\Serialize\Serializer\Serialize;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Quote\Api\ChangeQuoteControlInterface;
 use Shift4\Payment\Exception\PartialPaymentException;
@@ -121,6 +120,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
         \Shift4\Payment\Model\TransactionLog $transactionLog,
         \Shift4\Payment\Model\SavedCards $savedCards,
         \Magento\Customer\Model\Session $customerSession,
+		\Magento\Framework\Serialize\SerializerInterface $serializer,
         $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
@@ -207,7 +207,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
             $this->healthcareTotalAmount = $healthcareTotalAmountWithTax;
             $this->healthcareTax = $healthcareTax;
 
-            $this->serializer = new Serialize();
+            $this->serializer = $serializer;
         }
     }
 
