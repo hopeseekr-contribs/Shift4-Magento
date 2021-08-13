@@ -2,7 +2,7 @@
   "name": "shift4/payment",
   "description": "Shift4 Payments module for Magento 2",
   "type": "magento2-module",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "license": [
     "GPL-3.0"
   ],

@@ -12,9 +12,9 @@ class Api
     private $accessToken = '491AB6AD-2EF3-4749-B292-5B2D899CB1CB';
     private $endpoint = 'https://utgapi.shift4test.com/api/rest/v1/';
     private $clerk = '2009';
-    private $interfaceName = 'S4PM_Magento_1.0.13';
+    private $interfaceName = 'S4PM_Magento_1.0.14';
     private $companyName = 'Shift4 corporation';
-    private $interfaceVersion = '1.0.13';
+    private $interfaceVersion = '1.0.14';
     private $checkoutSession;
     private $scopeConfig;
     private $pageFactory;
