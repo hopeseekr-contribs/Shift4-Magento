@@ -160,11 +160,11 @@ define([
 						self.custoMessages(true);
 					}
 					
-					if (!window.checkoutConfig.payment.shift4_custom_data.enableGPay) {
+					if (window.checkoutConfig.payment.shift4_custom_data.enableGPay == '0') {
 						$('.google-pay-button').remove();
 					}
 					
-					if (!window.checkoutConfig.payment.shift4_custom_data.enableAPay) {
+					if (window.checkoutConfig.payment.shift4_custom_data.enableAPay == '0') {
 						$('.apple-pay-button').remove();
 					}
 					
