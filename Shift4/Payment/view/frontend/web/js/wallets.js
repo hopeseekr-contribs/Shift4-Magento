@@ -14,6 +14,7 @@ function i4goWalletsInit(owner) {
 	_wallets_i4goTrueTokenObj = owner;
 	_wallets_i4goTrueTokenObj.settings.debug && remoteLog("Wallets initializing...");
 	jQuery(".pay-button").hide().addClass("hidden").addClass("pay-hidden");
+
 	if ((typeof _wallets_i4goTrueTokenObj.walletConfig === "object")) {
 		applePayInit(_wallets_i4goTrueTokenObj.walletConfig);
 		googlePayInit(_wallets_i4goTrueTokenObj.walletConfig);
@@ -82,6 +83,7 @@ function applePayInit(config) {
 						if (canMakePayments) {
 							jQuery(".apple-pay-button").on("click", onApplePayClick);
 							jQuery(".apple-pay-button").show().removeClass("hidden").removeClass("pay-hidden");
+                            jQuery(".pay-button").hide().addClass("hidden").addClass("pay-hidden");
 							_wallets_i4goTrueTokenObj.onWalletEnabled("apple-pay", true, "Ready");
 						}
 					}, function(error) {
@@ -97,7 +99,7 @@ function applePayInit(config) {
 					jQuery(".apple-pay-button").show().removeClass("hidden").removeClass("pay-hidden");
 					_wallets_i4goTrueTokenObj.onWalletEnabled("apple-pay", true, "Ready");
 				}
-				// end of active card required condition  
+				// end of active card required condition
 			} else {
 				var reason = "Apple Pay not found";
 				_wallets_i4goTrueTokenObj.settings.debug && remoteLog(reason);
@@ -271,9 +273,9 @@ function apGetDefaultShippingMethods() {
 			detail: item.description,
 			amount: item.amount,
 			identifier: item.id
-			}) 
+			})
 		});
-	}	
+	}
 	return shippingMethods;
 }
 
@@ -756,7 +758,7 @@ function gpOnPaymentDataChanged(intermediatePaymentData, wallet) {
 
 /**
  * Helper function to create a new TransactionInfo object.
- 
+
  * @param string shippingOptionId respresenting the selected shipping option in the payment sheet.
  *
  * @see {@link https://developers.google.com/pay/api/web/reference/request-objects#TransactionInfo|TransactionInfo}
@@ -850,6 +852,7 @@ function addGooglePayButton() {
 	$buttonObj.addClass("pay-button google-pay-button");
 	jQuery(".google-pay-button").replaceWith(button);
 	jQuery(".google-pay-button").show().removeClass("hidden").removeClass("pay-hidden");
+	jQuery('.pay-buttons').removeClass("pay-hidden");
 }
 
 /**
