@@ -97,7 +97,9 @@ class SavedCards extends \Magento\Framework\Model\AbstractModel
         $collection = $this->getCollection();
         $collection->addFieldToFilter('customer_id', $customerId)
                 ->addFieldToFilter('cc_type', $i4goType)
-                ->addFieldToFilter('last_four', $this->getLast4FromToken($i4goTrueToken));
+                ->addFieldToFilter('last_four', $this->getLast4FromToken($i4goTrueToken))
+                ->addFieldToFilter('cc_exp_month', $i4goExpMonth)
+                ->addFieldToFilter('cc_exp_year', $i4goExpYear);
         if ($collection->count()) {
             $return = __('Already exist');
         } else {
