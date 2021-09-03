@@ -17,7 +17,7 @@ define([
 
         return Component.extend({
             defaults: {
-                template: 'Shift4_Payment/payment/default'
+                template: 'Shift4_Payment/payment/' + window.checkoutConfig.payment.shift4_custom_data.template
             },
 			i4goInitialized: false,
 			i4goTrueToken: false,
@@ -158,18 +158,6 @@ define([
 					//disable messages
 					if ($('#' + self.getCode()).is(':checked')) {
 						self.custoMessages(true);
-					}
-					
-					if (window.checkoutConfig.payment.shift4_custom_data.enableGPay == '0') {
-						$('.google-pay-button').remove();
-					}
-					
-					if (window.checkoutConfig.payment.shift4_custom_data.enableAPay == '0') {
-						$('.apple-pay-button').remove();
-					}
-					
-					if (!window.checkoutConfig.payment.shift4_custom_data.enableGPay && !window.checkoutConfig.payment.shift4_custom_data.enableAPay) {
-						$('.quickpaymethods').hide();
 					}
 					
 					//save cards

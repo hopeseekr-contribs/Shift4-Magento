@@ -56,7 +56,6 @@ class ConfigProvider implements ConfigProviderInterface
 
         $healthcareTotalAmount = $healthcareTotalAmount - $processedAmountHsaFsa;
 
-
         //$totalAmount = $totals
 
         $authorizedCardsData = (array) $this->checkoutSession->getData('authorizedCardsData');
@@ -88,15 +87,28 @@ class ConfigProvider implements ConfigProviderInterface
 			);
         }
 
-
 		$enableGPay = $this->scopeConfig->getValue(
 			'payment/shift4/enable_google_pay',
 			\Magento\Store\Model\ScopeInterface::SCOPE_STORE
 		);
 		$enableAPay = $this->scopeConfig->getValue(
-			'payment/shift4_quick/enable_apple_pay',
+			'payment/shift4/enable_apple_pay',
 			\Magento\Store\Model\ScopeInterface::SCOPE_STORE
 		);
+
+		$template = 'default';
+		
+		if (!$enableGPay && !$enableAPay) {
+			$template = 'no_quicpayments';
+		} else {
+			if (!$enableGPay) {
+				$template = 'no_gp';
+			}
+
+			if (!$enableAPay) {
+				$template = 'no_ap';
+			}
+		}
 
 		return [
             'guest_user_data' => $guestUserData,
@@ -131,7 +143,8 @@ class ConfigProvider implements ConfigProviderInterface
                     'processedAmountHsaFsa' => $processedAmountHsaFsa,
                     'total_amount' => $totals,
 					'enableGPay' => $enableGPay,
-					'enableAPay' => $enableAPay
+					'enableAPay' => $enableAPay,
+					'template' => $template
                 ]
             ]
         ];

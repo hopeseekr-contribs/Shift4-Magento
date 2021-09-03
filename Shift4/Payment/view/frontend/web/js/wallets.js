@@ -83,7 +83,6 @@ function applePayInit(config) {
 						if (canMakePayments) {
 							jQuery(".apple-pay-button").on("click", onApplePayClick);
 							jQuery(".apple-pay-button").show().removeClass("hidden").removeClass("pay-hidden");
-                            jQuery(".pay-button").hide().addClass("hidden").addClass("pay-hidden");
 							_wallets_i4goTrueTokenObj.onWalletEnabled("apple-pay", true, "Ready");
 						}
 					}, function(error) {
@@ -852,7 +851,6 @@ function addGooglePayButton() {
 	$buttonObj.addClass("pay-button google-pay-button");
 	jQuery(".google-pay-button").replaceWith(button);
 	jQuery(".google-pay-button").show().removeClass("hidden").removeClass("pay-hidden");
-	jQuery('.pay-buttons').removeClass("pay-hidden");
 }
 
 /**
