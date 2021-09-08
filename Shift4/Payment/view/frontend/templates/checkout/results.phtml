@@ -73,7 +73,14 @@ $paymentMethod = $block->getPaymentMethod();
                             <?php if ($block->isShippingAddress($address)) : ?>
                             <span class="shipping-label"><?= $block->escapeHtml(__('Ship to:')); ?></span>
                             <span class="shipping-address">
-                                <?= $block->escapeHtml($block->formatQuoteShippingAddress($address)); ?>
+                                <?php
+								//workaround bug, when sometimes magento display unformatted address
+								$addressDisplayed = $block->escapeHtml($block->formatQuoteShippingAddress($address));
+								if (strstr($addressDisplayed, '{{depend')) {
+									$addressDisplayed = '';
+								}
+								echo $addressDisplayed;
+								?>
                             </span>
                             <?php else : ?>
                             <span class="shipping-address">
