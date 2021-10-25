@@ -16,8 +16,8 @@
                 <group id="shift4_section" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Credit, Debit, or Gift Card (Shift4)</label>
 					<comment><![CDATA[<div class="shift4-notice">
-									<a href="https://www.shift4.com/dotn/4tify/i4go.cfm" target="_blank" id="shift4-logo">&nbsp;</a><br>
-									<a href="https://www.shift4.com/dotn/4tify/i4go.cfm" target="_blank">Click here to learn more</a>
+									<a href="https://www.shift4.com/secure-gateway" target="_blank" id="shift4-logo">&nbsp;</a><br>
+									<a href="https://www.shift4.com/secure-gateway" target="_blank">Click here to learn more</a>
 								</div>]]></comment>
                     <field id="active" translate="label tooltip" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enabled*</label>

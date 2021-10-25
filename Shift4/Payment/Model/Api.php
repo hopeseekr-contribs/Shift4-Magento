@@ -702,7 +702,7 @@ class Api
         if (!$this->invoiceId && ($method == 'sale' || $method == 'capture')) {
             $this->invoiceId = $this->transactionLog->getNextInvoiceId();
         }
-
+		
         $saveData = [
             'amount' => $amount,
             'order_id' => $this->orderId,
