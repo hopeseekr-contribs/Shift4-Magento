@@ -18,6 +18,16 @@ var config = {
         },
         wallets_js: {
             deps: ['jquery']
+        },
+        mixins: {
+            'Magento_Checkout/js/view/shipping': {
+                'Shift4_Payment/js/view/shipping': true
+            }
+        }
+    },
+    map: {
+        '*': {
+            'Magento_Checkout/js/view/shipping': 'Shift4_Payment/js/view/shipping'
         }
     }
 };
