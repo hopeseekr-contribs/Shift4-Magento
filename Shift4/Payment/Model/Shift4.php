@@ -207,7 +207,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
             $this->healthcareTotalAmount = $healthcareTotalAmountWithTax;
             $this->healthcareTax = $healthcareTax;
         }
-		
+
 		$this->serializer = new Serialize();
     }
 
@@ -622,18 +622,18 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 
                                 $transactions[$refundInvoice]['cardType'] = $this->getCardFullName($data->result[0]->card->type ?? null);
                                 $transactions[$refundInvoice]['preauthCardNumber'] = 'xxxx-' . substr($data->result[0]->card->number, -4);
-                                $transactions[$refundInvoice]['preauthProcessedAmount'] = $data->result[0]->amount->total;
+                                $transactions[$refundInvoice]['preauthProcessedAmount'] = $data->result[0]->amount->total ?? 0.00;
                                 $transactions[$refundInvoice]['preauthInvoiceId'] = $refundInvoice;
-                                $transactions[$refundInvoice]['preauthAuthCode'] = $data->result[0]->transaction->authorizationCode;
-                                $transactions[$refundInvoice]['uniqueId'] = $data->result[0]->card->token->value;
+                                $transactions[$refundInvoice]['preauthAuthCode'] = $data->result[0]->transaction->authorizationCode ?? null;
+                                $transactions[$refundInvoice]['uniqueId'] = $data->result[0]->card->token->value ?? '';
                                 $transactions[$refundInvoice]['remainingAmount'] = 0;
                                 $transactions[$refundInvoice]['cardCount'] = 0;
                                 $transactions[$refundInvoice]['tax'] = 0;
-                                $transactions[$refundInvoice]['response'] = $response['data'];
+                                $transactions[$refundInvoice]['response'] = $response['data'] ?? [];
                                 $transactions[$refundInvoice]['transaction_type'] = 'refund';
                                 $transactions[$refundInvoice]['voided'] = 0;
                                 $transactions[$refundInvoice]['refunded'] = 1;
-                                $transactions[$refundInvoice]['date'] = $data->result[0]->dateTime;
+                                $transactions[$refundInvoice]['date'] = $data->result[0]->dateTime ?? date('Y-m-d h:i:s');
                                 $transactions[$refundInvoice]['dateUpdated'] = '';
                             } else {
                                 $errors[$transaction['preauthInvoiceId']] = $error;
@@ -697,14 +697,14 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 
                     $payment->setTransactionId($refundInvoice . '-refund');
                     $payment->setParentTransactionId($currentTransaction['preauthInvoiceId']);
-					
+
 					$authorizationCode = '';
 					if (property_exists($data->result[0], 'transaction') &&
 						property_exists($data->result[0]->transaction, 'authorizationCode')
 						) {
 						$authorizationCode = $data->result[0]->transaction->authorizationCode;
 					}
-					
+
 					$uniqueId = '';
 					if (property_exists($data->result[0], 'card') &&
 						property_exists($data->result[0]->card, 'token') &&
@@ -712,28 +712,28 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 						) {
 						$uniqueId = $data->result[0]->card->token->value;
 					}
-					
+
 					$preauthProcessedAmount = 0;
 					if (property_exists($data->result[0], 'amount') &&
 						property_exists($data->result[0]->amount, 'total')
 						) {
 						$preauthProcessedAmount = $data->result[0]->amount->total;
 					}
-					
+
 					$cardNumber = '';
 					if (property_exists($data->result[0], 'card') &&
 						property_exists($data->result[0]->card, 'number')
 						) {
 						$cardNumber = $data->result[0]->card->number;
 					}
-					
+
 					$cardType = '';
 					if (property_exists($data->result[0], 'card') &&
 						property_exists($data->result[0]->card, 'type')
 						) {
 						$cardType = $data->result[0]->card->type;
 					}
-					
+
 					$date = '';
 					if (property_exists($data->result[0], 'dateTime')) {
 						$date = $data->result[0]->dateTime;
