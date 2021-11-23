@@ -363,7 +363,8 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                         if ($captureResponse['errors']) {
                             $errors = $captureResponse['errors'];
                         } else {
-                            $successPayments[] = $captureResponse['data']->result[0]->transaction->invoice;
+                            // @fixme: Should it properly blow up with full error handling if any of these objects are null?
+                            $successPayments[] = $captureResponse['data']->result[0]->transaction->invoice ?? null;
                         }
                     }
                 }
@@ -412,7 +413,8 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                                 if ($captureResponse['errors']) {
                                     $errors = $captureResponse['errors'];
                                 } else {
-                                    $successPayments[] = $captureResponse['data']->result[0]->transaction->invoice;
+                                    // @fixme: Should it properly blow up with full error handling if any of these objects are null?
+                                    $successPayments[] = $captureResponse['data']->result[0]->transaction->invoice ?? null;
                                 }
                             }
 
@@ -434,7 +436,8 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                                 if ($captureResponse['errors']) {
                                     $errors = $captureResponse['errors'];
                                 } else {
-                                    $successPayments[] = $captureResponse['data']->result[0]->transaction->invoice;
+                                    // @fixme: Should it properly blow up with full error handling if any of these objects are null?
+                                    $successPayments[] = $captureResponse['data']->result[0]->transaction->invoice ?? null;
                                 }
                             }
 
@@ -510,8 +513,11 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 
                     $data = json_decode($response['data']);
                     $responseCode = $data->result[0]->transaction->responseCode ?? null;
-                    $error = $this->checkResponseForErrors($responseCode);
-
+                    if (!$responseCode) {
+                        $error = 'No transaction / response code: The connection to the payment gateway probably timed out.';
+                    } else {
+                        $error = $this->checkResponseForErrors($responseCode);
+                    }
                     $parentTransactionId = explode('-', $lastTransactionId, 2);
                     $parentTransactionId = str_replace('-void', '', $parentTransactionId[1]);
 
@@ -530,7 +536,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                             $payment->setIsTransactionClosed(1);
                         }
 
-                        $transactions[$k]['dateUpdated'] = $data->result[0]->dateTime;
+                        $transactions[$k]['dateUpdated'] = $data->result[0]->dateTime ?? date('Y-m-d H:i:s');
                         $transactions[$k]['voided'] = 1;
                         $transactions[$k]['transaction_type'] = 'void';
                     } else {
@@ -604,9 +610,18 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 
                             $response = $this->api->refund($payment, $transaction['preauthProcessedAmount'], $transaction['preauthInvoiceId'], $transaction['uniqueId']);
                             $data = json_decode($response['data']);
-                            $responseCode = $data->result[0]->transaction->responseCode;
-                            $error = $this->checkResponseForErrors($responseCode);
 
+                            if (!property_exists($data->result[0], 'transaction')) {
+                                $error = 'No transaction object was received (probably because the connection to the payment gateway timed out.).';
+                                $responseCode = '';
+                            } else {
+                                $responseCode = $data->result[0]->transaction->responseCode;
+                                $error = $this->checkResponseForErrors($responseCode);
+                            }
+
+                            if (($data->result[0]->transaction->authorizationCode ?? null) === null) {
+                                $error = 'Did not receive an authorizationCode, possibly due to a payment gateway timeout. Please try again.';
+                            }
                             if (!$error) {
                                 $refundInvoice = $data->result[0]->transaction->invoice ?? '??';
 
@@ -620,7 +635,8 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                                     $payment->setParentTransactionId($transaction['preauthInvoiceId']);
                                 }
 
-                                $transactions[$refundInvoice]['cardType'] = $this->getCardFullName($data->result[0]->card->type ?? null);
+
+                                $transactions[$refundInvoice]['cardType'] = $this->getCardFullName($data->result[0]->card->type ?? '');
                                 $transactions[$refundInvoice]['preauthCardNumber'] = 'xxxx-' . substr($data->result[0]->card->number, -4);
                                 $transactions[$refundInvoice]['preauthProcessedAmount'] = $data->result[0]->amount->total ?? 0.00;
                                 $transactions[$refundInvoice]['preauthInvoiceId'] = $refundInvoice;
@@ -646,7 +662,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                         }
                     } else {
                         $data = json_decode($response['data']);
-                        $responseCode = $data->result[0]->transaction->responseCode;
+                        $responseCode = $data->result[0]->transaction->responseCode ?? null;
                         $error = $this->checkResponseForErrors($responseCode);
 
                         if (!$error) {
@@ -689,8 +705,14 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 
                 $response = $this->api->refund($payment, $amount, $shift4Invoices, $currentTransaction['uniqueId']);
                 $data = json_decode($response['data']);
-                $responseCode = $data->result[0]->transaction->responseCode;
-                $error = $this->checkResponseForErrors($responseCode);
+
+                if (!property_exists($data->result[0], 'transaction')) {
+                    $error = 'No transaction object was received (probably because the connection to the payment gateway timed out.).';
+                    $responseCode = '';
+                } else {
+                    $responseCode = $data->result[0]->transaction->responseCode;
+                    $error = $this->checkResponseForErrors($responseCode);
+                }
 
                 if (!$error) {
                     $refundInvoice = $data->result[0]->transaction->invoice;
@@ -875,7 +897,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                     $responseCode = 'A';
                 }
 
-                if ($responseCode == 'A' && ($amount - $data->result[0]->amount->total) > 0) {
+                if (($responseCode == 'A' || $responseCode == 'C') && ($amount - $data->result[0]->amount->total) > 0) {
                     $responseCode = 'P'; //partial. Not returned "P" when checking invoice
                 }
             }
@@ -1166,7 +1188,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                     $data = json_decode($response['data']);
                     $authorizedCardsData[$k]['voided'] = 1;
                     $authorizedCardsData[$k]['transaction_type'] = 'void';
-                    $authorizedCardsData[$k]['dateUpdated'] = $data->result[0]->dateTime ?? null;
+                    $authorizedCardsData[$k]['dateUpdated'] = $data->result[0]->dateTime ?? date('Y-m-d H:i:s');
                 } else {
                     $errorMessage .= __("%1 not voided. Error: %2", $k, $response['errorMessage']).'<br>';
                 }
@@ -1205,7 +1227,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 
                 $authorizedCardsData[$invoiceId]['voided'] = 1;
                 $authorizedCardsData[$invoiceId]['transaction_type'] = 'void';
-                $authorizedCardsData[$invoiceId]['dateUpdated'] = $data->result[0]->dateTime;
+                $authorizedCardsData[$invoiceId]['dateUpdated'] = $data->result[0]->dateTime ?? date('Y-m-d H:i:s');
                 $this->session->setData('authorizedCardsData', $authorizedCardsData);
                 $this->session->setData('processedAmount', $processedAmount);
                 return 1;
@@ -1253,6 +1275,10 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
      */
     private function checkResponseForErrors($responseCode)
     {
+        if ($responseCode === null) {
+            return 'No rseponse code was received, probably due to a payment gateway timeout.';
+        }
+
         return $this->api->checkResponseForErrors($responseCode);
     }
 
