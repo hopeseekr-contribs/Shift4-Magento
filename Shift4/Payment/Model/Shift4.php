@@ -29,6 +29,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
     protected $partialProcessedAmounts;
     protected $invoice;
     protected $magentoInvoice = 0;
+    protected $sleepSeconds = 5;
     protected $productDescriptors;
 
     /**
@@ -156,6 +157,10 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
             ) {
                 $this->customerSession->authenticate();
             }
+        }
+		
+		if ($this->scopeConfig->getValue('payment/shift4/processing_mode', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 'live') {
+            $this->sleepSeconds = 3;
         }
 
         //hsa/fsa
@@ -707,8 +712,42 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                 $data = json_decode($response['data']);
 
                 if (!property_exists($data->result[0], 'transaction')) {
-                    $error = 'No transaction object was received (probably because the connection to the payment gateway timed out.).';
-                    $responseCode = '';
+					
+					//timeout
+					if ($response['error'] == 504 ||
+						(
+							property_exists($data->result[0], 'error') && 
+							property_exists($data->result[0]->error, 'primaryCode') &&
+							$data->result[0]->error->primaryCode == '9961')
+						) {
+
+						sleep($this->sleepSeconds);
+						$response = $this->api->getInvoice($response['invoice']);
+
+						if ($response['error']) {
+							$error = 'Server timed out. Please try again later.';
+						} else {
+							$data = json_decode($response['data']);
+							if (property_exists($data->result[0], 'transaction') &&
+        						property_exists($data->result[0]->transaction, 'responseCode')) {
+								$responseCode = $data->result[0]->transaction->responseCode;
+								$error = $this->checkResponseForErrors($responseCode);
+							} else {
+								$error = 'Server error. Please try again later.';
+							}
+						}
+
+					//other error
+					} else {
+						if (property_exists($data->result[0], 'error') && 
+						    property_exists($data->result[0]->error, 'primaryCode')) {
+								
+							$error = 'Server error. Please try again later. Error number: '
+							. $data->result[0]->error->primaryCode;
+						} else {
+							$error = 'Server error. Please try again later.';
+						}
+					}
                 } else {
                     $responseCode = $data->result[0]->transaction->responseCode;
                     $error = $this->checkResponseForErrors($responseCode);
@@ -884,7 +923,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 
             $this->api->devLog('got timeout');
 
-            sleep(5); //todo: check mode and change in production mode to 3.
+            sleep($this->sleepSeconds);
             $response = $this->api->getInvoice($response['invoice']);
 
             if ($response['error']) {
