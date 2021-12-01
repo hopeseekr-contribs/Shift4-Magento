@@ -38,16 +38,8 @@ class ConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
-        $totals = $this->checkoutSession->getQuote()->getGrandTotal();
-        $this->checkoutSession->getQuote()->reserveOrderId()->save();
-        $i4go = $this->api->getAccessBlock($totals, $this->checkoutSession->getQuote()->getReservedOrderId());
-
-        $savedCardsData = ['html' => '', 'default' => 'new'];
-
-        $i4go_server = $i4go['i4go_server'];
-        $i4go_accessblock = $i4go['i4go_accessblock'];
-        $i4go_countrycode = $i4go['i4go_countrycode'];
-        $i4go_i4m_url = $i4go['i4go_i4m_url'];
+		
+		$savedCardsData = ['html' => '', 'default' => 'new'];
 
         $healthcareProducts = (array) $this->checkoutSession->getData('healthcareProducts');
 
@@ -55,8 +47,6 @@ class ConfigProvider implements ConfigProviderInterface
         $healthcareTotalAmount = (float) $this->checkoutSession->getData('healthcareTotalAmountWithTax');
 
         $healthcareTotalAmount = $healthcareTotalAmount - $processedAmountHsaFsa;
-
-        //$totalAmount = $totals
 
         $authorizedCardsData = (array) $this->checkoutSession->getData('authorizedCardsData');
 
@@ -114,10 +104,6 @@ class ConfigProvider implements ConfigProviderInterface
             'guest_user_data' => $guestUserData,
             'payment' => [
                 'shift4_custom_data' => [
-                    'i4go_server_url' => $i4go_i4m_url,
-                    'i4go_accessblock' => $i4go_accessblock,
-                    'i4go_countrycode' => $i4go_countrycode,
-                    'i4go_server' => $i4go_server,
                     'support_swipe' => (
                         $this->scopeConfig->getValue(
                             'payment/shift4/support_swipe',
@@ -141,7 +127,6 @@ class ConfigProvider implements ConfigProviderInterface
                     'healthcareTotalAmount' => $healthcareTotalAmount,
                     'default_card' => $savedCardsData['default'],
                     'processedAmountHsaFsa' => $processedAmountHsaFsa,
-                    'total_amount' => $totals,
 					'enableGPay' => $enableGPay,
 					'enableAPay' => $enableAPay,
 					'template' => $template

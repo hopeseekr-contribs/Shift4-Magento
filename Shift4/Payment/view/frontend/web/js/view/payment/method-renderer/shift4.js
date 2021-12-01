@@ -89,62 +89,7 @@ define([
 				var self = this;
 				if ($('#i4go_form') && $('#i4go_form').length > 0) {
 					try {
-						$('#i4go_form').i4goTrueToken({
-							server: window.checkoutConfig.payment.shift4_custom_data.i4go_server,
-							accessBlock: window.checkoutConfig.payment.shift4_custom_data.i4go_accessblock,
-							language: 'en',
-							self: document.location,
-							template: "shift4shop",
-							i4goInfo: {"visible": false},
-							submitButton: { label: window.checkoutConfig.payment.shift4_custom_data.submit_label },
-							encryptedOnlySwipe: window.checkoutConfig.payment.shift4_custom_data.support_swipe,
-                            gcDisablesExpiration: window.checkoutConfig.payment.shift4_custom_data.disable_expiration_date_for_gc,
-                            gcDisablesCVV2Code: window.checkoutConfig.payment.shift4_custom_data.disable_cvv_for_gc,
-							cardType: {"visible": true},
-							url: window.checkoutConfig.payment.shift4_custom_data.i4go_server_url,
-							frameContainer: 'i4go_form', // Only used if frameName does not exist
-							frameName: "", // Auto-assigned if left empty
-							frameAutoResize: true,
-							frameClasses: "",
-							formAutoSubmitOnSuccess: false,
-							formAutoSubmitOnFailure: false,
-							onSuccess: function (form, data) {
-								if (data.i4go_response == 'SUCCESS' && data.i4go_responsecode == 1) {
-									self.i4goTrueToken = data.i4go_uniqueid;
-									self.i4goExpMonth = data.i4go_expirationmonth;
-									self.i4goExpYear = data.i4go_expirationyear;
-									self.i4goType = data.i4go_cardtype;
-									self.placeOrder();
-								} else {
-									//errors
-								}
-							},
-							onFailure: function (form, data) {
-								//
-							},
-							onComplete: function (form, data) {
-								//
-							},
-							acceptedPayments: "AX,DC,GC,JC,MC,NS,VS",
-							formPaymentResponse: "i4go_response",
-							formPaymentResponseCode: "i4go_responsecode",
-							formPaymentResponseText: "i4go_responsetext",
-							formPaymentMaskedCard: "i4go_maskedcard",
-							formPaymentToken: "i4go_uniqueid",
-							formPaymentExpMonth: "i4go_expirationmonth",
-							formPaymentExpYear: "i4go_expirationyear",
-							formPaymentType: "i4go_cardtype",
-							payments: [
-								{type: "VS", name: "Visa"},
-								{type: "MC", name: "MasterCard"},
-								{type: "AX", name: "American Express"},
-								{type: "DC", name: "Diners Club"},
-								{type: "NS", name: "Discover"},
-								{type: "JC", name: "JCB"},
-								{type: "GC", name: "Gift Card"}
-							],
-							cssRules: ["body{font-family:'Trebuchet MS', Arial, Helvetica, sans-serif;background-color: '#aaa'; borderLeft: '5px solid #ccc'}#container{margin-left:8px;padding-left:0px;margin-right:0px;padding-right:0px}label{display:none;}.row{margin-right:0;margin-left:0;}.col-4,.col-3{padding-left:0px;padding-right:10px;flex:0;}.col-1,.col-md-8{padding-left:0;}.form-group{margin-bottom:0;}.form-control{max-width: 100%; width: 273px;height: 30px; margin-bottom: 10px; background: #ffffff none repeat scroll 0 0;border: 1px solid silver; border-radius: 2px; font-size: 15px;}#i4go_expirationMonth {width: 80px;}#cvv2Code{width:60px;}#i4go_expirationYear {width: 90px;}.addcardform{height:auto;}#i4go_cvv2Code {width: 80px;}#i4go_cardNumber {width: 255px;}.btn-secure {background: #1979c3; border: 0 none;color: #ffffff;display: inline-block;font-family: 'RalewayHelvetica Neue',Verdana,Arial,sans-serif;font-size: 13px;font-weight: normal;line-height: 19px;padding: 7px 15px;text-align: center;text-transform: uppercase;vertical-align: middle;white-space: nowrap;}.btn-secure:hover {background-color: #006bb4; color: #ffffff;outline: medium none; cursor: pointer;}"]
-						});
+						self.loadI4goIframe();
 					}
 					catch(err) {
 						self.addMessage(err.message, 'error');
@@ -331,7 +276,6 @@ define([
 						});
 					return true;				
             },
-			
 			addPartialPayment: function(resp) {
 				var self = this;
 				$('#partial_payments').append('<div id="preauthorized_section_' + resp[1] + '" style="margin-top:1.5em;"><div id="preauth_card_type_' + resp[1] + '" style="clear:both;"></div><div id="preauth_card_number_' + resp[1] + '" style="clear:both;"></div><div id="preauth_processed_amount_' + resp[1] + '" style="clear:both;"></div><div id="preauth_invoice_id_' + resp[1] + '" style="clear:both;"></div><div id="preauth_auth_code_' + resp[1] + '" style="clear:both;"></div><div id="preauth_receipt_text_' + resp[1] + '" style="clear:both;"></div></div>');
@@ -386,7 +330,78 @@ define([
 				} else {
 					$('.messages').html('<!-- ko foreach: messageContainer.getErrorMessages() --><!--/ko--><!-- ko foreach: messageContainer.getSuccessMessages() --><!--/ko-->');
 				}
-			}
+			},
+			
+			loadI4goIframe: function() {
+					var self = this;
+					var i4goUrl = url.build('shift4/payment/geti4go');
+					$.ajax({
+						method: "GET",
+						url: i4goUrl,
+						dataType: "json",
+						showLoader: true,
+						data: {}
+					})
+					.done(function (response) {
+						$('#i4go_form').i4goTrueToken({
+							server: response.i4go_server,
+							accessBlock: response.i4go_accessblock,
+							language: 'en',
+							self: document.location,
+							template: "shift4shop",
+							i4goInfo: {"visible": false},
+							submitButton: { label: window.checkoutConfig.payment.shift4_custom_data.submit_label },
+							encryptedOnlySwipe: window.checkoutConfig.payment.shift4_custom_data.support_swipe,
+                            gcDisablesExpiration: window.checkoutConfig.payment.shift4_custom_data.disable_expiration_date_for_gc,
+                            gcDisablesCVV2Code: window.checkoutConfig.payment.shift4_custom_data.disable_cvv_for_gc,
+							cardType: {"visible": true},
+							url: response.i4go_i4m_url,
+							frameContainer: 'i4go_form', // Only used if frameName does not exist
+							frameName: "", // Auto-assigned if left empty
+							frameAutoResize: true,
+							frameClasses: "",
+							formAutoSubmitOnSuccess: false,
+							formAutoSubmitOnFailure: false,
+							onSuccess: function (form, data) {
+								if (data.i4go_response == 'SUCCESS' && data.i4go_responsecode == 1) {
+									self.i4goTrueToken = data.i4go_uniqueid;
+									self.i4goExpMonth = data.i4go_expirationmonth;
+									self.i4goExpYear = data.i4go_expirationyear;
+									self.i4goType = data.i4go_cardtype;
+									self.placeOrder();
+								} else {
+									//errors
+								}
+							},
+							onFailure: function (form, data) {
+								//
+							},
+							onComplete: function (form, data) {
+								//
+							},
+							acceptedPayments: "AX,DC,GC,JC,MC,NS,VS",
+							formPaymentResponse: "i4go_response",
+							formPaymentResponseCode: "i4go_responsecode",
+							formPaymentResponseText: "i4go_responsetext",
+							formPaymentMaskedCard: "i4go_maskedcard",
+							formPaymentToken: "i4go_uniqueid",
+							formPaymentExpMonth: "i4go_expirationmonth",
+							formPaymentExpYear: "i4go_expirationyear",
+							formPaymentType: "i4go_cardtype",
+							payments: [
+								{type: "VS", name: "Visa"},
+								{type: "MC", name: "MasterCard"},
+								{type: "AX", name: "American Express"},
+								{type: "DC", name: "Diners Club"},
+								{type: "NS", name: "Discover"},
+								{type: "JC", name: "JCB"},
+								{type: "GC", name: "Gift Card"}
+							],
+							cssRules: ["body{font-family:'Trebuchet MS', Arial, Helvetica, sans-serif;background-color: '#aaa'; borderLeft: '5px solid #ccc'}#container{margin-left:8px;padding-left:0px;margin-right:0px;padding-right:0px}label{display:none;}.row{margin-right:0;margin-left:0;}.col-4,.col-3{padding-left:0px;padding-right:10px;flex:0;}.col-1,.col-md-8{padding-left:0;}.form-group{margin-bottom:0;}.form-control{max-width: 100%; width: 273px;height: 30px; margin-bottom: 10px; background: #ffffff none repeat scroll 0 0;border: 1px solid silver; border-radius: 2px; font-size: 15px;}#i4go_expirationMonth {width: 80px;}#cvv2Code{width:60px;}#i4go_expirationYear {width: 90px;}.addcardform{height:auto;}#i4go_cvv2Code {width: 80px;}#i4go_cardNumber {width: 255px;}.btn-secure {background: #1979c3; border: 0 none;color: #ffffff;display: inline-block;font-family: 'RalewayHelvetica Neue',Verdana,Arial,sans-serif;font-size: 13px;font-weight: normal;line-height: 19px;padding: 7px 15px;text-align: center;text-transform: uppercase;vertical-align: middle;white-space: nowrap;}.btn-secure:hover {background-color: #006bb4; color: #ffffff;outline: medium none; cursor: pointer;}"]
+						});
+						return true;	
+					});				
+            },
         });
     }
 );
