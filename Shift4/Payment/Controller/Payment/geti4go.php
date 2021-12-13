@@ -44,7 +44,15 @@ class geti4go extends \Magento\Framework\App\Action\Action
         $shipping = $this->checkoutSession->getQuote()->getShippingAddress()->getShippingAmount();
 
         $this->checkoutSession->getQuote()->reserveOrderId()->save();
-        $i4go = $this->api->getAccessBlock($totals, $this->checkoutSession->getQuote()->getReservedOrderId());
+
+		$processedAmount = (float) $this->checkoutSession->getData('processedAmount');
+
+        //if partial authorization before.
+        if ($processedAmount > 0) {
+            $totals = $totals - $processedAmount;
+        }
+
+		$i4go = $this->api->getAccessBlock($totals, $this->checkoutSession->getQuote()->getReservedOrderId());
 
 		$return = [
 			'i4go_server' => $i4go['i4go_server'],

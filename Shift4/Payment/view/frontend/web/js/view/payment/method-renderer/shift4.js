@@ -97,7 +97,16 @@ define([
 					
 					//Load partial payments
 					$.each(window.checkoutConfig.payment.shift4_custom_data.partial_payments, function (key, value) {
-						self.addPartialPayment(value);
+						var partial = [
+							value.preauthInvoiceId,
+							value.cardCount,
+							value.cardType,
+							value.preauthCardNumber,
+							value.preauthProcessedAmount,
+							value.preauthAuthCode,
+							value.remainingAmount
+						];
+						self.addPartialPayment(partial);
 					});
 					
 					//disable messages
@@ -166,7 +175,7 @@ define([
 			},
 
 			placeOrder: function (data, event) {
-								var self = this;
+				var self = this;
 
 				if (event) {
 					event.preventDefault();
@@ -198,12 +207,12 @@ define([
 										$('.s4-message.message-warning').remove();
 									}
 									self.isPlaceOrderActionAllowed(true);
-									$('#i4go_form iframe').attr('src', $('#i4go_form iframe').attr('src'));
+									self.loadI4goIframe();
 									
 								} else {
 									self.addMessage(response.responseJSON.message, 'error');
 									self.isPlaceOrderActionAllowed(true);
-									$('#i4go_form iframe').attr('src', $('#i4go_form iframe').attr('src'));
+									self.loadI4goIframe();
 									return false;
 								}
 							}
@@ -343,6 +352,19 @@ define([
 						data: {}
 					})
 					.done(function (response) {
+						$('#i4go_form').remove()
+						$('#new_card').prepend('<div id="i4go_form"></div>');
+						
+						if (window.checkoutConfig.payment.shift4_custom_data.enableGPay == '1') {
+							$('.google-pay-button').remove();
+							$('.pay-buttons').prepend('<button class="pay-button google-pay-button pay-hidden" style="display:none;"></button>');
+						}
+						
+						if (window.checkoutConfig.payment.shift4_custom_data.enableAPay == '1') {
+							$('.apple-pay-button').remove();
+							$('.pay-buttons').prepend('<button class="pay-button apple-pay-button pay-hidden" style="display:none;"></button>');
+						}
+						
 						$('#i4go_form').i4goTrueToken({
 							server: response.i4go_server,
 							accessBlock: response.i4go_accessblock,
