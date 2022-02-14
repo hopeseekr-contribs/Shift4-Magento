@@ -11,7 +11,7 @@
         <css src="Shift4_Payment::css/custom.css"/>
     
         <!-- The following two ways to add local JavaScript files are equal -->
-        <link src="Shift4_Payment::js/jquery-1.10.2.min.js"/>
+        <link src="Shift4_Payment::js/jquery-1.12.4.min.js"/>
         <link src="Shift4_Payment::js/noconflict.js"/>
         <link src="Shift4_Payment::js/custom.js"/>
         	
