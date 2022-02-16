@@ -199,6 +199,9 @@ $hsaFsa = $block->getHsaFsa();
     </div>
 <?php endif; ?>
     <div class="s4messages"></div>
-
-    <div id="i4go_form"></div>
+	<?php if ($savedCards['html'] != ''): ?> 
+	<label style="color:#636363;font-size:13px;font-weight:600;display:block;margin-top:10px;margin-left:8px;font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;"><?= /* @escapeNotVerified */ __('My saved cards:') ?></label>
+	<select id="my_saved_cards" name="saved_card" style="margin-left:8px; width: 273px;height: 30px;padding: 0 8px;margin-bottom: 10px;background: #ffffff none repeat scroll 0 0;border: 1px solid silver;border-radius: 2px;font-size: 15px;"><?php echo $savedCards['html']; ?></select>
+	<?php endif; ?>
+    <div id="i4go_form"<?php if ($savedCards['default'] != 'new' && $savedCards['html'] != '') { ?> style="display:none;"><?php } ?>></div>
 </div>
