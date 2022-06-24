@@ -314,7 +314,7 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
                     ->limit(1);
 
         $invoice = $this->getConnection()->fetchRow($sql);
-        return str_pad(((int) $invoice['increment_id'] +1), 9, "0", STR_PAD_LEFT);
+        return str_pad(((int) ($invoice['increment_id'] ?? 0) + 1), 9, "0", STR_PAD_LEFT);
     }
 
     public function saveAllTransactions($transactions)
