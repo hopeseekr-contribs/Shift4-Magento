@@ -32,15 +32,16 @@ class PaymentInfo
                 $amount = 0;
                 $utgResponse = \json_decode($card['utg_response']);
                 if (json_last_error() == JSON_ERROR_NONE) {
-					
-					if (property_exists($utgResponse->result[0], 'amount') &&
-						property_exists($utgResponse->result[0]->amount, 'total')
-						) {
-						$amount = (float) $utgResponse->result[0]->amount->total;
-					}
+                    
+                    if (property_exists($utgResponse->result[0], 'amount') 
+                        && property_exists($utgResponse->result[0]->amount, 'total')
+                    ) {
+                        $amount = (float) $utgResponse->result[0]->amount->total;
+                    }
 
-                    if (property_exists($utgResponse->result[0], 'transaction') && 
-						property_exists($utgResponse->result[0]->transaction, 'authorizationCode')) {
+                    if (property_exists($utgResponse->result[0], 'transaction')  
+                        && property_exists($utgResponse->result[0]->transaction, 'authorizationCode')
+                    ) {
                         $authorizationCode = (string)$utgResponse->result[0]->transaction->authorizationCode;
                     }
                 }

@@ -3,10 +3,10 @@
 /**
  * Shift4_Payment module dependency
  *
- * @category    Payment
- * @package     Shift4_Payment
- * @author      Chetu
- * @copyright   Shift4 Payment (https://www.shift4.com)
+ * @category  Payment
+ * @package   Shift4_Payment
+ * @author    Chetu
+ * @copyright Shift4 Payment (https://www.shift4.com)
  */
 
 namespace Shift4\Payment\Model\ResourceModel;
@@ -45,8 +45,8 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
         $sql = $this->getConnection()->select();
 
         $sql->from(['s4' => $this->getMainTable()])
-                ->joinLeft(["o" => $this->getTable('sales_order')], "s4.order_id = o.increment_id", $orderColumns)
-                ->joinLeft(["c" => $this->getTable('customer_entity')], "s4.customer_id = c.entity_id", ['firstname', 'lastname']);
+            ->joinLeft(["o" => $this->getTable('sales_order')], "s4.order_id = o.increment_id", $orderColumns)
+            ->joinLeft(["c" => $this->getTable('customer_entity')], "s4.customer_id = c.entity_id", ['firstname', 'lastname']);
 
 
         if ($filterType == 'order_date') {
@@ -135,12 +135,12 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
 
                 $utgResponse = json_decode($v['utg_response']);
                 if (json_last_error() == JSON_ERROR_NONE) {
-					
-					if (!property_exists($utgResponse->result[0], 'amount')) {
-						$amountProcessed = 0;
-					} else {
-						$amountProcessed = (float) $utgResponse->result[0]->amount->total;
-					}
+                    
+                    if (!property_exists($utgResponse->result[0], 'amount')) {
+                        $amountProcessed = 0;
+                    } else {
+                        $amountProcessed = (float) $utgResponse->result[0]->amount->total;
+                    }
                 }
 
                 $type = 'other';
@@ -155,59 +155,59 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
                 }
 
                 if ($v['error'] == '' && $v['voided'] == 0) {
-					if (!isset($totals[$v['card_type']])) {
-						$totals[$v['card_type']] = [];
-					}
-					
-					if (!isset($totals[$v['card_type']][$type])) {
-						$totals[$v['card_type']][$type] = [];
-					}
-					
-					if (!isset($totals[$v['card_type']][$type]['total'])) {
-						$totals[$v['card_type']][$type]['total'] = 0;
-					}
-					
-					if (!isset($totals[$v['card_type']][$type]['count'])) {
-						$totals[$v['card_type']][$type]['count'] = 0;
-					}
-					
-					if (!isset($totals['totals'])) {
-						$totals['totals'] = [];
-					}
-					
-					if (!isset($totals['totals'][$type])) {
-						$totals['totals'][$type] = [];
-					}
-					
-					if (!isset($totals['totals'][$type]['total'])) {
-						$totals['totals'][$type]['total'] = 0;
-					}
-					
-					if (!isset($totals['totals'][$type]['count'])) {
-						$totals['totals'][$type]['count'] = 0;
-					}
-					
+                    if (!isset($totals[$v['card_type']])) {
+                        $totals[$v['card_type']] = [];
+                    }
+                    
+                    if (!isset($totals[$v['card_type']][$type])) {
+                        $totals[$v['card_type']][$type] = [];
+                    }
+                    
+                    if (!isset($totals[$v['card_type']][$type]['total'])) {
+                        $totals[$v['card_type']][$type]['total'] = 0;
+                    }
+                    
+                    if (!isset($totals[$v['card_type']][$type]['count'])) {
+                        $totals[$v['card_type']][$type]['count'] = 0;
+                    }
+                    
+                    if (!isset($totals['totals'])) {
+                        $totals['totals'] = [];
+                    }
+                    
+                    if (!isset($totals['totals'][$type])) {
+                        $totals['totals'][$type] = [];
+                    }
+                    
+                    if (!isset($totals['totals'][$type]['total'])) {
+                        $totals['totals'][$type]['total'] = 0;
+                    }
+                    
+                    if (!isset($totals['totals'][$type]['count'])) {
+                        $totals['totals'][$type]['count'] = 0;
+                    }
+                    
                     $totals[$v['card_type']][$type]['total'] = (float) $totals[$v['card_type']][$type]['total'] + $amountProcessed;
                     $totals[$v['card_type']][$type]['count'] = (int) $totals[$v['card_type']][$type]['count'] + 1;
                     $totals['totals'][$type]['total'] = (float) $totals['totals'][$type]['total'] + $amountProcessed;
                     $totals['totals'][$type]['count'] = (int) $totals['totals'][$type]['count'] + 1;
                 } elseif ($v['error'] != '' && $v['voided'] == 0) {
-					
-					if (!isset($totals['errors'])) {
-						$totals['errors'] = [];
-					}
-					
-					if (!isset($totals['errors'][$type])) {
-						$totals['errors'][$type] = [];
-					}
-					
-					if (!isset($totals['errors'][$type]['total'])) {
-						$totals['errors'][$type]['total'] = 0;
-					}
-					
-					if (!isset($totals['errors'][$type]['count'])) {
-						$totals['errors'][$type]['count'] = 0;
-					}
+                    
+                    if (!isset($totals['errors'])) {
+                        $totals['errors'] = [];
+                    }
+                    
+                    if (!isset($totals['errors'][$type])) {
+                        $totals['errors'][$type] = [];
+                    }
+                    
+                    if (!isset($totals['errors'][$type]['total'])) {
+                        $totals['errors'][$type]['total'] = 0;
+                    }
+                    
+                    if (!isset($totals['errors'][$type]['count'])) {
+                        $totals['errors'][$type]['count'] = 0;
+                    }
 
                     $totals['errors'][$type]['total'] = (float) $totals['errors'][$type]['total'] + $v['amount'];
                     $totals['errors'][$type]['count'] = (int) $totals['errors'][$type]['count'] + 1;
@@ -234,9 +234,9 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
     public function getTransaction($transactionId)
     {
         $sql = $this->getConnection()
-                    ->select()
-                    ->from($this->getMainTable())
-                    ->where("shift4_transaction_id=?", (int) $transactionId);
+            ->select()
+            ->from($this->getMainTable())
+            ->where("shift4_transaction_id=?", (int) $transactionId);
 
         $transaction = $this->getConnection()->fetchRow($sql);
         return $transaction;
@@ -254,11 +254,11 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
         ];
 
         $sql = $this->getConnection()
-                    ->select()
-                    ->from(['s4' => $this->getMainTable()])
-                    ->joinLeft(["o" => $this->getTable('sales_order')], "s4.order_id = o.increment_id", $orderColumns)
-                    ->where("o.entity_id ='". (int) $orderId."'")
-                    ->order('s4.transaction_date');
+            ->select()
+            ->from(['s4' => $this->getMainTable()])
+            ->joinLeft(["o" => $this->getTable('sales_order')], "s4.order_id = o.increment_id", $orderColumns)
+            ->where("o.entity_id ='". (int) $orderId."'")
+            ->order('s4.transaction_date');
 
         $transactions = $this->getConnection()->fetchAll($sql);
         return $transactions;
@@ -276,11 +276,11 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
         ];
 
         $sql = $this->getConnection()
-                    ->select()
-                    ->from(['s4' => $this->getMainTable()])
-                    ->joinLeft(["o" => $this->getTable('sales_order')], "s4.order_id = o.increment_id", $orderColumns)
-                    ->where("s4.invoice_id ='". $this->escapeString($invoiceId)."'")
-                    ->order('s4.transaction_date');
+            ->select()
+            ->from(['s4' => $this->getMainTable()])
+            ->joinLeft(["o" => $this->getTable('sales_order')], "s4.order_id = o.increment_id", $orderColumns)
+            ->where("s4.invoice_id ='". $this->escapeString($invoiceId)."'")
+            ->order('s4.transaction_date');
 
         $transactions = $this->getConnection()->fetchAll($sql);
         return $transactions;
@@ -308,10 +308,10 @@ class TransactionLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractD
     {
 
         $sql = $this->getConnection()
-                    ->select()
-                    ->from($this->getTable('sales_invoice'), ['increment_id'])
-                    ->order('increment_id DESC')
-                    ->limit(1);
+            ->select()
+            ->from($this->getTable('sales_invoice'), ['increment_id'])
+            ->order('increment_id DESC')
+            ->limit(1);
 
         $invoice = $this->getConnection()->fetchRow($sql);
         return str_pad(((int) ($invoice['increment_id'] ?? 0) + 1), 9, "0", STR_PAD_LEFT);

@@ -64,11 +64,11 @@ class AccessTokenUnMask extends \Magento\Config\Block\System\Config\Form\Field
         $html = parent::getAfterElementHtml();
 
         $html .= $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
-                ->setType('button')
-                ->setId('access_token_unmask')
-                ->setLabel('New Token')
-                ->setOnClick("javascript:addNew()")
-                ->toHtml();
+            ->setType('button')
+            ->setId('access_token_unmask')
+            ->setLabel('New Token')
+            ->setOnClick("javascript:addNew()")
+            ->toHtml();
 
         return $html . $buttonScript;
     }

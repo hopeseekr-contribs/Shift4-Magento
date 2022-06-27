@@ -9,7 +9,7 @@ class GetAccessToken extends \Magento\Backend\App\Action
     /**
      * Constructor
      *
-     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Backend\App\Action\Context        $context
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
      */
     public function __construct(
@@ -44,7 +44,7 @@ class GetAccessToken extends \Magento\Backend\App\Action
             try {
                 $result = $this->api->getShift4AccessToken($authToken, $endPoint);
                 if (!empty($result['http_code']) && $result['http_code'] == '200') {
-					
+                    
                     $response = json_decode($result['data']);
 
                     $access_token = $response->result[0]->credential->accessToken;
@@ -59,8 +59,8 @@ class GetAccessToken extends \Magento\Backend\App\Action
                     }
                 } else {
 
-					$response = json_decode($result['data']);
-					
+                    $response = json_decode($result['data']);
+                    
                     $data['error_message'] = $response->result[0]->error->longText
                         ? $response->result[0]->error->longText
                         : __('Error generating access token');

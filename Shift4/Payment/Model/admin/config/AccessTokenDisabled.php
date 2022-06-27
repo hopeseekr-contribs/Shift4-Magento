@@ -16,7 +16,7 @@ class AccessTokenDisabled extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Method for Set Element
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param  \Magento\Framework\Data\Form\Element\AbstractElement $element
      * @return String
      */
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)

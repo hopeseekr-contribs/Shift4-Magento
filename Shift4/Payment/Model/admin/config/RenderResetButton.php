@@ -3,9 +3,9 @@
 /**
  * Render reset button for the server addresses
  *
- * @category    Shift4
- * @package     Payment
- * @author    Chetu Team
+ * @category Shift4
+ * @package  Payment
+ * @author   Chetu Team
  */
 
 namespace Shift4\Payment\Model\admin\config;
@@ -16,7 +16,7 @@ class RenderResetButton extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Method for Set Element
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param  \Magento\Framework\Data\Form\Element\AbstractElement $element
      * @return String
      */
     protected $_server_addresses = 'https://utgapi.shift4test.com/api/rest/v1/';
@@ -63,12 +63,12 @@ class RenderResetButton extends \Magento\Config\Block\System\Config\Form\Field
         $html = parent::getAfterElementHtml();
 
         $html .= $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
-                ->setType('button')
-                ->setClass('scalable save')
-                ->setLabel('Reset')
-                ->setId('shift4_reset_server_address')
-                ->setOnClick("javascript:resetServerAddresses()")
-                ->toHtml();
+            ->setType('button')
+            ->setClass('scalable save')
+            ->setLabel('Reset')
+            ->setId('shift4_reset_server_address')
+            ->setOnClick("javascript:resetServerAddresses()")
+            ->toHtml();
 
         return $html . $buttonScript;
     }

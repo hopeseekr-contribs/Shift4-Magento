@@ -104,9 +104,9 @@ class Shift4 extends \Magento\Backend\Block\Template
 
             $utgResponse = json_decode($v['utg_response']);
             if (json_last_error() == JSON_ERROR_NONE) {
-				if (property_exists($utgResponse, 'result') && property_exists($utgResponse->result[0], 'amount')) {
-					$amountProcessed = (float) $utgResponse->result[0]->amount->total;
-				}
+                if (property_exists($utgResponse, 'result') && property_exists($utgResponse->result[0], 'amount')) {
+                    $amountProcessed = (float) $utgResponse->result[0]->amount->total;
+                }
             }
 
             $transactions[$k]['order_url'] = (
@@ -116,9 +116,11 @@ class Shift4 extends \Magento\Backend\Block\Template
             );
             $transactions[$k]['amount_processed'] = $amountProcessed;
             $transactions[$k]['customer_url'] = (
-            $v['customer_id'] ? $this->getUrl('customer/index/edit', [
+            $v['customer_id'] ? $this->getUrl(
+                'customer/index/edit', [
                 'id' => $v['customer_id']
-            ]) : ''
+                ]
+            ) : ''
             );
             $transactions[$k]['customer_firstname'] = (
             $v['customer_firstname'] ? $v['customer_firstname'] : $v['firstname']
@@ -138,23 +140,27 @@ class Shift4 extends \Magento\Backend\Block\Template
             );
 
             switch ($request['filter_type']) {
-                case 'order_date':
-                    $transactions[$k]['download_url'] = $this->getUrl('payment/report/downloadorderlog', [
-                        'id' => $v['entity_id']
-                    ]);
-                    $orderTransactions[$v['order_id']][] = $transactions[$k];
-                    break;
-                case 'shipping_date':
-                    //todo
-                    break;
-                case 'timeout_date':
-                case 'transaction_date':
-                default:
-                    $transactions[$k]['download_url'] = $this->getUrl('payment/report/downloadtransactionlog', [
-                        'id' => $v['shift4_transaction_id']
-                    ]);
-                    $orderTransactions[$v['shift4_transaction_id']][] = $transactions[$k];
-                    break;
+            case 'order_date':
+                $transactions[$k]['download_url'] = $this->getUrl(
+                    'payment/report/downloadorderlog', [
+                    'id' => $v['entity_id']
+                        ]
+                );
+                $orderTransactions[$v['order_id']][] = $transactions[$k];
+                break;
+            case 'shipping_date':
+                //todo
+                break;
+            case 'timeout_date':
+            case 'transaction_date':
+            default:
+                $transactions[$k]['download_url'] = $this->getUrl(
+                    'payment/report/downloadtransactionlog', [
+                    'id' => $v['shift4_transaction_id']
+                        ]
+                );
+                $orderTransactions[$v['shift4_transaction_id']][] = $transactions[$k];
+                break;
             }
         }
 

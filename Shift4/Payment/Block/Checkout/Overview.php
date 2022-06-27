@@ -29,27 +29,26 @@ class Overview extends \Magento\Multishipping\Block\Checkout\Overview
         $this->savedCards = $savedCards;
         $this->checkoutSession = $checkoutSession;
 
-		//workaround MG-90
-		if (
-			$this->getCheckoutData()->getAddressErrors() &&
-			!empty($this->getCheckoutData()->getAddressErrors()) && 
-			$this->checkoutSession->getData('shift4PostReloaded') != 1
-		) {
-			$shift4Post = $this->request->getParam('shift4');
-			if (!empty($shift4Post) &&
-				isset($shift4Post['trueToken']) &&
-				isset($shift4Post['cardtype']) &&
-				ctype_alnum($shift4Post['trueToken']) &&
-				ctype_alnum($shift4Post['cardtype'])
-			) {
-				$this->checkoutSession->setData('shift4Post', $shift4Post);
-			}
-			$this->checkoutSession->setData('shift4PostReloaded', 1);
+        //workaround MG-90
+        if ($this->getCheckoutData()->getAddressErrors() 
+            && !empty($this->getCheckoutData()->getAddressErrors())  
+            && $this->checkoutSession->getData('shift4PostReloaded') != 1
+        ) {
+            $shift4Post = $this->request->getParam('shift4');
+            if (!empty($shift4Post) 
+                && isset($shift4Post['trueToken']) 
+                && isset($shift4Post['cardtype']) 
+                && ctype_alnum($shift4Post['trueToken']) 
+                && ctype_alnum($shift4Post['cardtype'])
+            ) {
+                $this->checkoutSession->setData('shift4Post', $shift4Post);
+            }
+            $this->checkoutSession->setData('shift4PostReloaded', 1);
 
-			header("refresh: 0;");
-		}
-		
-		$this->checkoutSession->setData('shift4PostReloaded', 0);
+            header("refresh: 0;");
+        }
+        
+        $this->checkoutSession->setData('shift4PostReloaded', 0);
 
     }
 
@@ -59,16 +58,16 @@ class Overview extends \Magento\Multishipping\Block\Checkout\Overview
     public function getPaymentHtml()
     {
         $shift4Post = $this->request->getParam('shift4');
-		
-		if (empty($shift4Post)) {
-			$shift4Post = $this->checkoutSession->getData('shift4Post');
-		}
+        
+        if (empty($shift4Post)) {
+            $shift4Post = $this->checkoutSession->getData('shift4Post');
+        }
 
-        if (!empty($shift4Post) &&
-            isset($shift4Post['trueToken']) &&
-            isset($shift4Post['cardtype']) &&
-            ctype_alnum($shift4Post['trueToken']) &&
-            ctype_alnum($shift4Post['cardtype'])
+        if (!empty($shift4Post) 
+            && isset($shift4Post['trueToken']) 
+            && isset($shift4Post['cardtype']) 
+            && ctype_alnum($shift4Post['trueToken']) 
+            && ctype_alnum($shift4Post['cardtype'])
         ) {
             $additionalHtml = '
 			<input type="hidden" name="shift4truetoken" value="'. $shift4Post['trueToken'] .'">

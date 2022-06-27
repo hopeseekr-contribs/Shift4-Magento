@@ -1,4 +1,5 @@
-define([
+define(
+    [
         'uiComponent',
         'Magento_Checkout/js/model/payment/renderer-list'
     ],
@@ -12,6 +13,9 @@ define([
             }
         );
 
-        /** Add view logic here if needed */
+        /**
+    * Add view logic here if needed 
+    */
         return Component.extend({});
-    });
+    }
+);

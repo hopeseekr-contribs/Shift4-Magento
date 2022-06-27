@@ -189,7 +189,9 @@ class Printinvoiceplain extends \Magento\Sales\Block\Items\AbstractItems
 
     public function itemRenderer($type, $item)
     {
-        /** @var \Magento\Framework\View\Element\RendererList $rendererList */
+        /**
+ * @var \Magento\Framework\View\Element\RendererList $rendererList 
+*/
         $item->setOrder($this->order);
         //$item->setInvoice($this->invoice);
 

@@ -11,13 +11,15 @@ class DownloadLog extends \Magento\Backend\App\Action
 {
     private $pageFactory;
 
-    /** @var \Shift4\Payment\Model\TransactionLog */
+    /**
+     * @var \Shift4\Payment\Model\TransactionLog 
+     */
     private $transactionLog;
 
     /**
      * Constructor
      *
-     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Backend\App\Action\Context        $context
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
      */
     public function __construct(

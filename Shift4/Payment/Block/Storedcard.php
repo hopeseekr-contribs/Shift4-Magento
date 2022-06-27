@@ -84,7 +84,7 @@ class Storedcard extends Template
     protected function _toHtml()
     {
         $iframe = $this->getLayout()->createBlock('Shift4\Payment\Block\Iframe')
-                ->setTemplate('i4go-iframe.phtml');
+            ->setTemplate('i4go-iframe.phtml');
         $this->setChild('i4go_iframe', $iframe);
         return parent::_toHtml();
         

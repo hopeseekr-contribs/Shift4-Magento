@@ -9,12 +9,12 @@ class Results extends \Magento\Multishipping\Block\Checkout\Results
      *
      * @return string Method.
      */
-	
+    
     public function getPaymentMethod()
     {
-		
-		$paymentMethod = $this->getCheckout()->getQuote()->getPayment()->getMethodInstance()->getCode();
+        
+        $paymentMethod = $this->getCheckout()->getQuote()->getPayment()->getMethodInstance()->getCode();
         return $paymentMethod;
     }
-	
+    
 }

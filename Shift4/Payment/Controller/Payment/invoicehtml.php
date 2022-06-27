@@ -3,9 +3,9 @@
 /**
  * Shift4 Payment controller for invoice html
  *
- * @category    Shift4
- * @package     Payment
- * @author    Giedrius
+ * @category Shift4
+ * @package  Payment
+ * @author   Giedrius
  */
 
 namespace Shift4\Payment\Controller\Payment;
@@ -32,10 +32,10 @@ class invoicehtml extends \Magento\Framework\App\Action\Action
     protected $resultPageFactory;
 
     /**
-     * @param Context $context
+     * @param Context                         $context
      * @param OrderViewAuthorizationInterface $orderAuthorization
-     * @param \Magento\Framework\Registry $registry
-     * @param PageFactory $resultPageFactory
+     * @param \Magento\Framework\Registry     $registry
+     * @param PageFactory                     $resultPageFactory
      */
     public function __construct(
         Context $context,
@@ -69,7 +69,9 @@ class invoicehtml extends \Magento\Framework\App\Action\Action
         if (isset($invoice)) {
             $this->_coreRegistry->register('current_invoice', $invoice);
         }
-            /** @var \Magento\Framework\View\Result\Page $resultPage */
+            /**
+ * @var \Magento\Framework\View\Result\Page $resultPage 
+*/
             $resultPage = $this->resultPageFactory->create()->addHandle('print');
             return $resultPage;
     }

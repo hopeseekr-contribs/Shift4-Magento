@@ -38,8 +38,8 @@ class ConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
-		
-		$savedCardsData = ['html' => '', 'default' => 'new'];
+        
+        $savedCardsData = ['html' => '', 'default' => 'new'];
 
         $healthcareProducts = (array) $this->checkoutSession->getData('healthcareProducts');
 
@@ -68,39 +68,40 @@ class ConfigProvider implements ConfigProviderInterface
         $customerId = (int) $this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId();
 
         if ($this->customerSession->isLoggedIn() && $this->scopeConfig->getValue(
-			'payment/shift4/enable_saved_cards',
-			\Magento\Store\Model\ScopeInterface::SCOPE_STORE
-			)) {
+            'payment/shift4/enable_saved_cards',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        )
+        ) {
             $saved_cards_enabled = 1;
             $savedCardsData = $this->savedCardsHelper->getSavedCardsHTML(
-				$this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId()
-			);
+                $this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId()
+            );
         }
 
-		$enableGPay = $this->scopeConfig->getValue(
-			'payment/shift4/enable_google_pay',
-			\Magento\Store\Model\ScopeInterface::SCOPE_STORE
-		);
-		$enableAPay = $this->scopeConfig->getValue(
-			'payment/shift4/enable_apple_pay',
-			\Magento\Store\Model\ScopeInterface::SCOPE_STORE
-		);
+        $enableGPay = $this->scopeConfig->getValue(
+            'payment/shift4/enable_google_pay',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+        $enableAPay = $this->scopeConfig->getValue(
+            'payment/shift4/enable_apple_pay',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
 
-		$template = 'default';
-		
-		if (!$enableGPay && !$enableAPay) {
-			$template = 'no_quicpayments';
-		} else {
-			if (!$enableGPay) {
-				$template = 'no_gp';
-			}
+        $template = 'default';
+        
+        if (!$enableGPay && !$enableAPay) {
+            $template = 'no_quicpayments';
+        } else {
+            if (!$enableGPay) {
+                $template = 'no_gp';
+            }
 
-			if (!$enableAPay) {
-				$template = 'no_ap';
-			}
-		}
+            if (!$enableAPay) {
+                $template = 'no_ap';
+            }
+        }
 
-		return [
+        return [
             'guest_user_data' => $guestUserData,
             'payment' => [
                 'shift4_custom_data' => [
@@ -110,16 +111,18 @@ class ConfigProvider implements ConfigProviderInterface
                             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                         ) ? true : false),
                     'submit_label' => $this->scopeConfig->getValue(
-						'payment/shift4/submit_label', \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-					),
+                        'payment/shift4/submit_label', \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                    ),
                     'disable_expiration_date_for_gc' => ($this->scopeConfig->getValue(
-						'payment/shift4/disable_expiration_date_for_gc',
-						\Magento\Store\Model\ScopeInterface::SCOPE_STORE) ? true : false
-					),
+                        'payment/shift4/disable_expiration_date_for_gc',
+                        \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                    ) ? true : false
+        ),
                     'disable_cvv_for_gc' => ($this->scopeConfig->getValue(
-						'payment/shift4/disable_cvv_for_gc',
-						\Magento\Store\Model\ScopeInterface::SCOPE_STORE) ? true : false
-					),
+                        'payment/shift4/disable_cvv_for_gc',
+                        \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                    ) ? true : false
+        ),
                     'partial_payments' => $authorizedCardsData,
                     'saved_cards' => $savedCardsData['html'],
                     'saved_cards_enabled' => $saved_cards_enabled,
@@ -127,9 +130,9 @@ class ConfigProvider implements ConfigProviderInterface
                     'healthcareTotalAmount' => $healthcareTotalAmount,
                     'default_card' => $savedCardsData['default'],
                     'processedAmountHsaFsa' => $processedAmountHsaFsa,
-					'enableGPay' => $enableGPay,
-					'enableAPay' => $enableAPay,
-					'template' => $template
+        'enableGPay' => $enableGPay,
+        'enableAPay' => $enableAPay,
+        'template' => $template
                 ]
             ]
         ];

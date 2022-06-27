@@ -103,22 +103,19 @@ class TransactionLog extends \Magento\Framework\Model\AbstractModel
             $responseJson = json_decode($utgResponse);
             if (json_last_error() == JSON_ERROR_NONE) {
                 if (property_exists($responseJson, 'result') && property_exists($responseJson->result[0], 'card')) {
-                    if (
-                        property_exists($responseJson->result[0]->card, 'number')
+                    if (property_exists($responseJson->result[0]->card, 'number')
                         && $responseJson->result[0]->card->number
                     ) {
                         $cardNumber = $responseJson->result[0]->card->number;
                     }
-                    if (
-                        property_exists($responseJson->result[0]->card, 'type')
+                    if (property_exists($responseJson->result[0]->card, 'type')
                         && $responseJson->result[0]->card->type
                     ) {
                         $cardType = $responseJson->result[0]->card->type;
                     }
                 }
             } else {
-                if (
-                    !($data['card_type'])
+                if (!($data['card_type'])
                     || $data['card_type'] == ''
                     || !isset($data['card_number'])
                     || $data['card_number'] == ''

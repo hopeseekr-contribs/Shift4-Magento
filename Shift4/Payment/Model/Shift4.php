@@ -96,7 +96,9 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 
     protected $developerMode = false;
 
-    /** @var Serialize */
+    /**
+     * @var Serialize 
+     */
     private $serializer;
 
     public function __construct(
@@ -152,14 +154,14 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
         } else {
             $this->session = $checkoutSession;
 
-            if ($this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId() > 0 &&
-                !$this->customerSession->isLoggedIn()
+            if ($this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId() > 0 
+                && !$this->customerSession->isLoggedIn()
             ) {
                 $this->customerSession->authenticate();
             }
         }
-		
-		if ($this->scopeConfig->getValue('payment/shift4/processing_mode', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 'live') {
+        
+        if ($this->scopeConfig->getValue('payment/shift4/processing_mode', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 'live') {
             $this->sleepSeconds = 3;
         }
 
@@ -213,14 +215,14 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
             $this->healthcareTax = $healthcareTax;
         }
 
-		$this->serializer = new Serialize();
+        $this->serializer = new Serialize();
     }
 
     /**
      * Capture Payment.
      *
-     * @param \Magento\Payment\Model\InfoInterface $payment
-     * @param float $amount
+     * @param  \Magento\Payment\Model\InfoInterface $payment
+     * @param  float                                $amount
      * @return $this
      */
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
@@ -383,7 +385,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                         if ($captureResponse['errors']) {
                             $errors = $captureResponse['errors'];
                         } else {
-                        //    $successPayments[] = $ptransaction['preauthInvoiceId'];
+                            //    $successPayments[] = $ptransaction['preauthInvoiceId'];
                         }
 
                     }
@@ -479,8 +481,8 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * Authorize a payment.
      *
-     * @param \Magento\Payment\Model\InfoInterface $payment
-     * @param float $amount
+     * @param  \Magento\Payment\Model\InfoInterface $payment
+     * @param  float                                $amount
      * @return $this
      */
     public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
@@ -492,7 +494,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * void payments
      *
-     * @param \Magento\Payment\Model\InfoInterface $payment
+     * @param  \Magento\Payment\Model\InfoInterface $payment
      * @return void
      */
     public function void($payment)
@@ -528,9 +530,10 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 
                     if (!$error) {
 
-                        if ($lastTransactionId != $transaction['preauthInvoiceId'] . '-void' &&
-                        $lastTransactionId != $transaction['preauthInvoiceId'] . '-authorization-void' &&
-                        $lastTransactionId != $transaction['preauthInvoiceId'] . '-capture-void') {
+                        if ($lastTransactionId != $transaction['preauthInvoiceId'] . '-void' 
+                            && $lastTransactionId != $transaction['preauthInvoiceId'] . '-authorization-void' 
+                            && $lastTransactionId != $transaction['preauthInvoiceId'] . '-capture-void'
+                        ) {
                             $payment->setTransactionId($transaction['preauthInvoiceId'] . '-void');
                             $payment->setParentTransactionId($transaction['preauthInvoiceId'].'-'.$parentTransactionId);
                             $payment->setIsTransactionClosed(1);
@@ -566,7 +569,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * cancel payments
      *
-     * @param \Magento\Payment\Model\InfoInterface $payment
+     * @param  \Magento\Payment\Model\InfoInterface $payment
      * @return void
      */
     public function cancel($payment)
@@ -577,8 +580,8 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * refund a payment.
      *
-     * @param \Magento\Payment\Model\InfoInterface $payment
-     * @param float $amount
+     * @param  \Magento\Payment\Model\InfoInterface $payment
+     * @param  float                                $amount
      * @return void
      */
     public function refund($payment, $amount)
@@ -660,7 +663,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                                 $errors[$transaction['preauthInvoiceId']] = $error;
                             }
 
-                        //end refund
+                            //end refund
                         } else {
                             //unknown error
                             $errors[$transaction['preauthInvoiceId']] = $response['errorMessage'];
@@ -712,42 +715,43 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                 $data = json_decode($response['data']);
 
                 if (!property_exists($data->result[0], 'transaction')) {
-					
-					//timeout
-					if ($response['error'] == 504 ||
-						(
-							property_exists($data->result[0], 'error') && 
-							property_exists($data->result[0]->error, 'primaryCode') &&
-							$data->result[0]->error->primaryCode == '9961')
-						) {
+                    
+                    //timeout
+                    if ($response['error'] == 504 
+                        || (                    property_exists($data->result[0], 'error')  
+                        && property_exists($data->result[0]->error, 'primaryCode') 
+                        && $data->result[0]->error->primaryCode == '9961')
+                    ) {
 
-						sleep($this->sleepSeconds);
-						$response = $this->api->getInvoice($response['invoice']);
+                        sleep($this->sleepSeconds);
+                        $response = $this->api->getInvoice($response['invoice']);
 
-						if ($response['error']) {
-							$error = 'Server timed out. Please try again later.';
-						} else {
-							$data = json_decode($response['data']);
-							if (property_exists($data->result[0], 'transaction') &&
-        						property_exists($data->result[0]->transaction, 'responseCode')) {
-								$responseCode = $data->result[0]->transaction->responseCode;
-								$error = $this->checkResponseForErrors($responseCode);
-							} else {
-								$error = 'Server error. Please try again later.';
-							}
-						}
+                        if ($response['error']) {
+                            $error = 'Server timed out. Please try again later.';
+                        } else {
+                            $data = json_decode($response['data']);
+                            if (property_exists($data->result[0], 'transaction') 
+                                && property_exists($data->result[0]->transaction, 'responseCode')
+                            ) {
+                                      $responseCode = $data->result[0]->transaction->responseCode;
+                                      $error = $this->checkResponseForErrors($responseCode);
+                            } else {
+                                   $error = 'Server error. Please try again later.';
+                            }
+                        }
 
-					//other error
-					} else {
-						if (property_exists($data->result[0], 'error') && 
-						    property_exists($data->result[0]->error, 'primaryCode')) {
-								
-							$error = 'Server error. Please try again later. Error number: '
-							. $data->result[0]->error->primaryCode;
-						} else {
-							$error = 'Server error. Please try again later.';
-						}
-					}
+                        //other error
+                    } else {
+                        if (property_exists($data->result[0], 'error')  
+                            && property_exists($data->result[0]->error, 'primaryCode')
+                        ) {
+                                
+                            $error = 'Server error. Please try again later. Error number: '
+                            . $data->result[0]->error->primaryCode;
+                        } else {
+                            $error = 'Server error. Please try again later.';
+                        }
+                    }
                 } else {
                     $responseCode = $data->result[0]->transaction->responseCode;
                     $error = $this->checkResponseForErrors($responseCode);
@@ -759,46 +763,46 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                     $payment->setTransactionId($refundInvoice . '-refund');
                     $payment->setParentTransactionId($currentTransaction['preauthInvoiceId']);
 
-					$authorizationCode = '';
-					if (property_exists($data->result[0], 'transaction') &&
-						property_exists($data->result[0]->transaction, 'authorizationCode')
-						) {
-						$authorizationCode = $data->result[0]->transaction->authorizationCode;
-					}
+                    $authorizationCode = '';
+                    if (property_exists($data->result[0], 'transaction') 
+                        && property_exists($data->result[0]->transaction, 'authorizationCode')
+                    ) {
+                        $authorizationCode = $data->result[0]->transaction->authorizationCode;
+                    }
 
-					$uniqueId = '';
-					if (property_exists($data->result[0], 'card') &&
-						property_exists($data->result[0]->card, 'token') &&
-						property_exists($data->result[0]->card->token, 'value')
-						) {
-						$uniqueId = $data->result[0]->card->token->value;
-					}
+                    $uniqueId = '';
+                    if (property_exists($data->result[0], 'card') 
+                        && property_exists($data->result[0]->card, 'token') 
+                        && property_exists($data->result[0]->card->token, 'value')
+                    ) {
+                        $uniqueId = $data->result[0]->card->token->value;
+                    }
 
-					$preauthProcessedAmount = 0;
-					if (property_exists($data->result[0], 'amount') &&
-						property_exists($data->result[0]->amount, 'total')
-						) {
-						$preauthProcessedAmount = $data->result[0]->amount->total;
-					}
+                    $preauthProcessedAmount = 0;
+                    if (property_exists($data->result[0], 'amount') 
+                        && property_exists($data->result[0]->amount, 'total')
+                    ) {
+                        $preauthProcessedAmount = $data->result[0]->amount->total;
+                    }
 
-					$cardNumber = '';
-					if (property_exists($data->result[0], 'card') &&
-						property_exists($data->result[0]->card, 'number')
-						) {
-						$cardNumber = $data->result[0]->card->number;
-					}
+                    $cardNumber = '';
+                    if (property_exists($data->result[0], 'card') 
+                        && property_exists($data->result[0]->card, 'number')
+                    ) {
+                        $cardNumber = $data->result[0]->card->number;
+                    }
 
-					$cardType = '';
-					if (property_exists($data->result[0], 'card') &&
-						property_exists($data->result[0]->card, 'type')
-						) {
-						$cardType = $data->result[0]->card->type;
-					}
+                    $cardType = '';
+                    if (property_exists($data->result[0], 'card') 
+                        && property_exists($data->result[0]->card, 'type')
+                    ) {
+                        $cardType = $data->result[0]->card->type;
+                    }
 
-					$date = '';
-					if (property_exists($data->result[0], 'dateTime')) {
-						$date = $data->result[0]->dateTime;
-					}
+                    $date = '';
+                    if (property_exists($data->result[0], 'dateTime')) {
+                        $date = $data->result[0]->dateTime;
+                    }
 
                     $transactions[$refundInvoice]['cardType'] = $this->getCardFullName($cardType);
                     $transactions[$refundInvoice]['preauthCardNumber'] = 'xxxx-' . substr($cardNumber, -4);
@@ -836,8 +840,8 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * Shift4 transaction
      *
-     * @param float $amount
-     * @param \Magento\Payment\Model\InfoInterface $payment
+     * @param  float                                $amount
+     * @param  \Magento\Payment\Model\InfoInterface $payment
      * @return array $response
      */
     private function shift4Transaction($amount, $payment)
@@ -1108,7 +1112,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
             $this->session->setData('healthcareTax', 0);
             $this->api->devLog('Approved code ends. saveCard: '. $saveCard);
         } elseif ($error == 'P') {
-         //A partial authorization has occurred.
+            //A partial authorization has occurred.
             $partialAuthData['partialPayment'] = 1;
             $partialAuthData['message'] = __('A partial payment for this order has been made. Please pay the remaining amount.');
 
@@ -1171,7 +1175,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * getCardFullName
      *
-     * @param string $cardType
+     * @param  string $cardType
      * @return string $cardFullName
      */
     protected function getCardFullName($cardType = null)
@@ -1180,30 +1184,30 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 
         if (isset($cardType)) {
             switch ($cardType) {
-                case 'MC':
-                    $cardFullName = 'MasterCard';
-                    break;
-                case 'VS':
-                    $cardFullName = 'Visa';
-                    break;
-                case 'AX':
-                    $cardFullName = 'American Express';
-                    break;
-                case 'DC':
-                    $cardFullName = 'Diners Club';
-                    break;
-                case 'NS':
-                    $cardFullName = 'Discover';
-                    break;
-                case 'JC':
-                    $cardFullName = 'JCB';
-                    break;
-                case 'YC':
-                    $cardFullName = 'Gift Card';
-                    break;
-                default:
-                    $cardFullName = $cardType;
-                    break;
+            case 'MC':
+                $cardFullName = 'MasterCard';
+                break;
+            case 'VS':
+                $cardFullName = 'Visa';
+                break;
+            case 'AX':
+                $cardFullName = 'American Express';
+                break;
+            case 'DC':
+                $cardFullName = 'Diners Club';
+                break;
+            case 'NS':
+                $cardFullName = 'Discover';
+                break;
+            case 'JC':
+                $cardFullName = 'JCB';
+                break;
+            case 'YC':
+                $cardFullName = 'Gift Card';
+                break;
+            default:
+                $cardFullName = $cardType;
+                break;
             }
         }
         return $cardFullName;
@@ -1211,6 +1215,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 
     /**
      * Cancels all partial payments
+     *
      * @return string
      */
     public function cancelAllPartialPayments()
@@ -1248,7 +1253,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * Cancels all partial payment
      *
-     * @param string $invoiceId
+     * @param  string $invoiceId
      * @return string
      */
     public function cancelPartialPayment($invoiceId)
@@ -1281,12 +1286,12 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * Save card
      *
-     * @param int $customerId
-     * @param string $i4goTrueToken
-     * @param string $i4goExpYear
-     * @param string $i4goType
-     * @param string $i4goExpMonth
-     * @param int $isDefault
+     * @param  int    $customerId
+     * @param  string $i4goTrueToken
+     * @param  string $i4goExpYear
+     * @param  string $i4goType
+     * @param  string $i4goExpMonth
+     * @param  int    $isDefault
      * @return string
      */
     public function saveCard($customerId, $i4goTrueToken, $i4goExpYear, $i4goType, $i4goExpMonth, $isDefault = 0)
@@ -1297,8 +1302,8 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * Delete card
      *
-     * @param int $customerId
-     * @param int $savedCardId
+     * @param  int $customerId
+     * @param  int $savedCardId
      * @return void
      */
     public function deleteCard($customerId, $savedCardId)
@@ -1309,7 +1314,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * Check transaction response for errors
      *
-     * @param string $responseCode
+     * @param  string $responseCode
      * @return string $error
      */
     private function checkResponseForErrors($responseCode)

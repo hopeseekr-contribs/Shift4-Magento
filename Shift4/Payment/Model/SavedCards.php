@@ -36,7 +36,7 @@ class SavedCards extends \Magento\Framework\Model\AbstractModel
     /**
      * Get cards by Customer Id
      *
-     * @param integer $customerId
+     * @param  integer $customerId
      * @return int $id
      */
     public function getCardsByCustomerId($customerId)
@@ -48,8 +48,8 @@ class SavedCards extends \Magento\Framework\Model\AbstractModel
     /**
      * Delete card
      *
-     * @param integer $customerId
-     * @param integer $savedCardId
+     * @param  integer $customerId
+     * @param  integer $savedCardId
      * @return int $id
      */
     public function deleteCard($customerId, $savedCardId)
@@ -60,12 +60,12 @@ class SavedCards extends \Magento\Framework\Model\AbstractModel
     /**
      * Save card
      *
-     * @param int $customerId
-     * @param string $i4goTrueToken
-     * @param string $i4goExpYear
-     * @param string $i4goType
-     * @param string $i4goExpMonth
-     * @param int $isDefault
+     * @param  int    $customerId
+     * @param  string $i4goTrueToken
+     * @param  string $i4goExpYear
+     * @param  string $i4goType
+     * @param  string $i4goExpMonth
+     * @param  int    $isDefault
      * @return string
      */
     public function saveCard($customerId, $i4goTrueToken, $i4goExpYear, $i4goType, $i4goExpMonth, $isDefault)
@@ -96,10 +96,10 @@ class SavedCards extends \Magento\Framework\Model\AbstractModel
         
         $collection = $this->getCollection();
         $collection->addFieldToFilter('customer_id', $customerId)
-                ->addFieldToFilter('cc_type', $i4goType)
-                ->addFieldToFilter('last_four', $this->getLast4FromToken($i4goTrueToken))
-                ->addFieldToFilter('cc_exp_month', $i4goExpMonth)
-                ->addFieldToFilter('cc_exp_year', $i4goExpYear);
+            ->addFieldToFilter('cc_type', $i4goType)
+            ->addFieldToFilter('last_four', $this->getLast4FromToken($i4goTrueToken))
+            ->addFieldToFilter('cc_exp_month', $i4goExpMonth)
+            ->addFieldToFilter('cc_exp_year', $i4goExpYear);
         if ($collection->count()) {
             $return = __('Already exist');
         } else {
@@ -107,7 +107,8 @@ class SavedCards extends \Magento\Framework\Model\AbstractModel
             if ($isDefault) {
                 $this->getResource()->unsetDefaults($customerId);
             }
-            $this->setData([
+            $this->setData(
+                [
                 'customer_id' => $customerId,
                 'cc_type' => $i4goType,
                 'cc_exp_month' => $i4goExpMonth,
@@ -115,7 +116,8 @@ class SavedCards extends \Magento\Framework\Model\AbstractModel
                 'last_four' => $this->getLast4FromToken($i4goTrueToken),
                 'token' => $i4goTrueToken,
                 'is_default' => $isDefault
-            ]);
+                ]
+            );
             $this->save();
         }
         return $return;
@@ -124,7 +126,7 @@ class SavedCards extends \Magento\Framework\Model\AbstractModel
     /**
      * Get Last 4 card numbers from token
      *
-     * @param string $i4goTrueToken
+     * @param  string $i4goTrueToken
      * @return string
      */
     public function getLast4FromToken($i4goTrueToken)
@@ -135,7 +137,7 @@ class SavedCards extends \Magento\Framework\Model\AbstractModel
         if (is_numeric($i4goTrueToken)) {
             $last4 = substr($i4goTrueToken, -4);
         
-        //i4go truetoken
+            //i4go truetoken
         } else {
             $last4 = substr($i4goTrueToken, 0, 4);
         }
@@ -145,7 +147,7 @@ class SavedCards extends \Magento\Framework\Model\AbstractModel
     /**
      * validate Customer Id
      *
-     * @param int $customerId
+     * @param  int $customerId
      * @return boolen
      */
     public function validateCustomerId($customerId)
@@ -156,7 +158,7 @@ class SavedCards extends \Magento\Framework\Model\AbstractModel
     /**
      * validate i4go TrueToken
      *
-     * @param int $i4goTrueToken
+     * @param  int $i4goTrueToken
      * @return boolen
      */
     public function validatei4goTrueToken($i4goTrueToken)
@@ -167,7 +169,7 @@ class SavedCards extends \Magento\Framework\Model\AbstractModel
     /**
      * validate i4go ExpYear
      *
-     * @param int $i4goExpYear
+     * @param  int $i4goExpYear
      * @return boolen
      */
     public function validatei4goExpYear($i4goExpYear)
@@ -178,7 +180,7 @@ class SavedCards extends \Magento\Framework\Model\AbstractModel
     /**
      * validate i4go Card Type
      *
-     * @param int $i4goType
+     * @param  int $i4goType
      * @return boolen
      */
     public function validatei4goType($i4goType)
@@ -189,7 +191,7 @@ class SavedCards extends \Magento\Framework\Model\AbstractModel
     /**
      * validate i4go Exp Month
      *
-     * @param int $i4goExpMonth
+     * @param  int $i4goExpMonth
      * @return boolen
      */
     public function validatei4goExpMonth($i4goExpMonth)

@@ -12,7 +12,7 @@ use Shift4\Payment\Helper\PaymentInfo as PaymentInfo;
 /**
  * Order information tab
  *
- * @author      Magento Core Team <core@magentocommerce.com>
+ * @author Magento Core Team <core@magentocommerce.com>
  */
 class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Tab\Info
 {

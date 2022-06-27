@@ -3,9 +3,9 @@
 /**
  * Shift4 Payment controller for cancel all partial authorizations
  *
- * @category    Shift4
- * @package     Payment
- * @author    Giedrius
+ * @category Shift4
+ * @package  Payment
+ * @author   Giedrius
  */
 
 namespace Shift4\Payment\Controller\Payment;

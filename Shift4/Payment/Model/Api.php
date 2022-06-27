@@ -107,9 +107,9 @@ class Api
     /**
      * Shift4 transaction
      *
-     * @param float $amount
-     * @param \Magento\Payment\Model\InfoInterface $payment
-     * @param string $i4goTrueToken
+     * @param  float                                $amount
+     * @param  \Magento\Payment\Model\InfoInterface $payment
+     * @param  string                               $i4goTrueToken
      * @return array $response
      */
     public function transaction(
@@ -240,8 +240,8 @@ class Api
             }
 
             throw new \RuntimeException(print_r($requestBody, true));
-//            print_r($requestBody);
-//            die();
+            //            print_r($requestBody);
+            //            die();
         }
 
         if ($invoiceHtml == '') {
@@ -283,10 +283,10 @@ class Api
     /**
      * Shift4 transaction refund
      *
-     * @param \Magento\Payment\Model\InfoInterface $payment
-     * @param float $amount
-     * @param string $invoice
-     * @param string $i4goTrueToken
+     * @param  \Magento\Payment\Model\InfoInterface $payment
+     * @param  float                                $amount
+     * @param  string                               $invoice
+     * @param  string                               $i4goTrueToken
      * @return array $response
      */
     public function refund($payment, $amount, $invoice, $i4goTrueToken)
@@ -338,9 +338,9 @@ class Api
     /**
      * Shift4 transaction refund
      *
-     * @param string $invoice
-     * @param float $amount
-     * @param string $i4goTrueToken
+     * @param  string $invoice
+     * @param  float  $amount
+     * @param  string $i4goTrueToken
      * @return array $response
      */
     public function capture(
@@ -401,9 +401,9 @@ class Api
     /**
      * Shift4 transaction refund
      *
-     * @param string $invoice
-     * @param float $amount
-     * @param string $i4goTrueToken
+     * @param  string $invoice
+     * @param  float  $amount
+     * @param  string $i4goTrueToken
      * @return array $response
      */
     public function update($invoice, $amount, $i4goTrueToken, $tax = 0, $transactionType = 'capture')
@@ -442,7 +442,7 @@ class Api
     /**
      * Shift4 get invoice
      *
-     * @param string $invoice
+     * @param  string $invoice
      * @return array $response
      */
     public function getInvoice($invoice)
@@ -462,7 +462,7 @@ class Api
     /**
      * Shift4 void invoice
      *
-     * @param string $invoice
+     * @param  string $invoice
      * @return array $response
      */
     public function void($invoice)
@@ -529,8 +529,8 @@ class Api
      * curl request to Shift4 api
      *
      * @param String $url
-     * @param array $requestBody
-     * @param array $headers
+     * @param array  $requestBody
+     * @param array  $headers
      * @param string $customRequest
      *
      * @return array
@@ -559,8 +559,9 @@ class Api
         ];
 
         if (isset($requestBody['transaction'])
-            && isset ($requestBody['transaction']['invoice'])
-            && $requestBody['transaction']['invoice']) {
+            && isset($requestBody['transaction']['invoice'])
+            && $requestBody['transaction']['invoice']
+        ) {
             $return['invoice'] = $requestBody['transaction']['invoice'];
         } else {
             foreach ($headers as $value) {
@@ -571,8 +572,7 @@ class Api
             }
         }
 
-        if (
-            isset($requestBody['card'])
+        if (isset($requestBody['card'])
             && isset($requestBody['card']['token'])
             && isset($requestBody['card']['token']['value'])
             && $requestBody['card']['token']['value']
@@ -581,8 +581,7 @@ class Api
         }
 
         $amount = 0;
-        if (
-            isset($requestBody['amount']['total'])
+        if (isset($requestBody['amount']['total'])
             && $requestBody['amount']
             && $requestBody['amount']['total']
         ) {
@@ -619,40 +618,40 @@ class Api
             //with these http responses we will do later
             if ($httpCode != '200') {
                 switch ($httpCode) {
-                    case 403:
-                        $return['errorMessage'] = __('ERROR -> 403 Forbidden');
-                        $return['error'] = 403;
-                        break;
+                case 403:
+                    $return['errorMessage'] = __('ERROR -> 403 Forbidden');
+                    $return['error'] = 403;
+                    break;
 
-                    case 400:
-                        $return['errorMessage'] = __('ERROR -> 400 Bad Request');
-                        $return['error'] = 400;
-                        break;
+                case 400:
+                    $return['errorMessage'] = __('ERROR -> 400 Bad Request');
+                    $return['error'] = 400;
+                    break;
 
-                    case 404:
-                        $return['errorMessage'] = __('ERROR -> 404 Not Found');
-                        $return['error'] = 404;
-                        break;
+                case 404:
+                    $return['errorMessage'] = __('ERROR -> 404 Not Found');
+                    $return['error'] = 404;
+                    break;
 
-                    case 500:
-                        $return['errorMessage'] = __('ERROR -> 500 Internal Server Error');
-                        $return['error'] = 500;
-                        break;
+                case 500:
+                    $return['errorMessage'] = __('ERROR -> 500 Internal Server Error');
+                    $return['error'] = 500;
+                    break;
 
-                    case 503:
-                        $return['errorMessage'] = __('ERROR -> 503 Service Unavailable');
-                        $return['error'] = 503;
-                        break;
+                case 503:
+                    $return['errorMessage'] = __('ERROR -> 503 Service Unavailable');
+                    $return['error'] = 503;
+                    break;
 
-                    case 504:
-                        $return['errorMessage'] = __('ERROR -> 504 Timed Out');
-                        $return['error'] = 504;
-                        break;
+                case 504:
+                    $return['errorMessage'] = __('ERROR -> 504 Timed Out');
+                    $return['error'] = 504;
+                    break;
 
-                    default:
-                        $return['errorMessage'] = __('Request Error');
-                        $return['error'] = $httpCode;
-                        break;
+                default:
+                    $return['errorMessage'] = __('Request Error');
+                    $return['error'] = $httpCode;
+                    break;
                 }
 
                 if ($httpCode == 400 || $httpCode == 504) {
@@ -675,18 +674,18 @@ class Api
         $logging = $this->scopeConfig->getValue('payment/shift4/logging', ScopeInterface::SCOPE_STORE);
 
         switch ($logging) {
-            case 'problems':
-                if ($return['error']) {
-                    $this->logger->info($this->formatLogMessage($return, $jsonData));
-                }
-                break;
-
-            case 'all':
-                // log all the communication
+        case 'problems':
+            if ($return['error']) {
                 $this->logger->info($this->formatLogMessage($return, $jsonData));
-                break;
+            }
+            break;
 
-            case 'off':
+        case 'all':
+            // log all the communication
+            $this->logger->info($this->formatLogMessage($return, $jsonData));
+            break;
+
+        case 'off':
             // logging is off
         }
 
@@ -702,7 +701,7 @@ class Api
         if (!$this->invoiceId && ($method == 'sale' || $method == 'capture')) {
             $this->invoiceId = $this->transactionLog->getNextInvoiceId();
         }
-		
+        
         $saveData = [
             'amount' => $amount,
             'order_id' => $this->orderId,
@@ -818,25 +817,25 @@ class Api
     /**
      * Count transactions
      *
-     * @param string $action
+     * @param  string $action
      * @return int
      */
     protected function transCount($action = 'increase')
     {
         switch ($action) {
-            case 'increase':
-                $transCount = (int) $this->session->getData('transCount');
-                $transCount++;
-                $this->session->setData('transCount', $transCount);
+        case 'increase':
+            $transCount = (int) $this->session->getData('transCount');
+            $transCount++;
+            $this->session->setData('transCount', $transCount);
+            break;
+        case 'clear':
+            $this->session->setData('transCount', 0);
+            break;
+        case 'return':
+            return (int) $this->session->getData('transCount');
                 break;
-            case 'clear':
-                $this->session->setData('transCount', 0);
-                break;
-            case 'return':
-                return (int) $this->session->getData('transCount');
-                break;
-            default:
-                break;
+        default:
+            break;
         }
     }
 
@@ -845,44 +844,46 @@ class Api
      *
      * @return array
      */
-     public function getAccessBlock($amount = 0, $magentoOrderId = 0)
+    public function getAccessBlock($amount = 0, $magentoOrderId = 0)
     {
         $i4go_clientIp = $_SERVER['REMOTE_ADDR'];
 
         $return_data = [
-            'error' => '',
-            'i4go_server' => '',
-            'i4go_accessblock' => '',
-            'i4go_countrycode' => '',
-            'i4go_i4m_url' => '',
+           'error' => '',
+           'i4go_server' => '',
+           'i4go_accessblock' => '',
+           'i4go_countrycode' => '',
+           'i4go_i4m_url' => '',
         ];
 
         $i4goData = [
-            'fuseaction' => 'account.preauthorizeClient',
-            'i4go_clientip' => $i4go_clientIp,
-            'i4go_accesstoken' => $this->accessToken
+           'fuseaction' => 'account.preauthorizeClient',
+           'i4go_clientip' => $i4go_clientIp,
+           'i4go_accesstoken' => $this->accessToken
         ];
-		
-		//temp solution for 503 i4go error. We need to remove that after i4go will fix
-		
-		$enableGPay = $this->scopeConfig->getValue(
-			'payment/shift4/enable_google_pay',
-			\Magento\Store\Model\ScopeInterface::SCOPE_STORE
-		);
-		$enableAPay = $this->scopeConfig->getValue(
-			'payment/shift4/enable_apple_pay',
-			\Magento\Store\Model\ScopeInterface::SCOPE_STORE
-		);
+        
+        //temp solution for 503 i4go error. We need to remove that after i4go will fix
+        
+        $enableGPay = $this->scopeConfig->getValue(
+            'payment/shift4/enable_google_pay',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+        $enableAPay = $this->scopeConfig->getValue(
+            'payment/shift4/enable_apple_pay',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
 
-		if ($magentoOrderId != 0 && ($enableGPay || $enableAPay)) {
-			$i4goData['i4go_basket'] = json_encode([
+        if ($magentoOrderId != 0 && ($enableGPay || $enableAPay)) {
+            $i4goData['i4go_basket'] = json_encode(
+                [
                 'OrderDetails' => [
                     'OrderNumber' => $magentoOrderId,
                     'Amount' => $amount,
                     'CurrencyCode' => 'USD'
                 ]
-            ]);
-		}
+                ]
+            );
+        }
 
         $i4goData = str_replace('+', '%20', http_build_query($i4goData, '', '&'));
 
@@ -963,39 +964,39 @@ class Api
     /**
      * Check transaction response for errors
      *
-     * @param string $responseCode
+     * @param  string $responseCode
      * @return string $error
      */
     public function checkResponseForErrors($responseCode)
     {
         $error = false;
         switch ($responseCode) {
-            case 'A':
-            case 'C':
-                $error = false;
-                break;
-            case 'D':
-                //declined
-                $error = __('The transaction is declined.');
-                break;
-            case 'e':
-                //error
-                $error = __('Error response');
-                break;
-            case 'f':
-                $error = __('An AVS or CSC failure has occurred.');
-                break;
-            case 'P':
-                //partial
-                $error = 'P';
-                break;
-            case 'R':
-                $error = __('The transaction requires a voice referral.');
-                break;
-            default:
-                //The approval status is unknown
-                $error = __('Approval status is unknown.');
-                break;
+        case 'A':
+        case 'C':
+            $error = false;
+            break;
+        case 'D':
+            //declined
+            $error = __('The transaction is declined.');
+            break;
+        case 'e':
+            //error
+            $error = __('Error response');
+            break;
+        case 'f':
+            $error = __('An AVS or CSC failure has occurred.');
+            break;
+        case 'P':
+            //partial
+            $error = 'P';
+            break;
+        case 'R':
+            $error = __('The transaction requires a voice referral.');
+            break;
+        default:
+            //The approval status is unknown
+            $error = __('Approval status is unknown.');
+            break;
         }
         return $error;
     }

@@ -3,9 +3,9 @@
 /**
  * Render Token exchange button in the system config section
  *
- * @category    Shift4
- * @package     Payment
- * @author    Chetu Team
+ * @category Shift4
+ * @package  Payment
+ * @author   Chetu Team
  */
 
 namespace Shift4\Payment\Model\admin\config;
@@ -16,7 +16,7 @@ class RenderExchangeButton extends \Magento\Config\Block\System\Config\Form\Fiel
     /**
      * Method for Set Element
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param  \Magento\Framework\Data\Form\Element\AbstractElement $element
      * @return String
      */
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
@@ -51,18 +51,18 @@ class RenderExchangeButton extends \Magento\Config\Block\System\Config\Form\Fiel
         $url = $this->getBaseUrl() . 'shift4/payment/getAccessToken/';
 
         $html .= $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
-                ->setType('button')
-                ->setClass('scalable save')
-                ->setLabel('Exchange')
-                ->setId('shift4_exchange_tokens')
-                ->toHtml();
+            ->setType('button')
+            ->setClass('scalable save')
+            ->setLabel('Exchange')
+            ->setId('shift4_exchange_tokens')
+            ->toHtml();
 
         $html .= $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
-                ->setType('button')
-                ->setClass('scalable save cancel')
-                ->setLabel('Cancel')
-                ->setId('shift4_cancel_token_exchange')
-                ->toHtml();
+            ->setType('button')
+            ->setClass('scalable save cancel')
+            ->setLabel('Cancel')
+            ->setId('shift4_cancel_token_exchange')
+            ->toHtml();
 
         return $html . $buttonScript;
     }

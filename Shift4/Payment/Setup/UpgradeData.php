@@ -15,6 +15,7 @@ use Magento\Eav\Setup\EavSetupFactory;
 
 /**
  * Upgrade Data script
+ *
  * @codeCoverageIgnore
  */
 class UpgradeData implements UpgradeDataInterface
@@ -31,7 +32,7 @@ class UpgradeData implements UpgradeDataInterface
      * Init
      *
      * @param CategorySetupFactory $categorySetupFactory
-     * @param EavSetupFactory $eavSetupFactory
+     * @param EavSetupFactory      $eavSetupFactory
      */
     public function __construct(EavSetupFactory $eavSetupFactory)
     {
@@ -40,6 +41,7 @@ class UpgradeData implements UpgradeDataInterface
 
     /**
      * {@inheritdoc}
+     *
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
