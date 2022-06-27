@@ -189,10 +189,12 @@ $hsaFsa = $block->getHsaFsa();
 		</div>
 	</div>
     <?php if ($savedCards['html'] != ''): ?>
+    <div style="margin-left: 0">
     <label style="color:#636363;font-size:13px;font-weight:600;display:block;margin-top:10px;margin-left:8px;font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;"><?= /* @escapeNotVerified */ __('My saved cards:') ?></label>
     <select id="my_saved_cards" name="saved_card" style="margin-left:8px; width: 273px;height: 30px;padding: 0 8px;margin-bottom: 10px; border: 1px solid silver;border-radius: 2px;font-size: 15px;"><?= $savedCards['html']; ?></select>
     <?php endif; ?>
     <div id="i4go_form"<?php if (isset($savedCards['default']) && $savedCards['default'] != 'new') { echo ' style="display:none;"';} ?>></div>
     <input id="shift4_true_token" name="shift4[trueToken]" value="<?php if (isset($savedCards['default']) && $savedCards['default'] != 'new') { echo $savedCards['default'];} ?>" type="hidden">
     <input id="shift4_cardtype" name="shift4[cardtype]" value="<?php if (isset($savedCards['defaultType'])) { echo $savedCards['defaultType'];} ?>" type="hidden">
+    </div>
 </div>
