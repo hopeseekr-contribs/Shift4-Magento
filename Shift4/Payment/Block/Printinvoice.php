@@ -162,10 +162,12 @@ class Printinvoice extends \Magento\Sales\Block\Items\AbstractItems
 
         $this->setChild('invoice_totals', $totals);
 
-        $customerbalance = $this->getLayout()
-            ->createBlock(\Magento\CustomerBalance\Block\Sales\Order\Customerbalance::class, 'customerbalance')
-            ->setTemplate('Shift4_Payment::customerbalance.phtml');
-        $totals->setChild('customerbalance', $customerbalance);
+        if (class_exists('\Magento\CustomerBalance\Block\Sales\Order\Customerbalance')) {
+			$customerbalance = $this->getLayout()
+				->createBlock(\Magento\CustomerBalance\Block\Sales\Order\Customerbalance::class, 'customerbalance')
+				->setTemplate('Shift4_Payment::customerbalance.phtml');
+			$totals->setChild('customerbalance', $customerbalance);
+		}
 
         $tax = $this->getLayout()
             ->createBlock(\Magento\Tax\Block\Sales\Order\Tax::class, 'tax')
