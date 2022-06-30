@@ -503,7 +503,12 @@ class Api
 
             $this->endpoint = $endPoint;
 
-            $response = $this->curlRequest('credentials/accesstoken', $requestBody);
+            $response = $this->curlRequest('credentials/accesstoken', $requestBody, [
+                'Content-Type: application/json',
+                'CompanyName: '.$this->companyName,
+                'InterfaceName: '.$this->interfaceName,
+                'InterfaceVersion: '.$this->interfaceVersion
+            ]);
 
             return $response;
         } else {
