@@ -501,6 +501,11 @@ class Api
                 ]
             ];
 
+            // MGO-146: Add the final slash to the UTG server, if it is missing.
+            if (substr($endPoint, '-1') !== '/') {
+                $endPoint .= '/';
+            }
+
             $this->endpoint = $endPoint;
 
             $response = $this->curlRequest('credentials/accesstoken', $requestBody, [
@@ -707,7 +712,7 @@ class Api
         if (!$this->invoiceId && ($method == 'sale' || $method == 'capture')) {
             $this->invoiceId = $this->transactionLog->getNextInvoiceId();
         }
-		
+
         $saveData = [
             'amount' => $amount,
             'order_id' => $this->orderId,
@@ -867,9 +872,9 @@ class Api
             'i4go_clientip' => $i4go_clientIp,
             'i4go_accesstoken' => $this->accessToken
         ];
-		
+
 		//temp solution for 503 i4go error. We need to remove that after i4go will fix
-		
+
 		$enableGPay = $this->scopeConfig->getValue(
 			'payment/shift4/enable_google_pay',
 			\Magento\Store\Model\ScopeInterface::SCOPE_STORE

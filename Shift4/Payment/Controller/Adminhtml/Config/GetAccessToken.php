@@ -30,6 +30,11 @@ class GetAccessToken extends \Magento\Backend\App\Action
         $authToken = $this->getRequest()->getParam('authToken');
         $endPoint = $this->getRequest()->getParam('endPoint');
 
+        // MGO-146: Add the final slash to the UTG server, if it is missing.
+        if (substr($endPoint, '-1') !== '/') {
+            $endPoint .= '/';
+        }
+
         /*
             Access token format example: 7DBDD96D-F268-F7C0-C4FD2184CDCC824C
         */
