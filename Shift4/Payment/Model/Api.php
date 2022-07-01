@@ -560,6 +560,9 @@ class Api
         $cardNumber = $cardType = '';
 
         $return = [
+            'HTTP Headers' => !empty($headers) ? '-H ' . implode(' -H ', $headers) : null,
+            'URL' => $this->endpoint . $url,
+            'Request Type' => 'POST',
             'errorMessage' => '',
             'http_code' => '',
             'error' => false,
