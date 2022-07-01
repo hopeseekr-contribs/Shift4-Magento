@@ -44,7 +44,7 @@ class GetAccessToken extends \Magento\Backend\App\Action
             try {
                 $result = $this->api->getShift4AccessToken($authToken, $endPoint);
                 if (!empty($result['http_code']) && $result['http_code'] == '200') {
-					
+
                     $response = json_decode($result['data']);
 
                     $access_token = $response->result[0]->credential->accessToken;
@@ -60,10 +60,15 @@ class GetAccessToken extends \Magento\Backend\App\Action
                 } else {
 
 					$response = json_decode($result['data']);
-					
-                    $data['error_message'] = $response->result[0]->error->longText
-                        ? $response->result[0]->error->longText
-                        : __('Error generating access token');
+
+                    if (!isset($response) || !is_object($response) || is_null($response->result)) {
+                        $data['error_message'] = __('Error fetching an Access Token from UTG. See logs for more info. Try clicking "Reset Token".');
+                    } else {
+                        $data['error_message'] = $response->result[0]->error->longText
+                            ? $response->result[0]->error->longText
+                            : __('Error generating access token');
+                    }
+
                     $data['accessToken'] = '';
                 }
             } catch (Exception $ex) {
