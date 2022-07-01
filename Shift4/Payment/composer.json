@@ -6,6 +6,9 @@
   "license": [
     "GPL-3.0"
   ],
+  "require": {
+      "orangephp/curl-to-cli": "0.1"
+  },
   "autoload": {
     "files": [
       "registration.php"
@@ -13,8 +16,10 @@
     "psr-4": {
       "Shift4\\Payment\\": ""
     }
+  },
+  "config": {
+    "allow-plugins": {
+      "0.0.0/composer-include-files": true
+    }
   }
 }
-
-
-

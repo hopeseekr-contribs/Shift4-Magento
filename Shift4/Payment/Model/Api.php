@@ -7,6 +7,9 @@ use Magento\Store\Model\ScopeInterface;
 use Shift4\Payment\Model\Shift4;
 use Magento\Framework\App\Config\ScopeConfigInterface as ScopeConfig;
 
+require_once __DIR__ . '/../vendor/orangephp/curl-to-cli/src/CurlToCLI.php';
+require_once __DIR__ . '/../vendor/orangephp/curl-to-cli/src/NotImplementedException.php';
+
 class Api
 {
     private $accessToken = '491AB6AD-2EF3-4749-B292-5B2D899CB1CB';
@@ -596,22 +599,26 @@ class Api
 
         $jsonData = json_encode($requestBody);
 
-        $handler = curl_init($this->endpoint . $url);
-        curl_setopt($handler, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($handler, CURLOPT_TIMEOUT, 65);
+        $handler = \OrangePHP\curl_init($this->endpoint . $url);
+        \OrangePHP\curl_setopt($handler, CURLOPT_HTTPHEADER, $headers);
+        \OrangePHP\curl_setopt($handler, CURLOPT_TIMEOUT, 65);
 
         if ($customRequest == 'POST') {
-            curl_setopt($handler, CURLOPT_POSTFIELDS, $jsonData);
-            curl_setopt($handler, CURLOPT_POST, 1);
+            \OrangePHP\curl_setopt($handler, CURLOPT_POSTFIELDS, $jsonData);
+            \OrangePHP\curl_setopt($handler, CURLOPT_POST, 1);
         }
 
-        curl_setopt($handler, CURLOPT_CUSTOMREQUEST, $customRequest);
-        curl_setopt($handler, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($handler, CURLOPT_SSL_VERIFYPEER, $this->verifySSL);
+        \OrangePHP\curl_setopt($handler, CURLOPT_CUSTOMREQUEST, $customRequest);
+        \OrangePHP\curl_setopt($handler, CURLOPT_RETURNTRANSFER, true);
+        \OrangePHP\curl_setopt($handler, CURLOPT_SSL_VERIFYPEER, $this->verifySSL);
 
-        $response = curl_exec($handler);
-        $httpCode = curl_getinfo($handler, CURLINFO_HTTP_CODE);
+        $response = \OrangePHP\curl_exec($handler);
+        $httpCode = \OrangePHP\curl_getinfo($handler, CURLINFO_HTTP_CODE);
         $return['http_code'] = $httpCode;
+
+
+        $curlToCLI = \OrangePHP\convert_to_cli();
+        file_put_contents(BP . '/var/log/curl.log', date('c') . ' @ Api.php:' . __LINE__ . ' > ' . $curlToCLI, FILE_APPEND);
 
         if (curl_errno($handler)) {
 
@@ -891,17 +898,21 @@ class Api
 
         $i4goData = str_replace('+', '%20', http_build_query($i4goData, '', '&'));
 
-        $handler = curl_init();
+        $handler = \OrangePHP\curl_init();
 
-        curl_setopt($handler, CURLOPT_URL, $this->i4goEndpoint);
+        \OrangePHP\curl_setopt($handler, CURLOPT_URL, $this->i4goEndpoint);
 
-        curl_setopt($handler, CURLOPT_POSTFIELDS, $i4goData);
-        curl_setopt($handler, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($handler, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($handler, CURLOPT_TIMEOUT, 65);
-        curl_setopt($handler, CURLOPT_SSL_VERIFYPEER, $this->verifySSL);
+        \OrangePHP\curl_setopt($handler, CURLOPT_POSTFIELDS, $i4goData);
+        \OrangePHP\curl_setopt($handler, CURLOPT_CUSTOMREQUEST, 'POST');
+        \OrangePHP\curl_setopt($handler, CURLOPT_RETURNTRANSFER, true);
+        \OrangePHP\curl_setopt($handler, CURLOPT_TIMEOUT, 65);
+        \OrangePHP\curl_setopt($handler, CURLOPT_SSL_VERIFYPEER, $this->verifySSL);
 
-        $response = curl_exec($handler);
+        $response = \OrangePHP\curl_exec($handler);
+
+        $curlToCLI = \OrangePHP\convert_to_cli();
+        file_put_contents(BP . '/var/log/curl.log', date('c') . ' @ Api.php:' . __LINE__ . ' > ' . $curlToCLI, FILE_APPEND);
+
         if (curl_errno($handler)) {
             $return_data['error'] = curl_error($handler);
         }
