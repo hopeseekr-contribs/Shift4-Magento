@@ -30,6 +30,11 @@ class GetAccessToken extends \Magento\Backend\App\Action
         $authToken = $this->getRequest()->getParam('authToken');
         $endPoint = $this->getRequest()->getParam('endPoint');
 
+        // MGO-146: Add the final slash to the UTG server, if it is missing.
+        if (substr($endPoint, '-1') !== '/') {
+            $endPoint .= '/';
+        }
+
         /*
             Access token format example: 7DBDD96D-F268-F7C0-C4FD2184CDCC824C
         */
@@ -44,7 +49,7 @@ class GetAccessToken extends \Magento\Backend\App\Action
             try {
                 $result = $this->api->getShift4AccessToken($authToken, $endPoint);
                 if (!empty($result['http_code']) && $result['http_code'] == '200') {
-					
+
                     $response = json_decode($result['data']);
 
                     $access_token = $response->result[0]->credential->accessToken;
@@ -60,7 +65,7 @@ class GetAccessToken extends \Magento\Backend\App\Action
                 } else {
 
 					$response = json_decode($result['data']);
-					
+
                     $data['error_message'] = $response->result[0]->error->longText
                         ? $response->result[0]->error->longText
                         : __('Error generating access token');

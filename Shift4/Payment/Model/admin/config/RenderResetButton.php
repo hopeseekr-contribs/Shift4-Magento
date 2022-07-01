@@ -43,6 +43,10 @@ class RenderResetButton extends \Magento\Config\Block\System\Config\Form\Field
     public function getAfterElementHtml()
     {
         $enteredUrl = \Magento\Framework\App\ObjectManager::getInstance()->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/shift4/server_addresses');
+        // MGO-146: Add the final slash to the UTG server, if it is missing.
+        if (substr($enteredUrl, '-1') !== '/') {
+            $enteredUrl .= '/';
+        }
         $buttonScript = "<script>
                         var entered_url = '" . $enteredUrl . "';
                         var live_url = 'https://utg.shift4api.net/api/rest/v1/';
