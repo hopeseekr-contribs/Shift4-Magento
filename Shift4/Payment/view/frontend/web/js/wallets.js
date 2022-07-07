@@ -5,21 +5,28 @@
 var _wallets_canMakeApplePayments = false;
 var _wallets_i4goTrueTokenObj = null;
 var _wallet_session = null;
-
+/*
 (function($){
 	$(".pay-button").hide().addClass("hidden").addClass("pay-hidden");
 })(jQuery);
+*/
+
+require(['jquery', 'jquery/ui'], function($) {
+	alert('hi');
+	$(".pay-button").hide().addClass("hidden").addClass("pay-hidden");
 
 function i4goWalletsInit(owner) {
 	_wallets_i4goTrueTokenObj = owner;
 	_wallets_i4goTrueTokenObj.settings.debug && remoteLog("Wallets initializing...");
-	jQuery(".pay-button").hide().addClass("hidden").addClass("pay-hidden");
+	$(".pay-button").hide().addClass("hidden").addClass("pay-hidden");
 
 	if ((typeof _wallets_i4goTrueTokenObj.walletConfig === "object")) {
+		alert('hi 2');
 		applePayInit(_wallets_i4goTrueTokenObj.walletConfig);
 		googlePayInit(_wallets_i4goTrueTokenObj.walletConfig);
 		_wallets_i4goTrueTokenObj.settings.debug && remoteLog("Wallets initialized");
 	} else {
+		alert('hi 3');
 		var reason = "Wallets not enabled";
 		_wallets_i4goTrueTokenObj.settings.debug && remoteLog(reason);
 		_wallets_i4goTrueTokenObj.onWalletEnabled("apple-pay", false, reason);
@@ -81,8 +88,8 @@ function applePayInit(config) {
 
 						/* This is idential to block with activeCardRequired */
 						if (canMakePayments) {
-							jQuery(".apple-pay-button").on("click", onApplePayClick);
-							jQuery(".apple-pay-button").show().removeClass("hidden").removeClass("pay-hidden");
+							$(".apple-pay-button").on("click", onApplePayClick);
+							$(".apple-pay-button").show().removeClass("hidden").removeClass("pay-hidden");
 							_wallets_i4goTrueTokenObj.onWalletEnabled("apple-pay", true, "Ready");
 						}
 					}, function(error) {
@@ -92,10 +99,10 @@ function applePayInit(config) {
 						_wallets_i4goTrueTokenObj.onWalletEnabled("apple-pay", false, reason);
 					});
 				} else {
-					/* Similar to above */
+					//* Similar to above */
 					_wallets_canMakeApplePayments = true;
-					jQuery(".apple-pay-button").on("click", onApplePayClick);
-					jQuery(".apple-pay-button").show().removeClass("hidden").removeClass("pay-hidden");
+					$(".apple-pay-button").on("click", onApplePayClick);
+					$(".apple-pay-button").show().removeClass("hidden").removeClass("pay-hidden");
 					_wallets_i4goTrueTokenObj.onWalletEnabled("apple-pay", true, "Ready");
 				}
 				// end of active card required condition
@@ -187,7 +194,7 @@ function getApplePaySession(validationURL) {
 				url: url,
 				data: data
 			}));
-			jQuery.post(url, data, function(responseData, status) {
+			$.post(url, data, function(responseData, status) {
 				if (status == "success") {
 					resolve(responseData);
 				} else {
@@ -330,7 +337,7 @@ function gp2apPaymentDataRequestUpdate(gpPaymentDataRequestUpdate) {
 				} else if (typeof item.price === "number") {
 					amount = item.price.toFixed(2);
 				}
-				let label = jQuery.trim(item.label.replace(regex, ""));
+				let label = $.trim(item.label.replace(regex, ""));
 				newShippingMethods.push({
 					label: label,
 					detail: item.description,
@@ -472,6 +479,7 @@ function apOnShippingMethodSelected(event, session) {
  */
 
 function googlePayInit(config) {
+	alert('2');
 	try {
 		_wallets_i4goTrueTokenObj.settings.debug && remoteLog("Checking for Google Pay...");
 		_wallets_i4goTrueTokenObj.settings.debug && console.log("wallet - googlePayInit()", config);
@@ -844,13 +852,13 @@ function addGooglePayButton() {
 	}
 	const button = paymentsClient.createButton(buttonOptions);
 
-	var $buttonObj = jQuery(button).find("button");
+	var $buttonObj = $(button).find("button");
 	if ($buttonObj.length === 0) {
-		$buttonObj = jQuery(button);
+		$buttonObj = $(button);
 	}
 	$buttonObj.addClass("pay-button google-pay-button");
-	jQuery(".google-pay-button").replaceWith(button);
-	jQuery(".google-pay-button").show().removeClass("hidden").removeClass("pay-hidden");
+	$(".google-pay-button").replaceWith(button);
+	$(".google-pay-button").show().removeClass("hidden").removeClass("pay-hidden");
 }
 
 /**
@@ -1008,9 +1016,9 @@ function prefetchGooglePaymentData() {
  */
 function onGooglePaymentButtonClicked() {
 
-	jQuery('#new_card').show();
-	jQuery('#i4go_form').show();
-	jQuery('#shift4_place_order .s4placeOrderBlock').hide();
+	$('#new_card').show();
+	$('#i4go_form').show();
+	$('#shift4_place_order .s4placeOrderBlock').hide();
 
 	const paymentDataRequest = getGooglePaymentDataRequest();
 	paymentDataRequest.transactionInfo = getGoogleTransactionInfo();
@@ -1073,4 +1081,6 @@ function postGooglePayComplete(success) {
 	}
 	_wallets_i4goTrueTokenObj.settings.debug && remoteLog("Google Pay post complete: " + desc);
 }
+
+});
 

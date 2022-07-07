@@ -342,6 +342,7 @@ define([
 			},
 			
 			loadI4goIframe: function() {
+				alert('5');
 					var self = this;
 					var i4goUrl = url.build('shift4/payment/geti4go');
 					$.ajax({
@@ -352,18 +353,22 @@ define([
 						data: {}
 					})
 					.done(function (response) {
+						alert('6');
 						$('#i4go_form').remove()
 						$('#new_card').prepend('<div id="i4go_form"></div>');
 						
 						if (window.checkoutConfig.payment.shift4_custom_data.enableGPay == '1') {
+							alert('7');
 							$('.google-pay-button').remove();
 							$('.pay-buttons').prepend('<button class="pay-button google-pay-button pay-hidden" style="display:none;"></button>');
 						}
 						
 						if (window.checkoutConfig.payment.shift4_custom_data.enableAPay == '1') {
+							alert('8');
 							$('.apple-pay-button').remove();
 							$('.pay-buttons').prepend('<button class="pay-button apple-pay-button pay-hidden" style="display:none;"></button>');
 						}
+						alert('9');
 						
 						$('#i4go_form').i4goTrueToken({
 							server: response.i4go_server,
