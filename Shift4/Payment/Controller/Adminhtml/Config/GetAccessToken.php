@@ -63,11 +63,14 @@ class GetAccessToken extends \Magento\Backend\App\Action
                         $data['accessToken'] = '';
                     }
                 } else {
-
-					$response = json_decode($result['data']);
+			if (!empty($result) && isset($result['data'])) {
+				$response = json_decode($result['data']);
+			}
+			else {
+			}
 
                     if (!isset($response) || !is_object($response) || is_null($response->result)) {
-                        $data['error_message'] = __('Error fetching an Access Token from UTG. See logs for more info. Try clicking "Reset Token".');
+                        $data['error_message'] = __('Error fetching an Access Token from UTG. See logs for more info. Try clicking "Reset Token".' . json_encode($result));
                     } else {
                         $data['error_message'] = $response->result[0]->error->longText
                             ? $response->result[0]->error->longText
