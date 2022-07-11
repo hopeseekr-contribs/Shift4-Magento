@@ -78,7 +78,7 @@ class Api
             $this->endpoint = $this->scopeConfig
                 ->getValue('payment/shift4/server_addresses', ScopeInterface::SCOPE_STORE);
             $this->accessToken = $this->scopeConfig
-                ->getValue('payment/shift4/live_accessToken', ScopeInterface::SCOPE_STORE);
+                ->getValue('payment/shift4/live_access_token', ScopeInterface::SCOPE_STORE);
             $this->i4goEndpoint = 'https://access.i4go.com';
             $this->verifySSL = true;
         }
