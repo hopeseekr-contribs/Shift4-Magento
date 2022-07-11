@@ -58,6 +58,7 @@ class GetAccessToken extends \Magento\Backend\App\Action
                         $this->configWriter->save('payment/shift4/live_access_token', $access_token, 'default');
                         $data['error_message'] = '';
                         $data['accessToken'] =  $this->maskToken($access_token);
+						$this->configWriter->save('payment/shift4/masked_access_token', $data['accessToken'], 'default');
                     } else {
                         $data['error_message'] = __('Error generating access token');
                         $data['accessToken'] = '';
