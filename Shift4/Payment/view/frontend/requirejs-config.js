@@ -5,19 +5,16 @@
 
 var config = {
 	paths: {
-		"i4goTrueToken": "https://i4m.shift4test.com/js/jquery.i4goTrueToken",
+		"i4goTrueToken": "https://i4m.i4go.com/js/jquery.i4goTrueToken",
 		"Gpay": "https://pay.google.com/gp/p/js/pay",
 		wallets_js: "Shift4_Payment/js/wallets"
 	},
 	shim: {
-		jquery: {
-            exports: '$'
-        },
         'i4goTrueToken': {
-            deps: ['jquery']
+            deps: ['$']
         },
         wallets_js: {
-            deps: ['jquery']
+            deps: ['$']
         }
     }
 };

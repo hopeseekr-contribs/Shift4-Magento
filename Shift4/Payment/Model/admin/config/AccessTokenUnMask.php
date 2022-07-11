@@ -44,19 +44,19 @@ class AccessTokenUnMask extends \Magento\Config\Block\System\Config\Form\Field
                     $('row_payment_us_shift4_section_shift4_auth_token').show();
                     $('payment_us_shift4_section_shift4_auth_token').setValue('');
                     $('row_payment_us_shift4_section_shift4_masked_access_token').hide();
-                    jQuery('#row_payment_us_shift4_section_shift4_auth_token label').css('font-weight','bold');
-                    jQuery('#payment_us_shift4_section_shift4_auth_token').css({'transition':'all 2s ease'});
+                    $('#row_payment_us_shift4_section_shift4_auth_token label').css('font-weight','bold');
+                    $('#payment_us_shift4_section_shift4_auth_token').css({'transition':'all 2s ease'});
                     setTimeout( function(){
-                        jQuery('#payment_us_shift4_section_shift4_auth_token').css({'border':'1px dashed #FF2828','box-shadow':'0 0 1px 0 red inset'});
+                        $('#payment_us_shift4_section_shift4_auth_token').css({'border':'1px dashed #FF2828','box-shadow':'0 0 1px 0 red inset'});
                     },200);
                     $('payment_us_shift4_section_shift4_auth_token').addClassName('required-entry');
-                    jQuery('#payment_us_shift4_section_shift4_auth_token').focus();
+                    $('#payment_us_shift4_section_shift4_auth_token').focus();
                 }
             }
-            jQuery('#payment_us_shift4_section_shift4_auth_token').keyup(function(){
-                jQuery('#payment_us_shift4_section_shift4_auth_token').css({'border':'1px solid #aaa'});
+            $('#payment_us_shift4_section_shift4_auth_token').keyup(function(){
+                $('#payment_us_shift4_section_shift4_auth_token').css({'border':'1px solid #aaa'});
                 setTimeout(function () {
-                    jQuery('#payment_us_shift4_section_shift4_auth_token').css({'border':'1px solid #aaa','box-shadow':'0 0 0 0 #fff inset','transition':'all 2s ease'});
+                    $('#payment_us_shift4_section_shift4_auth_token').css({'border':'1px solid #aaa','box-shadow':'0 0 0 0 #fff inset','transition':'all 2s ease'});
                 }, 1000);
             });
         </script>
