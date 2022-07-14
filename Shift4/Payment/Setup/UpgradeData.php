@@ -44,23 +44,50 @@ class UpgradeData implements UpgradeDataInterface
      */
     public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
-        $setup->startSetup();
-        
+        $maskCC = function ($number, $digits) {
+            return preg_replace('/[0-9A-Z]/', 'X', substr($number, 0, $digits * -1)) . substr($number, $digits * -1);
+        };
+
         $installer = $setup;
 
         $installer->startSetup();
-    
-        $installer->getConnection()->addColumn(
+
+        $connection = $installer->getConnection();
+        $connection->addColumn(
             $installer->getTable('sales_order_payment'),
             'shift4_additional_information',
             [
-                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                'length' => '64k',
+                'type'     => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                'length'   => '64k',
                 'nullable' => true,
-                'comment' => 'Shift4 Additional Information'
+                'comment'  => 'Shift4 Additional Information'
             ]
         );
 
         $installer->endSetup();
+
+        if (version_compare($context->getVersion(), '1.1.18', '<')) {
+            // Remove any old data first.
+            $select = $connection
+                ->select()
+                ->from('core_config_data')
+                ->where('path', 'payment/shift4/masked_access_token');
+
+            $connection->deleteFromSelect($select, 'core_config_data');
+
+            // Grab the access token and mask it.
+            $accessTokenSelect = $connection->select()
+                ->from('core_config_data', 'value')
+                ->where('path = ?', 'payment/shift4/live_access_token');
+            $maskedAccessToken = $maskCC($connection->fetchOne($accessTokenSelect), 6);
+
+            // Insert the masked access token.
+            $connection->insert('core_config_data', [
+                'scope'    => 'default',
+                'scope_id' => 0,
+                'path'     => 'payment/shift4/masked_access_token',
+                'value'    => $maskedAccessToken,
+            ]);
+        }
     }
 }
