@@ -187,8 +187,17 @@ define([
 					this.isPlaceOrderActionAllowed(false);
 					
 					this.getPlaceOrderDeferredObject()
-						.fail(
+						.done(
 							function (response) {
+								alert('success');
+								var resp = JSON.parse(response);
+								self.afterPlaceOrder();
+								redirectOnSuccessAction.execute();
+							}
+						)
+						.always(
+							function (response) {
+								alert('failure');
 								if (response.responseJSON.message.substr(0, 17) == 'Partial payment: ') {
 									
 									var sep = response.responseJSON.message.indexOf('|');
@@ -215,12 +224,6 @@ define([
 									self.loadI4goIframe();
 									return false;
 								}
-							}
-						).done(
-							function (response) {
-								var resp = JSON.parse(response);
-								self.afterPlaceOrder();
-								redirectOnSuccessAction.execute();
 							}
 						);
 
