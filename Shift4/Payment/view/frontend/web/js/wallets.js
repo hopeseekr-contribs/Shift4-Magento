@@ -199,7 +199,10 @@ function getApplePaySession(validationURL) {
 						status: status
 					});
 				}
-			}).fail(function(jqXHR, textStatus, errorThrown) {
+			})
+			.done(function() { })
+			.fail(function(jqXHR, textStatus, errorThrown) {
+				alert('asf');
 				_wallets_i4goTrueTokenObj.settings.debug && remoteLog("Failed getApplePaySession: " + JSON.stringify({
 					url: url,
 					jqXHR: jqXHR,
