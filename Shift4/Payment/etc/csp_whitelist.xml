@@ -6,7 +6,9 @@
                 <value id="wh_i4go" type="host">*.s4-test.com</value>
                 <value id="i4m_i4go" type="host">*.i4go.com</value>
                 <value id="shift4test_i4go" type="host">i4m.shift4test.com</value>
+                <value id="googlepay" type="host">pay.google.com</value>
                 <value id="googlepay2" type="host">*.googleapis.com</value>
+                <value id="googlepay3" type="host">*.gstatic.com</value>
             </values>
         </policy>
         <policy id="style-src">
@@ -14,7 +16,9 @@
               	<value id="wh_i4go" type="host">*.s4-test.com</value>
                 <value id="i4m_i4go" type="host">*.i4go.com</value>
                 <value id="shift4test_i4go" type="host">i4m.shift4test.com</value>
+                <value id="googlepay" type="host">pay.google.com</value>
                 <value id="googlepay2" type="host">*.googleapis.com</value>
+                <value id="googlepay3" type="host">*.gstatic.com</value>
             </values>
         </policy>
         <policy id="img-src">
@@ -24,6 +28,7 @@
                 <value id="shift4test_i4go" type="host">i4m.shift4test.com</value>
                 <value id="googlepay" type="host">pay.google.com</value>
                 <value id="googlepay2" type="host">*.googleapis.com</value>
+                <value id="googlepay3" type="host">*.gstatic.com</value>
             </values>
         </policy>
         <policy id="connect-src">
@@ -33,6 +38,7 @@
                 <value id="shift4test_i4go" type="host">i4m.shift4test.com</value>
                 <value id="googlepay" type="host">pay.google.com</value>
                 <value id="googlepay2" type="host">*.googleapis.com</value>
+                <value id="googlepay3" type="host">*.gstatic.com</value>
             </values>
         </policy>
         <policy id="font-src">
@@ -40,8 +46,9 @@
                <value id="wh_i4go" type="host">*.s4-test.com</value>
                 <value id="i4m_i4go" type="host">*.i4go.com</value>
                 <value id="shift4test_i4go" type="host">i4m.shift4test.com</value>
-		<value id="googlepay" type="host">pay.google.com</value>
+                <value id="googlepay" type="host">pay.google.com</value>
                 <value id="googlepay2" type="host">*.googleapis.com</value>
+                <value id="googlepay3" type="host">*.gstatic.com</value>
             </values>
         </policy>
         <policy id="frame-src">
@@ -51,6 +58,7 @@
                 <value id="shift4test_i4go" type="host">i4m.shift4test.com</value>
                 <value id="googlepay" type="host">pay.google.com</value>
                 <value id="googlepay2" type="host">*.googleapis.com</value>
+                <value id="googlepay3" type="host">*.gstatic.com</value>
             </values>
         </policy>
         <policy id="form-action">
@@ -60,6 +68,7 @@
                 <value id="shift4test_i4go" type="host">i4m.shift4test.com</value>
                 <value id="googlepay" type="host">pay.google.com</value>
                 <value id="googlepay2" type="host">*.googleapis.com</value>
+                <value id="googlepay3" type="host">*.gstatic.com</value>
             </values>
         </policy>
     </policies>
