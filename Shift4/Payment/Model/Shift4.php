@@ -14,8 +14,10 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 {
     const CODE = 'shift4';
     const MODULE_NAME = 'Shift4_Payment';
+	const PAYMENT_ERROR = 'Shift4 Payment Error:';
 
     protected $_code = self::CODE;
+    protected $_paymentErrorMessage = self::PAYMENT_ERROR;
 
     protected $api;
     protected $scopeConfig;
@@ -124,6 +126,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Customer\Model\Session $customerSession,
         $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+		\Magento\Framework\App\ProductMetadataInterface $productMetadata,
         array $data = []
     ) {
 
@@ -146,6 +149,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
         $this->transactionLog = $transactionLog;
         $this->savedCards = $savedCards;
         $this->customerSession = $customerSession;
+		$this->productMetadata = $productMetadata;
 
         if ($this->authSession->isLoggedIn()) {
             $this->session = $authSession;
@@ -843,6 +847,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
     private function shift4Transaction($amount, $payment)
     {
 
+		$isadmin = $this->authSession->isLoggedIn();
         $customerId = (int) $this->checkoutSession->getQuote()->getBillingAddress()->getCustomerId();
 
         // Prevent missing orders.
@@ -854,13 +859,15 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                 $this->quoteManager->convertCustomerCartToGuest();
             }
 
-            throw new PaymentException(__("Sorry, an error occurred. Please refresh the page and proceed with payment or wait for page to refresh automatically."));
+            //throw new PaymentException(__("Sorry, an error occurred. Please refresh the page and proceed with payment or wait for page to refresh automatically."));
+			$this->throwError("Sorry, an error occurred. Please refresh the page and proceed with payment or wait for page to refresh automatically.", $isadmin);
         }
 
         //make sure not allow to do transaction with invalid session
         if ($customerId > 0 && !$this->customerSession->isLoggedIn()) {
             $this->api->devLog('Have Customer ID but no customer session: checkoutSession: ' . $customerId . ', Order ID: ' . $payment->getOrder()->getIncrementId());
-            throw new PaymentException(__("Session Expired. Please Sign In again"));
+            //throw new PaymentException(__("Session Expired. Please Sign In again"));
+            $this->throwError("Session Expired. Please Sign In again", $isadmin);
         }
 
         $savedCardsEnabled = $hsaFsaCard = false;
@@ -903,15 +910,18 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
         } elseif ($this->request->getParam('shift4truetoken')) {
             $i4goTrueToken = $this->request->getParam('shift4truetoken');
         } else {
-            throw new PaymentException(__('Error getting i4go TrueToken'));
+           // throw new PaymentException(__('Error getting i4go TrueToken'));
+           $this->throwError('Error getting i4go TrueToken', $isadmin);
         }
 
         if (!ctype_alnum($i4goTrueToken)) {
-            throw new PaymentException(__('Wrong i4go true token')); //just to be sure no xss
+            //throw new PaymentException(__('Wrong i4go true token')); //just to be sure no xss
+            $this->throwError('Wrong i4go true token', $isadmin);
         }
 
         if ($i4goType && !ctype_alnum($i4goType)) {
-            throw new PaymentException(__('Wrong Card Type')); //just to be sure no xss
+           // throw new PaymentException(__('Wrong Card Type')); //just to be sure no xss
+           $this->throwError('Wrong Card Type', $isadmin);
         }
 
         //do transaction
@@ -927,7 +937,8 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
             $response = $this->api->getInvoice($response['invoice']);
 
             if ($response['error']) {
-                throw new PaymentException(__($response['errorMessage']));
+               // throw new PaymentException(__($response['errorMessage']));
+                $this->throwError($response['errorMessage'], $isadmin);
             } else {
                 $data = json_decode($response['data']);
                 if ($data->result[0]->transaction->responseCode) {
@@ -941,7 +952,8 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                 }
             }
         } elseif ($response['error']) {
-            throw new PaymentException(__($response['errorMessage']));
+          //  throw new PaymentException(__($response['errorMessage']));
+		  $this->throwError($response['errorMessage'], $isadmin);
         } else {
             $data = json_decode($response['data']);
             $responseCode = $data->result[0]->transaction->responseCode;
@@ -1030,11 +1042,13 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
             if ($saveCard && $i4goExpMonth && $savedCardsEnabled) {
 
                 if (!ctype_alnum($i4goExpYear)) {
-                    throw new PaymentException(__('Wrong Exp Year')); //just to be sure no xss
+                    //throw new PaymentException(__('Wrong Exp Year')); //just to be sure no xss
+                    $this->throwError('Wrong Exp Year', $isadmin);
                 }
 
                 if (!ctype_alnum($i4goExpMonth)) {
-                    throw new PaymentException(__('Wrong Exp Month')); //just to be sure no xss
+                    //throw new PaymentException(__('Wrong Exp Month')); //just to be sure no xss
+                    $this->throwError('Wrong Exp Month', $isadmin);
                 }
 
                 $this->saveCard($customerId, $i4goTrueToken, $i4goExpYear, $i4goType, $i4goExpMonth, 1);
@@ -1123,7 +1137,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 
             $this->api->devLog('Partial authorization');
 
-            if (!$this->authSession->isLoggedIn()) { //if customer
+            if (!$isadmin) { //if customer
 
                 if ($saveCard && $i4goExpMonth && $savedCardsEnabled) {
                     $this->saveCard(
@@ -1134,7 +1148,20 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                         $i4goExpMonth
                     );
                 }
-                throw new PartialPaymentException($partialAuthData, __('A partial payment for this order has been made. Please pay the remaining amount.'));
+               // throw new PartialPaymentException($partialAuthData, __('A partial payment for this order has been made. Please pay the remaining amount.'));
+			   
+				//from PartialPaymentException.php lines 18-24
+			    $partialPaymentData = $partialAuthData['preauthInvoiceId'].';'.
+				$partialAuthData['cardCount'].';'.
+				$partialAuthData['cardType'].';'.
+				$partialAuthData['preauthCardNumber'].';'.
+				$partialAuthData['preauthProcessedAmount'].';'.
+				$partialAuthData['preauthAuthCode'].';'.
+				$partialAuthData['remainingAmount']; 
+				//end PartialPaymentException.php lines 18-24
+			   
+               echo $this->_paymentErrorMessage . 'Partial payment: ' . $partialPaymentData . '|A partial payment for this order has been made. Please pay the remaining amount.';
+			   die();
 
             } else { //if admin
                 throw new PaymentException(__('A partial payment for $%1 for this order has been made. Please pay the remaining amount ($%2) or cancel partial payments.', $partialAuthData['preauthProcessedAmount'], $partialAuthData['remainingAmount']));
@@ -1159,7 +1186,10 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
                     );
                 }
             }
-            throw new PaymentException(__($error));
+	
+            //throw new PaymentException(__($error));
+            $this->throwError($error, $isadmin);
+			die();
         }
 
         $this->transactionLog = null; //close conections
@@ -1428,4 +1458,17 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
         }
         return ['errors' => $errors, 'data' => $data];
     }
+	
+	//workaround for versions > 2.4.3
+	private function throwError($message, $isadmin = false) {
+
+		$magentoVersion = (int) preg_replace("/[^0-9]/", "", $this->productMetadata->getVersion());
+
+		if ($isadmin || $magentoVersion < 243) {
+		    throw new PaymentException(__($message));
+		} else {
+            echo $this->_paymentErrorMessage . $message;
+		    die();
+		}
+	}
 }

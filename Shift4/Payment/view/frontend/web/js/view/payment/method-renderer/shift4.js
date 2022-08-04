@@ -27,6 +27,7 @@ define([
 			partialPayment: false,
 			saveCard: 1,
 			useHsaFsa: 0,
+			paymentErrorMessage: 'Shift4 Payment Error:',
 
             context: function() {
                 return this;
@@ -46,7 +47,7 @@ define([
 						'use_hsa_fsa': self.useHsaFsa,
 						'i4go_exp_month': self.i4goExpMonth,
 						'i4go_exp_year': self.i4goExpYear,
-						'i4go_type': self.i4goType,
+						'i4go_type': self.i4goType
 					}
                 };
             },
@@ -185,19 +186,46 @@ define([
 
 				if (this.validate()) {
 					this.isPlaceOrderActionAllowed(false);
-					
+
 					this.getPlaceOrderDeferredObject()
 						.done(
 							function (response) {
-								alert('success');
-								var resp = JSON.parse(response);
-								self.afterPlaceOrder();
-								redirectOnSuccessAction.execute();
+								if (response.substr(0, 21) == self.paymentErrorMessage) {
+									if (response.substr(21, 17) == 'Partial payment: ') {
+										
+										var sep = response.indexOf('|');
+										
+										var paymentData = response.substr(38, sep-38);
+										var message = response.substr(sep+1);
+										paymentData = paymentData.split(';');
+										self.addMessage(message, 'warning');
+										
+										if (confirm(__('The available amount on your card has been authorized for use, but it is insufficient to complete your purchase. To complete your purchase, click OK and enter an additional card. To cancel your purchase, click Cancel'))) {
+
+											self.addPartialPayment(paymentData);
+
+										} else {
+											self.cancelPayment(paymentData[0]);
+											$('.s4-message.message-warning').remove();
+										}
+										self.isPlaceOrderActionAllowed(true);
+										self.loadI4goIframe();
+										
+									} else {
+										self.addMessage(response.substr(21), 'error');
+										self.isPlaceOrderActionAllowed(true);
+										self.loadI4goIframe();
+										return false;
+									}
+								} else {
+									var resp = JSON.parse(response);
+									self.afterPlaceOrder();
+									redirectOnSuccessAction.execute();
+								}
 							}
 						)
-						.always(
+						.fail(
 							function (response) {
-								alert('failure');
 								if (response.responseJSON.message.substr(0, 17) == 'Partial payment: ') {
 									
 									var sep = response.responseJSON.message.indexOf('|');
@@ -224,7 +252,7 @@ define([
 									self.loadI4goIframe();
 									return false;
 								}
-							}
+							} 
 						);
 
 					return true;
