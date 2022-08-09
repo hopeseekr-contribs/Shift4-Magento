@@ -27,15 +27,19 @@ class UpgradeData implements UpgradeDataInterface
      */
     private $eavSetupFactory;
 
+    /** @var \Magento\Framework\App\Config\Storage\WriterInterface $configWriter */
+    private $configWriter;
+
     /**
      * Init
      *
      * @param CategorySetupFactory $categorySetupFactory
      * @param EavSetupFactory $eavSetupFactory
      */
-    public function __construct(EavSetupFactory $eavSetupFactory)
+    public function __construct(EavSetupFactory $eavSetupFactory, \Magento\Framework\App\Config\Storage\WriterInterface $configWriter)
     {
         $this->eavSetupFactory = $eavSetupFactory;
+        $this->configWriter = $configWriter;
     }
 
     /**
@@ -89,5 +93,15 @@ class UpgradeData implements UpgradeDataInterface
                 'value'    => $maskedAccessToken,
             ]);
         }
+
+        // UPDATE `core_config_data` SET value=0 WHERE `path`='dev/js/enable_js_bundling';
+        $this->configWriter->save('dev/js/enable_js_bundling', 0);
+/*
+        $connection->update(
+            'core_config_data',
+            ['value' => '0'],
+            ['path'  => 'dev/js/enable_js_bundling']
+        );
+*/
     }
 }
