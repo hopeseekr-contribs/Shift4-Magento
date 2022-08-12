@@ -124,9 +124,9 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
         \Shift4\Payment\Model\TransactionLog $transactionLog,
         \Shift4\Payment\Model\SavedCards $savedCards,
         \Magento\Customer\Model\Session $customerSession,
+		\Magento\Framework\App\ProductMetadataInterface $productMetadata,
         $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-		\Magento\Framework\App\ProductMetadataInterface $productMetadata,
         array $data = []
     ) {
 
