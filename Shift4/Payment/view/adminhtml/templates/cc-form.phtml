@@ -23,7 +23,7 @@ $hsaFsa = $block->getHsaFsa();
         loadShift4();
 
         //must insert hidden input outside payment block, because magento javascripts disable it
-        if ($('#shift4_true_token').length === 0) {
+        if ($('#shift4_true_token').length === 0 && $('#p_method_shift4').length != 0) {
             $('#order-billing_method').prepend('<input id="shift4_true_token" name="shift4truetoken" value="<?php if (isset($savedCards['default']) && $savedCards['default'] != 'new') { echo $savedCards['default'];} ?>" data-msg-required="<?= /* @escapeNotVerified */ __('Please secure payment information via i4go iframe.') ?>" data-validate=\'{"required":true}\' class="required-entry" type="hidden">');
         }
 
