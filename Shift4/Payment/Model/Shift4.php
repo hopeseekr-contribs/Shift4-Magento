@@ -1464,7 +1464,7 @@ class Shift4 extends \Magento\Payment\Model\Method\AbstractMethod
 
 		$magentoVersion = (int) preg_replace("/[^0-9]/", "", $this->productMetadata->getVersion());
 
-		if ($isadmin || $magentoVersion < 243) {
+		if ($isadmin || $magentoVersion < 243 || $magentoVersion > 244) {
 		    throw new PaymentException(__($message));
 		} else {
             echo $this->_paymentErrorMessage . $message;
